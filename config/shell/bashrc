@@ -10,3 +10,6 @@ eval "$(mise activate bash)"
 
 # Keep long-running work independent from Safari and network sessions.
 alias work='workspace-tmux'
+
+# Connect to the shared Hermes agent running in Kubernetes.
+alias hermes='/usr/local/lib/developer-workspace/hermes'

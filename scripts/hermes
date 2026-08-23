@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+NAMESPACE="apps"
+CONTAINER="hermes"
+
+POD="$(kubectl get pods -n "$NAMESPACE" \
+  -l app.kubernetes.io/name=hermes \
+  -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}' \
+  | awk '{print $1}')"
+
+if [[ -z "$POD" ]]; then
+  echo "Hermes pod not found in namespace ${NAMESPACE}" >&2
+  exit 1
+fi
+
+exec kubectl exec -it \
+  -n "$NAMESPACE" \
+  "$POD" \
+  -c "$CONTAINER" \
+  -- /bin/bash

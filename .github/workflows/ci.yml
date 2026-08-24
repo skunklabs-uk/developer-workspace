@@ -56,6 +56,9 @@ jobs:
       - name: Load exact image artifact
         run: docker load --input /tmp/developer-workspace.tar
 
+      - name: PID 1 orphan reaping regression
+        run: bash scripts/test-init-reaping.sh "$IMAGE_LOCAL"
+
       - name: Smoke test
         run: >-
           docker run --rm
@@ -69,7 +72,6 @@ jobs:
           -e MISE_GITHUB_TOKEN="${{ github.token }}"
           --entrypoint /usr/local/lib/developer-workspace/test-playwright-runtime.sh
           "$IMAGE_LOCAL"
-
 
       - name: Block actionable HIGH/CRITICAL vulnerabilities
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0

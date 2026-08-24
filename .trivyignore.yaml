@@ -36,3 +36,12 @@ vulnerabilities:
       - usr/lib/code-server/lib/vscode/node_modules/undici/package.json
     expired_at: 2026-09-10
     statement: "Dipendenza inclusa nella release upstream code-server 4.132.0; nessun upgrade supportato disponibile nel repository consumer. Il report completo resta visibile. Wave #16."
+
+  # CVE-2026-73566 è corretta in node-tar 7.5.21, ma il bundle VS Code 1.133.0
+  # incluso nell'ultima code-server 4.133.0 continua a risolvere tar 7.5.20.
+  # Nessun upgrade upstream supportato rimuove quindi il finding al 2026-08-24.
+  - id: CVE-2026-73566
+    paths:
+      - usr/lib/code-server/lib/vscode/node_modules/tar/package.json
+    expired_at: 2026-09-10
+    statement: "Dipendenza inclusa nel bundle VS Code/code-server; code-server 4.133.0 resta su tar 7.5.20 al 2026-08-24. Eccezione temporanea path-specific in attesa di release upstream; il report completo resta visibile. Issue #56."

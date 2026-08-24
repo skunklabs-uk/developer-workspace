@@ -249,3 +249,27 @@ workspace-doctor
 Also verify Git SSH, `gh auth status`, Codex login state, Vaultwarden login
 state, and SOPS decryption. A Vaultwarden unlock and `ssh-add` may be required
 again; that is intentional and avoids storing unlock secrets.
+
+## 10. Recovery after Pod recreation
+
+`/home/coder` and `/workspaces` are PVC-backed and survive Pod recreation. This
+includes repositories, the standalone Codex installation, authentication state,
+and Codex session history stored below the persistent home.
+
+Running Linux processes do **not** survive a Pod recreation. The old PID
+namespace disappears, so shells, the `tmux` server and any running Codex process
+are terminated even though their persistent files remain available. Do not
+expect `tmux` to keep a live Codex process across a Pod replacement.
+
+After the replacement Pod is Ready, open a new terminal, return to the project
+workspace and resume the persisted Codex session:
+
+```bash
+cd /workspaces/<project>
+git status
+codex resume
+```
+
+Select the previous session from the picker. If its name or thread ID is known,
+`codex resume <name-or-thread-id>` resumes it directly. Recreate any desired
+`tmux` session before continuing long-running interactive work.

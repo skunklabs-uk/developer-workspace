@@ -57,7 +57,7 @@ jobs:
         run: docker load --input /tmp/developer-workspace.tar
 
       - name: PID 1 orphan reaping regression
-        run: scripts/test-init-reaping.sh "$IMAGE_LOCAL"
+        run: bash scripts/test-init-reaping.sh "$IMAGE_LOCAL"
 
       - name: Smoke test
         run: >-

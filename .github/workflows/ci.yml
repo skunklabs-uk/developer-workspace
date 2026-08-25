@@ -25,13 +25,13 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Install shellcheck
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install --yes --no-install-recommends shellcheck
-
       - name: Lint shell scripts
-        run: shellcheck scripts/*.sh
+        run: >-
+          docker run --rm --network none
+          -v "$GITHUB_WORKSPACE:/mnt:ro"
+          --entrypoint /bin/sh
+          koalaman/shellcheck@sha256:0fa384f2a6171aef8a8ab2999a531c8c8158727d54a8f20157a5c3c51a734d6b2
+          -c 'shellcheck /mnt/scripts/*.sh'
 
       - name: Resolve release coordinate
         id: release

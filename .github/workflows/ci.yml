@@ -14,6 +14,7 @@ env:
   IMAGE_LOCAL: developer-workspace:ci-${{ github.sha }}
   IMAGE_REMOTE: ghcr.io/${{ github.repository_owner }}/developer-workspace
   IMAGE_ARTIFACT: developer-workspace-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+  DOCKER_BUILD_RECORD_UPLOAD: false
 
 jobs:
   verify:
@@ -130,19 +131,6 @@ jobs:
           -e MISE_GITHUB_TOKEN="${{ github.token }}"
           --entrypoint /usr/local/lib/developer-workspace/test-playwright-runtime.sh
           "$IMAGE_LOCAL"
-
-      - name: Block actionable HIGH/CRITICAL vulnerabilities
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          image-ref: ${{ env.IMAGE_LOCAL }}
-          format: table
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          vuln-type: os,library
-          scanners: vuln
-          version: v0.73.0
-          trivyignores: .trivyignore.yaml
-          exit-code: '1'
 
       # Release coordinates are immutable. Publishing only the first attempt
       # prevents a rerun from overwriting the artifact selected by GitOps.

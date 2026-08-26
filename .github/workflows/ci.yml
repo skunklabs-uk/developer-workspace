@@ -30,7 +30,7 @@ jobs:
           docker run --rm --network none
           -v "$GITHUB_WORKSPACE:/mnt:ro"
           --entrypoint /bin/sh
-          koalaman/shellcheck@sha256:0fa384f2a6171aef8a8ab2999a531c8c8158727d54a8f20157a5c3c51a734d6b2
+          koalaman/shellcheck@sha256:bb596a0d169b85ddd81d8b6d3a2ff6d5baf5fca10b97f575ebc647c3dff62b3d
           -c 'shellcheck /mnt/scripts/*.sh'
 
       - name: Resolve release coordinate

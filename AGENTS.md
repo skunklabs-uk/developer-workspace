@@ -19,3 +19,10 @@ Una condizione di stop si applica al solo perimetro che la richiede. Il blocco d
 Quando la fonte attiva o il task corrente identifica già il lavoro successivo necessario nella stessa missione, proseguire senza chiedere una conferma meccanica, salvo che si applichi una condizione di stop reale.
 
 Non fermarsi per passaggi già approvati, errori locali correggibili, verifiche risolvibili entro lo scope, stato documentale correggibile in modo univoco o fallback già autorizzati.
+
+## Governo, review e qualità editoriale
+
+- Le istruzioni di questo file sono vincolanti; ogni deroga richiede autorizzazione esplicita.
+- Ogni review deve indicare la revisione esaminata; se modifiche successive cambiano materialmente la superficie valutata, ripetere review e verifiche pertinenti.
+- I testi rivolti a persone devono essere in italiano e sottoposti a revisione tecnica e a `humanize-writing` quando disponibile; codice, identificatori, comandi, percorsi e termini tecnici restano nella forma più precisa.
+- Il template Agent OS è uno scheletro, non una fonte autorevole: non copiarlo né introdurre percorsi, documenti o regole senza un requisito concreto.

@@ -24,7 +24,7 @@ Non fermarsi per passaggi già approvati, errori locali correggibili, verifiche 
 
 - Le istruzioni di questo file sono vincolanti; ogni deroga richiede autorizzazione esplicita.
 - Ogni review deve indicare la revisione esaminata; se modifiche successive cambiano materialmente la superficie valutata, ripetere review e verifiche pertinenti.
-- I testi rivolti a persone devono essere in italiano e sottoposti a revisione tecnica e a `humanize-writing` quando disponibile; codice, identificatori, comandi, percorsi e termini tecnici restano nella forma più precisa.
+- I testi rivolti a persone devono essere in italiano e sottoposti a revisione tecnica; applicare `humanize-writing` quando disponibile e proporzionato. La sua indisponibilità non è una condizione di stop; codice, identificatori, comandi, percorsi e termini tecnici restano nella forma più precisa.
 - Il template Agent OS è uno scheletro, non una fonte autorevole: non copiarlo né introdurre percorsi, documenti o regole senza un requisito concreto.
 
 ### Closeout terminale RFC-0001

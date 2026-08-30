@@ -2,6 +2,7 @@
 node = "lts"
 python = "3"
 uv = "latest"
+"npm:pnpm" = "latest"
 "aqua:cli/cli" = "latest"
 "aqua:twpayne/chezmoi" = "latest"
 "npm:@bitwarden/cli" = "latest"

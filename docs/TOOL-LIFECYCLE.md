@@ -24,7 +24,7 @@ mise from `.bashrc`.
 
 | Owner | Tools | Location | Update |
 | --- | --- | --- | --- |
-| Persistent home via mise | Node, Python, uv, GitHub CLI, chezmoi, Bitwarden CLI, SOPS, age, kubectl, Helm, kustomize, Argo CD, OpenTofu, Ansible, jq, yq, actionlint, Trivy, ripgrep, fd, ShellCheck | `~/.local/share/mise` | `mise install`, `mise upgrade` |
+| Persistent home via mise | Node, pnpm, Python, uv, GitHub CLI, chezmoi, Bitwarden CLI, SOPS, age, kubectl, Helm, kustomize, Argo CD, OpenTofu, Ansible, jq, yq, actionlint, Trivy, ripgrep, fd, ShellCheck | `~/.local/share/mise` | `mise install`, `mise upgrade` |
 | Persistent home via mise, exact pin | Proxmox MCP server with semantic router | `~/.local/share/mise` | reviewed pin change followed by image build and smoke test |
 | Persistent home | Codex | `~/.local/libexec/codex` | automatic before a new session, or `codex update` |
 | Image bootstrap | code-server, Bash, Git, SSH, tmux, curl, GnuPG, browser runtime libraries, recovery copy of mise | `/usr`, `/usr/local`, `/opt` | image rebuild and rollout |
@@ -107,5 +107,6 @@ unless a measured technical constraint requires otherwise.
 - [mise upgrade](https://mise.jdx.dev/cli/upgrade.html)
 - [mise self-update](https://mise.jdx.dev/cli/self-update.html)
 - [mise getting started and doctor](https://mise.jdx.dev/getting-started)
+- [mise npm backend](https://mise.jdx.dev/dev-tools/backends/npm.html)
 - [mise pipx backend](https://mise.jdx.dev/dev-tools/backends/pipx.html)
 - [Python TLS/SSL wrapper](https://docs.python.org/3/library/ssl.html)

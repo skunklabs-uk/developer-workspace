@@ -8,7 +8,7 @@ mise install node python uv
 mise install
 eval "$(mise activate bash)"
 
-required=(code-server bash git gh tmux mise chezmoi sops age kubectl helm kustomize tofu ansible proxmox-mcp-server jq yq rg fd ssh dig codex bw node npm python3 uv shellcheck workspace-doctor workspace-tmux argocd actionlint trivy)
+required=(code-server bash git gh tmux mise chezmoi sops age kubectl helm kustomize tofu ansible proxmox-mcp-server jq yq rg fd ssh dig codex bw node npm pnpm python3 uv shellcheck workspace-doctor workspace-tmux argocd actionlint trivy)
 for binary in "${required[@]}"; do
   command -v "$binary" >/dev/null || { echo "missing: $binary" >&2; exit 1; }
 done

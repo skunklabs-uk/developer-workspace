@@ -42,47 +42,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          metadata=.release-metadata.yaml
-          test -f "$metadata"
-
-          wave=""
-          batch=""
-          generation=""
-          while IFS= read -r line || [[ -n "$line" ]]; do
-            [[ "$line" =~ ^[[:space:]]*$ ]] && continue
-            [[ "$line" =~ ^[[:space:]]*# ]] && continue
-            if [[ ! "$line" =~ ^(wave|batch|generation):[[:space:]]*([a-z0-9]+)[[:space:]]*$ ]]; then
-              echo "Invalid release metadata line: $line" >&2
-              exit 1
-            fi
-            key="${BASH_REMATCH[1]}"
-            value="${BASH_REMATCH[2]}"
-            case "$key" in
-              wave)
-                [[ -z "$wave" ]] || { echo "Duplicate wave" >&2; exit 1; }
-                wave="$value"
-                ;;
-              batch)
-                [[ -z "$batch" ]] || { echo "Duplicate batch" >&2; exit 1; }
-                batch="$value"
-                ;;
-              generation)
-                [[ -z "$generation" ]] || { echo "Duplicate generation" >&2; exit 1; }
-                generation="$value"
-                ;;
-            esac
-          done < "$metadata"
-
-          [[ "$wave" =~ ^w[0-9]{2}$ ]] || { echo "Invalid or missing wave" >&2; exit 1; }
-          [[ "$batch" =~ ^b[0-9]{2}$ ]] || { echo "Invalid or missing batch" >&2; exit 1; }
-          if [[ -n "$generation" ]]; then
-            [[ "$generation" =~ ^g[0-9]{2}$ ]] || { echo "Invalid generation" >&2; exit 1; }
-          fi
-
-          tag="$(TZ=Europe/Rome date +%Y.%m.%d)-${wave}-${batch}"
-          if [[ -n "$generation" ]]; then
-            tag="${tag}-${generation}"
-          fi
+          [[ "${GITHUB_RUN_NUMBER:-}" =~ ^[0-9]+$ ]] || { echo "Invalid GITHUB_RUN_NUMBER" >&2; exit 1; }
+          release_date="$(TZ=Europe/Rome date +%Y.%m.%d)"
+          printf -v build_number '%06d' "$GITHUB_RUN_NUMBER"
+          tag="${release_date}-b${build_number}"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "Resolved release coordinate: $tag"
 
@@ -132,8 +95,6 @@ jobs:
           --entrypoint /usr/local/lib/developer-workspace/test-playwright-runtime.sh
           "$IMAGE_LOCAL"
 
-      # Release coordinates are immutable. Publishing only the first attempt
-      # prevents a rerun from overwriting the artifact selected by GitOps.
       - name: Preserve verified image artifact
         if: >-
           ${{
@@ -188,17 +149,14 @@ jobs:
           inspect_output="$(docker manifest inspect "$RELEASE_REF" 2>&1)"
           inspect_status=$?
           set -e
-
           if (( inspect_status == 0 )); then
             echo "Release coordinate already exists and is immutable: $RELEASE_REF" >&2
             exit 1
           fi
-
           if grep -Eqi 'manifest unknown|no such manifest|not found' <<< "$inspect_output"; then
             echo "Release coordinate is available: $RELEASE_REF"
             exit 0
           fi
-
           echo "$inspect_output" >&2
           echo "Unable to prove release coordinate is unused; refusing publication." >&2
           exit 1

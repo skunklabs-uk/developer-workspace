@@ -73,10 +73,10 @@ jobs:
             esac
           done < "$metadata"
 
-          [[ "$wave" =~ ^w[0-9]+$ ]] || { echo "Invalid or missing wave" >&2; exit 1; }
-          [[ "$batch" =~ ^b[0-9]+$ ]] || { echo "Invalid or missing batch" >&2; exit 1; }
+          [[ "$wave" =~ ^w[0-9]{2}$ ]] || { echo "Invalid or missing wave" >&2; exit 1; }
+          [[ "$batch" =~ ^b[0-9]{2}$ ]] || { echo "Invalid or missing batch" >&2; exit 1; }
           if [[ -n "$generation" ]]; then
-            [[ "$generation" =~ ^g[0-9]+$ ]] || { echo "Invalid generation" >&2; exit 1; }
+            [[ "$generation" =~ ^g[0-9]{2}$ ]] || { echo "Invalid generation" >&2; exit 1; }
           fi
 
           tag="$(TZ=Europe/Rome date +%Y.%m.%d)-${wave}-${batch}"

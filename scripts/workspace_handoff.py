@@ -146,6 +146,11 @@ class Consumer:
                 f"Modifiche locali non committate: `{result.get('dirty', 'non rilevato')}`.\n\n"
                 + summary + '\n\nIl successo del processo non equivale ad accettazione o merge.\n')
 
+    def superseded(self, request):
+        return any(job['request']['assignment'] == request['assignment'] and
+                   job['request']['generation'] > request['generation']
+                   for job in self.state['jobs'].values())
+
     def tick(self):
         with self.locked():
             if not self.path.is_file() or self.path.is_symlink():
@@ -184,8 +189,12 @@ class Consumer:
                     key = digest(identity)
                     existing = self.state['jobs'].get(key)
                     if existing and existing['request'] != request:
-                        raise HandoffError('Stesso incarico con istruzioni o revisione differenti')
-                    if not existing:
+                        self.state['last_rejection'] = {'comment_id': comment['id'],
+                            'reason': 'Stesso incarico con istruzioni o revisione differenti'}
+                    if not existing and self.superseded(request):
+                        self.state['last_rejection'] = {'comment_id': comment['id'],
+                            'reason': 'Generation superata da un incarico già accettato'}
+                    elif not existing:
                         self.state['jobs'][key] = {'request': request, 'comment_id': comment['id'],
                                                   'phase': 'pending', 'receipt': None}
                 self.state['cursor'] = comment['id']
@@ -222,6 +231,12 @@ class Consumer:
                     current = next((item for item in comments if item['id'] == job['comment_id']), None)
                     if current is None or parse_request(current, self.config) != job['request']:
                         raise HandoffError('Comando rimosso, modificato o non più autorizzato')
+                    if self.superseded(job['request']):
+                        atomic_json(run_dir / 'result.json', {'exit_code': 1,
+                            'summary': 'Generation superata prima dell’avvio; Codex non eseguito.'})
+                        job['phase'] = 'result'
+                        self.save()
+                if job['phase'] == 'ready':
                     # Read-only network prerequisites may wait without consuming an execution.
                     prepare = getattr(self.runner, 'prepare', None)
                     if prepare is not None:

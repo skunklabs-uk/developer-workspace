@@ -147,6 +147,20 @@ class CheckoutTests(unittest.TestCase):
         with self.assertRaises(self.m.HandoffError):
             self.m.prepare_checkout(self.request, str(self.origin), self.root / 'task')
 
+    def test_probe_invokes_flat_native_sandbox_and_propagates_denial(self):
+        runner = self.m.LocalCodex({'sandbox': 'read-only'})
+        def native_cli(args, **kwargs):
+            # CLI 0.153.4 parses everything after an unrecognized positional
+            # argument as the executable, including the historical "linux".
+            if args[1:3] == ['sandbox', 'linux']:
+                return subprocess.CompletedProcess(args, 101)
+            return subprocess.CompletedProcess(args, 0)
+        with patch.object(self.m.subprocess, 'run', side_effect=native_cli):
+            runner.probe(self.origin, self.root, {})
+        with patch.object(self.m.subprocess, 'run', return_value=subprocess.CompletedProcess([], 1)):
+            with self.assertRaises(self.m.HandoffError):
+                runner.probe(self.origin, self.root, {})
+
     def test_execution_is_disabled_without_explicit_activation(self):
         runner = self.m.LocalCodex({'execution_enabled': False})
         with self.assertRaises(self.m.HandoffError):

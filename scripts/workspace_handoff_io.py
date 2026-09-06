@@ -236,7 +236,7 @@ class LocalCodex:
                   'if [ "$5" = write ]; then printf probe >"$4" || exit 14; '
                   'else if (printf probe >"$4") 2>/dev/null; then exit 15; fi; fi')
         access = 'read' if self.config.get('sandbox', 'read-only') == 'read-only' else 'write'
-        args = [self.codex, 'sandbox', 'linux', '--include-managed-config', '--permission-profile',
+        args = [self.codex, 'sandbox', '--include-managed-config', '--permission-profile',
                 'handoff', '--cd', str(checkout), *self.overrides(), '--', '/bin/sh', '-c', script,
                 'probe', str(checkout / 'AGENTS.md'), str(hidden), str(outside_write),
                 str(inside_write), access]

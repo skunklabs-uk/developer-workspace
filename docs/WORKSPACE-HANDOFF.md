@@ -2,8 +2,9 @@
 
 **Stato: Draft.** Codice e verifiche locali della missione
 [developer-workspace #75](https://github.com/skunklabs-uk/developer-workspace/issues/75).
-L'esecuzione nel Pod, i permessi effettivi e il giro completo con Codex non sono
-ancora collaudati. Questo documento non dichiara il servizio attivo.
+I test sono stati rieseguiti nel Pod. L’attivazione resta bloccata dalla
+creazione dei namespace richiesta dalla sandbox nativa; il giro completo con
+Codex non è collaudato. Questo documento non dichiara il servizio attivo.
 
 ## Perimetro
 
@@ -97,7 +98,10 @@ sola lettura; la pubblicazione automatica di branch modificati non è inclusa.
 
 Repository, assignment e generation identificano l'incarico. Ripubblicare lo
 stesso incarico non lo riesegue; cambiarne il contenuto senza cambiare identità
-è un conflitto. I comandi malformati vengono registrati come rifiutati senza
+è un conflitto registrato in `last_rejection`, senza impedire una consegna
+pendente. Una generation inferiore a una già accettata per lo stesso assignment
+viene rifiutata. Se era in attesa, riceve un risultato di mancato avvio perché
+superata; risultati già prodotti vengono comunque consegnati. I comandi malformati vengono registrati come rifiutati senza
 bloccare le successive richieste valide. Le modifiche a un comando non sono un
 meccanismo di cancellazione di un processo già avviato.
 
@@ -116,7 +120,7 @@ checkout, scritture assenti o limitate al checkout e rete dei comandi disabilita
 Non esiste fallback `danger-full-access` o bypass delle approvazioni.
 
 I permission profile upstream sono **beta** e non si combinano con i vecchi
-`sandbox_mode`. Prima del modello, `codex sandbox linux` prova il profilo su
+`sandbox_mode`. Prima del modello, `codex sandbox` prova il profilo su
 file sentinella non segreti: lettura nel checkout, lettura/scrittura negate
 fuori, scrittura nel checkout coerente con la modalità scelta. Un esito negativo
 ferma il tentativo. Non allargare il profilo automaticamente per farlo passare.
@@ -130,6 +134,30 @@ senza verificarne l'identità e il percorso reale. Il POC non cambia login.
 Fonti upstream: [esecuzione non interattiva](https://developers.openai.com/codex/noninteractive/),
 [permission profile](https://developers.openai.com/codex/permissions),
 [CLI sandbox](https://developers.openai.com/codex/cli/reference).
+
+### Compatibilità verificata il 6 settembre 2026
+
+Nel Pod `developer-workspace-0`, Codex CLI 0.153.4 espone il comando sandbox
+senza sottocomando `linux`. Usare il binario già verificato
+`/home/coder/.local/libexec/codex/codex` nel campo `codex`: il wrapper
+`/usr/local/bin/codex` può aggiornare automaticamente la CLI anche per `--version`.
+La verifica iniziale ha attivato quel comportamento preesistente e installato
+0.153.4; le prove successive hanno usato direttamente il binario.
+
+Il profilo `handoff` viene accettato dal parser, ma l’esecuzione di `/bin/true`
+fallisce con `bwrap: No permissions to create a new namespace`. Anche
+`unshare -Ur true` fallisce con `Operation not permitted`, pur con
+`kernel.unprivileged_userns_clone=1` e `user.max_user_namespaces=96054`.
+Non è ancora identificato quale controllo del runtime neghi la syscall.
+Il Pod mantiene `RuntimeDefault`, capability rimosse e
+`allowPrivilegeEscalation=false`; nessuno di questi confini è stato modificato.
+
+L’attivazione richiede quindi una soluzione approvata dal proprietario del
+runtime che renda eseguibile la sandbox nativa mantenendo il confine richiesto.
+Non usare sandbox legacy con lettura globale, full access, disabilitazione di
+seccomp o privilegi aggiuntivi come fallback. Login ChatGPT e identità GitHub
+sono verificati, ma non sostituiscono la prova del filesystem e dei tool effettivi.
+Lo stato operativo, gli head e i payload di ripartenza restano nella issue #75.
 
 ## Recupero ed evidenze
 

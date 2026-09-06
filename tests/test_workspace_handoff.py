@@ -124,9 +124,21 @@ class HandoffTests(unittest.TestCase):
         self.consumer.tick()
         self.api.comments.append(self.request(2000, head='b' * 40))
         self.restart()
-        with self.assertRaises(self.m.HandoffError):
-            self.consumer.tick()
+        self.consumer.tick()
+        self.assertIn('Stesso incarico', self.consumer.state['last_rejection']['reason'])
         self.assertEqual(self.runner.calls, 1)
+
+    def test_conflicting_message_does_not_block_durable_delivery(self):
+        self.api.comments.append(self.request())
+        self.api.lose_patch = True
+        with self.assertRaises(TimeoutError):
+            self.consumer.tick()
+        self.api.comments.append(self.request(2000, head='b' * 40))
+        self.restart()
+        self.consumer.tick()
+        self.assertEqual(self.runner.calls, 1)
+        self.assertEqual(self.api.patches, 2)
+        self.assertEqual(self.consumer.state['last_rejection']['comment_id'], 2000)
 
     def test_new_generation_is_a_new_explicit_iteration(self):
         self.api.comments.append(self.request())
@@ -134,6 +146,26 @@ class HandoffTests(unittest.TestCase):
         self.api.comments.append(self.request(2000, generation=2, head='b' * 40))
         self.consumer.tick()
         self.assertEqual(self.runner.calls, 2)
+
+    def test_older_generation_never_starts_after_newer_one(self):
+        self.api.comments.append(self.request(generation=2))
+        self.consumer.tick()
+        self.api.comments.append(self.request(2000, generation=1))
+        self.restart()
+        self.consumer.tick()
+        self.assertEqual(self.runner.calls, 1)
+        self.assertEqual(self.consumer.state['last_rejection']['comment_id'], 2000)
+        self.api.comments.append(self.request(2001, generation=3))
+        self.consumer.tick()
+        self.assertEqual(self.runner.calls, 2)
+
+    def test_newer_generation_supersedes_work_not_started(self):
+        self.api.comments.extend([self.request(), self.request(2, generation=2)])
+        self.consumer.tick()
+        self.assertEqual(self.runner.calls, 0)
+        self.assertIn('superata', self.api.comments[-1]['body'])
+        self.consumer.tick()
+        self.assertEqual(self.runner.calls, 1)
 
     def test_enrollment_does_not_reactivate_history(self):
         other = self.root / 'second'

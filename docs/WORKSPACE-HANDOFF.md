@@ -86,7 +86,7 @@ iniziare esattamente con `/workspace run` seguito da un oggetto JSON:
 
 ```text
 /workspace run
-{"repository":"skunklabs-uk/iwant","assignment":"WORKSPACE-HANDOFF-POC","generation":1,"branch":"agent/workspace-handoff-poc","head":"SHA_COMPLETO_DEL_COMMIT_APPROVATO","prompt":"docs/agents/prompts/workspace-handoff-poc-g1.md"}
+{"repository":"skunklabs-uk/iwant","assignment":"WORKSPACE-HANDOFF-POC","generation":1,"branch":"agent/workspace-75-prompt-authority","head":"SHA_COMPLETO_DEL_COMMIT_APPROVATO","prompt":"docs/agents/prompts/workspace-handoff-poc-g1.md"}
 ```
 
 L'esempio va completato con uno SHA reale di 40 caratteri: non è eseguibile così
@@ -158,6 +158,50 @@ Non usare sandbox legacy con lettura globale, full access, disabilitazione di
 seccomp o privilegi aggiuntivi come fallback. Login ChatGPT e identità GitHub
 sono verificati, ma non sostituiscono la prova del filesystem e dei tool effettivi.
 Lo stato operativo, gli head e i payload di ripartenza restano nella issue #75.
+
+### Diagnosi del diniego e prossimo accertamento
+
+La ripresa del 6 settembre distingue la shell del coordinatore in WSL2 dal
+consumer su Linux Debian nel Pod. Nel consumer sono stati osservati
+`Seccomp: 2`, un filtro, `NoNewPrivs: 1`, capability tutte a zero e AppArmor
+`cri-containerd.apparmor.d (enforce)`. Il runtime del nodo è
+`containerd://2.2.5-k3s2`. Senza cambiare queste condizioni:
+
+- `unshare(0)` e `unshare(CLONE_NEWUSER)` restituiscono `EPERM`;
+- `clone(SIGCHLD)` crea un figlio che termina subito;
+  `clone(CLONE_NEWUSER | SIGCHLD)` restituisce `EPERM`;
+- il probe del codice, riusando `runtime-probe` nello stato esistente,
+  termina con exit 1; anche il comando nativo `/bin/true` fallisce in bwrap.
+
+Il [profilo sorgente della stessa versione containerd](https://github.com/k3s-io/containerd/blob/v2.2.5-k3s2/contrib/seccomp/seccomp_default.go)
+ammette `unshare` con `CAP_SYS_ADMIN` e, senza tale capability, ammette `clone`
+solo senza i flag di namespace. È un'evidenza coerente con un diniego seccomp,
+non la lettura del filtro OCI effettivamente caricato. AppArmor resta un
+ulteriore confine da verificare. Non aggiungere capability per verificare
+l'ipotesi. `strace` non è presente, `dmesg` è negato e securityfs non espone i
+profili dal Pod; i sysctl già positivi non rimuovono questi limiti.
+
+Il prossimo accertamento richiede al proprietario del runtime **solo un
+estratto diagnostico dal nodo**, riferito al container corrente: sezione
+`linux.seccomp` della specifica OCI, `process.apparmorProfile`,
+`process.noNewPrivileges`, `process.capabilities` ed eventuali eventi kernel
+`SECCOMP`/`apparmor="DENIED"` correlati alla prova. Escludere environment,
+credenziali e l'output integrale di inspect. L'assenza di eventi audit non
+dimostra assenza del filtro. ID e istante della prova sono nella issue #75.
+
+Questa raccolta non richiede rollout o modifica del consumer. Se conferma la
+necessità di cambiare policy, preparare un diff Homelab sul profilo effettivo
+con le sole syscall/condizioni necessarie alla sandbox, impatto sull'intero
+Pod, rollback e prova prevista, e ottenere l'autorizzazione **prima** di
+applicarlo. Non proporre un profilo permissivo generico né presumere che una
+sola eccezione risolva anche AppArmor. Spostare il consumer è un'alternativa
+con conseguenze diverse, anch'essa da approvare; non clonare lo stato per
+provarla. Nessuna di queste modifiche è autorizzata da questo runbook.
+
+Dopo un rimedio approvato, ripetere il probe filesystem e verificare
+separatamente rete e tool/MCP/plugin effettivi del figlio con la stessa
+configurazione. Login ChatGPT, assenza dei file gestiti locali e filtro delle
+variabili sono verifiche preliminari: non certificano da soli quel confine.
 
 ## Recupero ed evidenze
 

@@ -1,0 +1,369 @@
+{
+  "status": "Draft",
+  "note": "Metadati letti dal nodo per derivare i candidati; nessun probe e nessun contenuto amministrativo letto.",
+  "paths": {
+    "/bin": {
+      "resolved": "/usr/bin",
+      "mode": "0o40755",
+      "directory": true,
+      "dev": 205,
+      "inode": 6816252
+    },
+    "/sbin": {
+      "resolved": "/usr/sbin",
+      "mode": "0o40755",
+      "directory": true,
+      "dev": 205,
+      "inode": 6824094
+    },
+    "/usr": {
+      "resolved": "/usr",
+      "mode": "0o40755",
+      "directory": true,
+      "dev": 205,
+      "inode": 6829844
+    },
+    "/etc": {
+      "resolved": "/etc",
+      "mode": "0o40755",
+      "directory": true,
+      "dev": 205,
+      "inode": 6829392
+    },
+    "/lib": {
+      "resolved": "/usr/lib",
+      "mode": "0o40755",
+      "directory": true,
+      "dev": 205,
+      "inode": 6816372
+    },
+    "/lib64": {
+      "resolved": "/usr/lib64",
+      "mode": "0o40755",
+      "directory": true,
+      "dev": 205,
+      "inode": 5407338
+    },
+    "/nix/store": {
+      "resolved": "/nix/store",
+      "error": "[Errno 2] No such file or directory: '/proc/208681/root/nix/store'"
+    },
+    "/run/current-system/sw": {
+      "resolved": "/run/current-system/sw",
+      "error": "[Errno 2] No such file or directory: '/proc/208681/root/run/current-system/sw'"
+    },
+    "/tmp": {
+      "resolved": "/tmp",
+      "mode": "0o42777",
+      "directory": true,
+      "dev": 2049,
+      "inode": 7733259
+    },
+    "/dev": {
+      "resolved": "/dev",
+      "mode": "0o40755",
+      "directory": true,
+      "dev": 1048728,
+      "inode": 1
+    },
+    "/dev/pts": {
+      "resolved": "/dev/pts",
+      "mode": "0o40755",
+      "directory": true,
+      "dev": 1048730,
+      "inode": 1
+    },
+    "/dev/null": {
+      "resolved": "/dev/null",
+      "mode": "0o20666",
+      "directory": false,
+      "dev": 1048728,
+      "inode": 6
+    },
+    "/dev/zero": {
+      "resolved": "/dev/zero",
+      "mode": "0o20666",
+      "directory": false,
+      "dev": 1048728,
+      "inode": 10
+    },
+    "/dev/full": {
+      "resolved": "/dev/full",
+      "mode": "0o20666",
+      "directory": false,
+      "dev": 1048728,
+      "inode": 8
+    },
+    "/dev/random": {
+      "resolved": "/dev/random",
+      "mode": "0o20666",
+      "directory": false,
+      "dev": 1048728,
+      "inode": 7
+    },
+    "/dev/urandom": {
+      "resolved": "/dev/urandom",
+      "mode": "0o20666",
+      "directory": false,
+      "dev": 1048728,
+      "inode": 11
+    },
+    "/dev/tty": {
+      "resolved": "/dev/tty",
+      "mode": "0o20666",
+      "directory": false,
+      "dev": 1048728,
+      "inode": 9
+    },
+    "/proc": {
+      "resolved": "/proc",
+      "mode": "0o40555",
+      "directory": true,
+      "dev": 1048677,
+      "inode": 1
+    },
+    "/workspaces/developer-workspace/.worktrees/handoff-75": {
+      "resolved": "/workspaces/developer-workspace/.worktrees/handoff-75",
+      "mode": "0o42755",
+      "directory": true,
+      "dev": 65024,
+      "inode": 445079
+    },
+    "/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/bin/codex": {
+      "resolved": "/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/bin/codex",
+      "mode": "0o100755",
+      "directory": false,
+      "dev": 65024,
+      "inode": 1372486,
+      "sha256": "56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da"
+    },
+    "/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/codex-resources/bwrap": {
+      "resolved": "/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/codex-resources/bwrap",
+      "mode": "0o100755",
+      "directory": false,
+      "dev": 65024,
+      "inode": 1372492,
+      "sha256": "77360cb751ccedc5971391444ac86a8a33c15b04d6b4a6fe45f5d25496e62c4c"
+    }
+  },
+  "mounts": [
+    {
+      "mountpoint": "/",
+      "options": "ro,relatime",
+      "optional": [],
+      "fstype": "overlay"
+    },
+    {
+      "mountpoint": "/proc",
+      "options": "rw,nosuid,nodev,noexec,relatime",
+      "optional": [],
+      "fstype": "proc"
+    },
+    {
+      "mountpoint": "/dev",
+      "options": "rw,nosuid",
+      "optional": [],
+      "fstype": "tmpfs"
+    },
+    {
+      "mountpoint": "/dev/pts",
+      "options": "rw,nosuid,noexec,relatime",
+      "optional": [],
+      "fstype": "devpts"
+    },
+    {
+      "mountpoint": "/dev/mqueue",
+      "options": "rw,nosuid,nodev,noexec,relatime",
+      "optional": [],
+      "fstype": "mqueue"
+    },
+    {
+      "mountpoint": "/workspaces",
+      "options": "rw,relatime",
+      "optional": [],
+      "fstype": "ext4"
+    },
+    {
+      "mountpoint": "/tmp",
+      "options": "rw,relatime",
+      "optional": [],
+      "fstype": "ext4"
+    },
+    {
+      "mountpoint": "/home/coder",
+      "options": "rw,relatime",
+      "optional": [],
+      "fstype": "ext4"
+    },
+    {
+      "mountpoint": "/etc/hosts",
+      "options": "rw,relatime",
+      "optional": [],
+      "fstype": "ext4"
+    },
+    {
+      "mountpoint": "/dev/termination-log",
+      "options": "rw,relatime",
+      "optional": [],
+      "fstype": "ext4"
+    },
+    {
+      "mountpoint": "/etc/hostname",
+      "options": "ro,relatime",
+      "optional": [],
+      "fstype": "ext4"
+    },
+    {
+      "mountpoint": "/etc/resolv.conf",
+      "options": "ro,relatime",
+      "optional": [],
+      "fstype": "ext4"
+    },
+    {
+      "mountpoint": "/dev/shm",
+      "options": "rw,relatime",
+      "optional": [],
+      "fstype": "tmpfs"
+    },
+    {
+      "mountpoint": "/etc/developer-workspace/kubeconfig",
+      "options": "ro,relatime",
+      "optional": [],
+      "fstype": "ext4"
+    },
+    {
+      "mountpoint": "/etc/developer-workspace/proxmox",
+      "options": "ro,relatime",
+      "optional": [],
+      "fstype": "ext4"
+    },
+    {
+      "mountpoint": "/proc/bus",
+      "options": "ro,nosuid,nodev,noexec,relatime",
+      "optional": [],
+      "fstype": "proc"
+    },
+    {
+      "mountpoint": "/proc/fs",
+      "options": "ro,nosuid,nodev,noexec,relatime",
+      "optional": [],
+      "fstype": "proc"
+    },
+    {
+      "mountpoint": "/proc/irq",
+      "options": "ro,nosuid,nodev,noexec,relatime",
+      "optional": [],
+      "fstype": "proc"
+    },
+    {
+      "mountpoint": "/proc/sys",
+      "options": "ro,nosuid,nodev,noexec,relatime",
+      "optional": [],
+      "fstype": "proc"
+    },
+    {
+      "mountpoint": "/proc/sysrq-trigger",
+      "options": "ro,nosuid,nodev,noexec,relatime",
+      "optional": [],
+      "fstype": "proc"
+    },
+    {
+      "mountpoint": "/proc/acpi",
+      "options": "ro,relatime",
+      "optional": [],
+      "fstype": "tmpfs"
+    },
+    {
+      "mountpoint": "/proc/interrupts",
+      "options": "rw,nosuid",
+      "optional": [],
+      "fstype": "tmpfs"
+    },
+    {
+      "mountpoint": "/proc/kcore",
+      "options": "rw,nosuid",
+      "optional": [],
+      "fstype": "tmpfs"
+    },
+    {
+      "mountpoint": "/proc/keys",
+      "options": "rw,nosuid",
+      "optional": [],
+      "fstype": "tmpfs"
+    },
+    {
+      "mountpoint": "/proc/timer_list",
+      "options": "rw,nosuid",
+      "optional": [],
+      "fstype": "tmpfs"
+    }
+  ],
+  "bwrap_path_candidates": {
+    "/usr/local/bin": false,
+    "/usr/bin": false,
+    "/bin": false,
+    "/home/coder/.local/bin": false,
+    "/home/coder/.local/libexec/codex": false
+  },
+  "config_sha256": "4acb321e9961ed148abb823c848d32b5c32bb53c67395923f8f3fe49ac5d9d69",
+  "state_sha256": "96a601a5723e97abddc6308c4dc904d5fbac8e126bce97915cdb892550a1e025",
+  "launcher": {
+    "init_path": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "bwrap_search": [
+      {
+        "directory": "/usr/local/sbin",
+        "exists": false
+      },
+      {
+        "directory": "/usr/local/bin",
+        "exists": false
+      },
+      {
+        "directory": "/usr/sbin",
+        "exists": false
+      },
+      {
+        "directory": "/usr/bin",
+        "exists": false
+      },
+      {
+        "directory": "/sbin",
+        "exists": false
+      },
+      {
+        "directory": "/bin",
+        "exists": false
+      }
+    ],
+    "zsh": {
+      "path": "/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/codex-resources/zsh/bin/zsh",
+      "sha256": "67faaaa89242c4a332e16e508a1977cffc24bf7fca31d4411cdfd101f3831ef3",
+      "mode": "0o100755"
+    }
+  },
+  "final_metadata_and_preserved_state": {
+    "/etc/developer-workspace": {
+      "mode": "0o755",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    "/home/coder/.codex/tmp/arg0": {
+      "mode": "0o700",
+      "uid": 1000,
+      "gid": 1000,
+      "symlink": false
+    },
+    "config_state": {
+      "config": {
+        "sha256": "4acb321e9961ed148abb823c848d32b5c32bb53c67395923f8f3fe49ac5d9d69",
+        "execution_enabled": false
+      },
+      "state": {
+        "sha256": "96a601a5723e97abddc6308c4dc904d5fbac8e126bce97915cdb892550a1e025",
+        "jobs": {},
+        "cursor": 5557127806
+      }
+    }
+  }
+}

@@ -208,20 +208,21 @@ il suo `deny mount` è quindi confermato. Nessun caricamento o modifica cache.
 La ricerca degli eventi kernel nella finestra della traccia non ha trovato
 eventi correlati; questo non smentisce il default ERRNO.
 
-La necessità di intervenire su entrambi i confini è ora documentata.
-La raccolta non certifica le condizioni esatte dei mount successivi, mai
-raggiunti dalla traccia. Un profilo completo non può essere sostituito da
-un allow generico per mount o da una sola eccezione per clone. Il delta
-approvabile e le informazioni residue sono governati dalla issue #75.
+I [candidati completi seccomp e AppArmor](workspace-handoff-candidates/README.md)
+sono ora preparati dalla baseline e dal sorgente della release Codex 0.153.4
+verificata. La documentazione separa input osservati, invocazione e operazioni
+derivate, matching e isolamento ancora da dimostrare. Entrambi compilano
+offline senza caricamento; diff e hash sono versionati e revisionati.
 
-Questa raccolta non ha richiesto rollout o modifica del consumer. Per il
-rimedio, preparare un diff Homelab sul profilo effettivo
-con le sole syscall/condizioni necessarie alla sandbox, impatto sull'intero
-container code-server, rollback e prova prevista, e ottenere l'autorizzazione **prima** di
-applicarlo. Non proporre un profilo permissivo generico né presumere che una
-sola eccezione risolva anche AppArmor. Spostare il consumer è un'alternativa
-con conseguenze diverse, anch'essa da approvare; non clonare lo stato per
-provarla. Nessuna di queste modifiche è autorizzata da questo runbook.
+La proposta comprende anche un **diff non applicato dell’input nativo handoff**:
+mascherare /etc/developer-workspace e leggere il solo eseguibile Codex della
+release. Risolve sulla carta due finding degli input correnti; non è una
+prova runtime. I soli profili applicati al POC invariato non sono raccomandati.
+Il diff Homelab limita i riferimenti Localhost al container code-server,
+ma le aperture interessano tutti i suoi processi, incluso il workspace
+interattivo. Distribuzione, finestra di ricreazione, accettazione e rollback
+sono descritti insieme ai candidati. Nessuna applicazione è autorizzata da
+questo runbook; consumer disabilitato e stato esistente conservato.
 
 Dopo un rimedio approvato, ripetere il probe filesystem e verificare
 separatamente rete e tool/MCP/plugin effettivi del figlio con la stessa

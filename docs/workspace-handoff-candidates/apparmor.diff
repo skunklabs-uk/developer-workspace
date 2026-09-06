@@ -1,0 +1,95 @@
+--- baseline/apparmor-preprocessed
++++ candidate/apparmor-preprocessed
+@@ -514,7 +514,7 @@
+ 
+ 
+ 
+-profile cri-containerd.apparmor.d flags=(attach_disconnected,mediate_deleted) {
++profile workspace-handoff-poc-v1 flags=(attach_disconnected,mediate_deleted) {
+    
+ 
+ ##included <abstractions/base>
+@@ -787,7 +787,7 @@
+   # Manager may send signals to container processes.
+   signal (receive) peer=unconfined,
+   # Container processes may send signals amongst themselves.
+-  signal (send,receive) peer=cri-containerd.apparmor.d,
++  signal (send,receive) peer=workspace-handoff-poc-v1,
+ 
+ 
+   deny @{PROC}/* w,   # deny write for all files directly in /proc (not in a subdir)
+@@ -800,7 +800,66 @@
+   deny @{PROC}/kmem rwklx,
+   deny @{PROC}/kcore rwklx,
+ 
+-  deny mount,
++  # Candidato Draft: nessun caricamento o collaudo runtime eseguito.
++  # Operazioni strutturali bubblewrap: percorsi costanti, non TMPDIR.
++  mount options=(rw,silent,make-rslave) /,
++  mount options=(rw,silent,make-rprivate) /oldroot/,
++  mount fstype=tmpfs options=(rw,nosuid,nodev) tmpfs -> /tmp/,
++  mount options=(rw,rbind) /tmp/newroot/ -> /tmp/newroot/,
++  pivot_root oldroot=/tmp/oldroot/ /tmp/,
++  pivot_root oldroot=/newroot/ /newroot/,
++  # Radice selettiva e dispositivi standard.
++  mount fstype=tmpfs options=(rw,nosuid,nodev) tmpfs -> /newroot/,
++  mount fstype=tmpfs options=(rw,nosuid,nodev) tmpfs -> /newroot/dev/,
++  mount fstype=devpts options=(rw,nosuid,noexec) devpts -> /newroot/dev/pts/,
++  mount fstype=proc options=(rw,nosuid,nodev,noexec) proc -> /newroot/proc/,
++  mount options=(rw,rbind) /oldroot/dev/null -> /newroot/dev/null,
++  mount options=(rw,rbind) /oldroot/dev/zero -> /newroot/dev/zero,
++  mount options=(rw,rbind) /oldroot/dev/full -> /newroot/dev/full,
++  mount options=(rw,rbind) /oldroot/dev/random -> /newroot/dev/random,
++  mount options=(rw,rbind) /oldroot/dev/urandom -> /newroot/dev/urandom,
++  mount options=(rw,rbind) /oldroot/dev/tty -> /newroot/dev/tty,
++  # Readable roots: sorgenti risolte prima del pivot, target logici del builder.
++  mount options=(rw,rbind) /oldroot/usr/bin/ -> /newroot/bin/,
++  mount options=(rw,rbind) /oldroot/etc/ -> /newroot/etc/,
++  mount options=(rw,rbind) /oldroot/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/codex-resources/zsh/bin/zsh -> /newroot/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/codex-resources/zsh/bin/zsh,
++  mount options=(rw,rbind) /oldroot/usr/lib/ -> /newroot/lib/,
++  mount options=(rw,rbind) /oldroot/usr/lib64/ -> /newroot/lib64/,
++  mount options=(rw,rbind) /oldroot/usr/sbin/ -> /newroot/sbin/,
++  mount options=(rw,rbind) /oldroot/usr/ -> /newroot/usr/,
++  mount options=(rw,rbind) /oldroot/workspaces/developer-workspace/.worktrees/handoff-75/ -> /newroot/workspaces/developer-workspace/.worktrees/handoff-75/,
++  mount options=(rw,rbind) /oldroot/home/coder/.local/state/workspace-handoff/iwant/runs/0048cc226d51c6d1daf9aa33cf5fb1f6f43b56d849c26dee079b21f132c81b21/checkout/ -> /newroot/home/coder/.local/state/workspace-handoff/iwant/runs/0048cc226d51c6d1daf9aa33cf5fb1f6f43b56d849c26dee079b21f132c81b21/checkout/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/bin/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/codex-resources/zsh/bin/zsh,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/lib/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/lib64/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/sbin/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/usr/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/workspaces/developer-workspace/.worktrees/handoff-75/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/home/coder/.local/state/workspace-handoff/iwant/runs/0048cc226d51c6d1daf9aa33cf5fb1f6f43b56d849c26dee079b21f132c81b21/checkout/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/hosts,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/hostname,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/resolv.conf,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/developer-workspace/kubeconfig/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/developer-workspace/proxmox/,
++  # codex exec: directory arg0 della singola invocazione, suffisso dinamico senza slash.
++  mount options=(rw,rbind) /oldroot/home/coder/.codex/tmp/arg0/codex-arg0*/ -> /newroot/home/coder/.codex/tmp/arg0/codex-arg0*/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/home/coder/.codex/tmp/arg0/codex-arg0*/,
++  # Delta input handoff proposto, non applicato: helper singolo e maschera amministrativa.
++  mount options=(rw,rbind) /oldroot/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/bin/codex -> /newroot/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/bin/codex,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/bin/codex,
++  mount fstype=tmpfs options=(rw,nosuid,nodev) tmpfs -> /newroot/etc/developer-workspace/,
++  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/developer-workspace/,
++  # Copertura proc condizionale access(W_OK), limitata ai quattro target del sorgente.
++  mount options=(rw,rbind) /newroot/proc/sys/ -> /newroot/proc/sys/,
++  remount options=(ro,bind,nosuid,nodev,noexec,relatime,silent) /newroot/proc/sys/,
++  mount options=(rw,rbind) /newroot/proc/sysrq-trigger -> /newroot/proc/sysrq-trigger,
++  remount options=(ro,bind,nosuid,nodev,noexec,relatime,silent) /newroot/proc/sysrq-trigger,
++  mount options=(rw,rbind) /newroot/proc/irq/ -> /newroot/proc/irq/,
++  remount options=(ro,bind,nosuid,nodev,noexec,relatime,silent) /newroot/proc/irq/,
++  mount options=(rw,rbind) /newroot/proc/bus/ -> /newroot/proc/bus/,
++  remount options=(ro,bind,nosuid,nodev,noexec,relatime,silent) /newroot/proc/bus/,
+ 
+   deny /sys/[^f]*/** wklx,
+   deny /sys/f[^s]*/** wklx,
+@@ -813,5 +872,5 @@
+ 
+   # allow processes within the container to trace each other,
+   # provided all other LSM and yama setting allow it.
+-  ptrace (trace,tracedby,read,readby) peer=cri-containerd.apparmor.d,
++  ptrace (trace,tracedby,read,readby) peer=workspace-handoff-poc-v1,
+ }

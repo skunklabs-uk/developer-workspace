@@ -1,0 +1,15 @@
+--- a/gitops/apps/developer-workspace/statefulset.yaml
++++ b/gitops/apps/developer-workspace/statefulset.yaml
+@@ -95,6 +95,12 @@
+               drop:
+                 - ALL
+             readOnlyRootFilesystem: true
++            seccompProfile:
++              type: Localhost
++              localhostProfile: profiles/workspace-handoff-poc-v1.json
++            appArmorProfile:
++              type: Localhost
++              localhostProfile: workspace-handoff-poc-v1
+           volumeMounts:
+             - name: data
+               mountPath: /home/coder

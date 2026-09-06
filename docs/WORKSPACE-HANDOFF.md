@@ -181,6 +181,16 @@ ulteriore confine da verificare. Non aggiungere capability per verificare
 l'ipotesi. `strace` non è presente, `dmesg` è negato e securityfs non espone i
 profili dal Pod; i sysctl già positivi non rimuovono questi limiti.
 
+Una traccia successiva del binario installato 0.153.4, raccolta il 6 settembre
+alle 19:17 UTC con `strace` temporaneo e senza avviare il consumer, identifica
+il primo diniego nel percorso nativo:
+`clone(CLONE_NEWNS|CLONE_NEWIPC|CLONE_NEWUSER|CLONE_NEWPID|CLONE_NEWNET|SIGCHLD)`
+restituisce `EPERM`, prima dei mount. Consentire soltanto `unshare` non risolve
+questo ingresso. Il template AppArmor della stessa versione upstream contiene
+anche `deny mount`: occorre acquisire il profilo caricato, senza assumere che
+coincida con il template o che una modifica solo seccomp basti. Traccia,
+hash e proposta condizionata con impatto/rollback sono nella issue #75.
+
 Il prossimo accertamento richiede al proprietario del runtime **solo un
 estratto diagnostico dal nodo**, riferito al container corrente: sezione
 `linux.seccomp` della specifica OCI, `process.apparmorProfile`,

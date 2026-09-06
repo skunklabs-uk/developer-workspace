@@ -1,0 +1,708 @@
+{
+  "status": "Active",
+  "purpose": "Baseline diagnostica in sola lettura per developer-workspace#75; non è un profilo da installare.",
+  "collected_at": "2026-09-06T19:47:36Z",
+  "node": "k3s-worker1",
+  "pod_uid": "65189e0c-a291-4731-98dc-d8338f522b48",
+  "container_name": "code-server",
+  "container_id": "7fb7f56e84c5acac1c6dfbc7de463db835565440a9b3acd9db55383fa65dc766",
+  "oci": {
+    "pid": 208681,
+    "seccomp": {
+      "architectures": [
+        "SCMP_ARCH_X86_64",
+        "SCMP_ARCH_X86",
+        "SCMP_ARCH_X32"
+      ],
+      "defaultAction": "SCMP_ACT_ERRNO",
+      "syscalls": [
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "names": [
+            "accept",
+            "accept4",
+            "access",
+            "adjtimex",
+            "alarm",
+            "bind",
+            "brk",
+            "cachestat",
+            "capget",
+            "capset",
+            "chdir",
+            "chmod",
+            "chown",
+            "chown32",
+            "clock_adjtime",
+            "clock_adjtime64",
+            "clock_getres",
+            "clock_getres_time64",
+            "clock_gettime",
+            "clock_gettime64",
+            "clock_nanosleep",
+            "clock_nanosleep_time64",
+            "close",
+            "close_range",
+            "connect",
+            "copy_file_range",
+            "creat",
+            "dup",
+            "dup2",
+            "dup3",
+            "epoll_create",
+            "epoll_create1",
+            "epoll_ctl",
+            "epoll_ctl_old",
+            "epoll_pwait",
+            "epoll_pwait2",
+            "epoll_wait",
+            "epoll_wait_old",
+            "eventfd",
+            "eventfd2",
+            "execve",
+            "execveat",
+            "exit",
+            "exit_group",
+            "faccessat",
+            "faccessat2",
+            "fadvise64",
+            "fadvise64_64",
+            "fallocate",
+            "fanotify_mark",
+            "fchdir",
+            "fchmod",
+            "fchmodat",
+            "fchmodat2",
+            "fchown",
+            "fchown32",
+            "fchownat",
+            "fcntl",
+            "fcntl64",
+            "fdatasync",
+            "fgetxattr",
+            "flistxattr",
+            "flock",
+            "fork",
+            "fremovexattr",
+            "fsetxattr",
+            "fstat",
+            "fstat64",
+            "fstatat64",
+            "fstatfs",
+            "fstatfs64",
+            "fsync",
+            "ftruncate",
+            "ftruncate64",
+            "futex",
+            "futex_requeue",
+            "futex_time64",
+            "futex_wait",
+            "futex_waitv",
+            "futex_wake",
+            "futimesat",
+            "getcpu",
+            "getcwd",
+            "getdents",
+            "getdents64",
+            "getegid",
+            "getegid32",
+            "geteuid",
+            "geteuid32",
+            "getgid",
+            "getgid32",
+            "getgroups",
+            "getgroups32",
+            "getitimer",
+            "getpeername",
+            "getpgid",
+            "getpgrp",
+            "getpid",
+            "getppid",
+            "getpriority",
+            "getrandom",
+            "getresgid",
+            "getresgid32",
+            "getresuid",
+            "getresuid32",
+            "getrlimit",
+            "get_robust_list",
+            "getrusage",
+            "getsid",
+            "getsockname",
+            "getsockopt",
+            "get_thread_area",
+            "gettid",
+            "gettimeofday",
+            "getuid",
+            "getuid32",
+            "getxattr",
+            "getxattrat",
+            "inotify_add_watch",
+            "inotify_init",
+            "inotify_init1",
+            "inotify_rm_watch",
+            "io_cancel",
+            "ioctl",
+            "io_destroy",
+            "io_getevents",
+            "io_pgetevents",
+            "io_pgetevents_time64",
+            "ioprio_get",
+            "ioprio_set",
+            "io_setup",
+            "io_submit",
+            "ipc",
+            "kill",
+            "landlock_add_rule",
+            "landlock_create_ruleset",
+            "landlock_restrict_self",
+            "lchown",
+            "lchown32",
+            "lgetxattr",
+            "link",
+            "linkat",
+            "listen",
+            "listmount",
+            "listxattr",
+            "listxattrat",
+            "llistxattr",
+            "_llseek",
+            "lremovexattr",
+            "lseek",
+            "lsetxattr",
+            "lsm_get_self_attr",
+            "lsm_list_modules",
+            "lsm_set_self_attr",
+            "lstat",
+            "lstat64",
+            "madvise",
+            "membarrier",
+            "memfd_create",
+            "memfd_secret",
+            "mincore",
+            "mkdir",
+            "mkdirat",
+            "mknod",
+            "mknodat",
+            "mlock",
+            "mlock2",
+            "mlockall",
+            "map_shadow_stack",
+            "mmap",
+            "mmap2",
+            "mprotect",
+            "mq_getsetattr",
+            "mq_notify",
+            "mq_open",
+            "mq_timedreceive",
+            "mq_timedreceive_time64",
+            "mq_timedsend",
+            "mq_timedsend_time64",
+            "mq_unlink",
+            "mremap",
+            "mseal",
+            "msgctl",
+            "msgget",
+            "msgrcv",
+            "msgsnd",
+            "msync",
+            "munlock",
+            "munlockall",
+            "munmap",
+            "name_to_handle_at",
+            "nanosleep",
+            "newfstatat",
+            "_newselect",
+            "open",
+            "openat",
+            "openat2",
+            "pause",
+            "pidfd_open",
+            "pidfd_send_signal",
+            "pipe",
+            "pipe2",
+            "pkey_alloc",
+            "pkey_free",
+            "pkey_mprotect",
+            "poll",
+            "ppoll",
+            "ppoll_time64",
+            "prctl",
+            "pread64",
+            "preadv",
+            "preadv2",
+            "prlimit64",
+            "process_mrelease",
+            "pselect6",
+            "pselect6_time64",
+            "pwrite64",
+            "pwritev",
+            "pwritev2",
+            "read",
+            "readahead",
+            "readlink",
+            "readlinkat",
+            "readv",
+            "recv",
+            "recvfrom",
+            "recvmmsg",
+            "recvmmsg_time64",
+            "recvmsg",
+            "remap_file_pages",
+            "removexattr",
+            "removexattrat",
+            "rename",
+            "renameat",
+            "renameat2",
+            "restart_syscall",
+            "rmdir",
+            "rseq",
+            "rt_sigaction",
+            "rt_sigpending",
+            "rt_sigprocmask",
+            "rt_sigqueueinfo",
+            "rt_sigreturn",
+            "rt_sigsuspend",
+            "rt_sigtimedwait",
+            "rt_sigtimedwait_time64",
+            "rt_tgsigqueueinfo",
+            "sched_getaffinity",
+            "sched_getattr",
+            "sched_getparam",
+            "sched_get_priority_max",
+            "sched_get_priority_min",
+            "sched_getscheduler",
+            "sched_rr_get_interval",
+            "sched_rr_get_interval_time64",
+            "sched_setaffinity",
+            "sched_setattr",
+            "sched_setparam",
+            "sched_setscheduler",
+            "sched_yield",
+            "seccomp",
+            "select",
+            "semctl",
+            "semget",
+            "semop",
+            "semtimedop",
+            "semtimedop_time64",
+            "send",
+            "sendfile",
+            "sendfile64",
+            "sendmmsg",
+            "sendmsg",
+            "sendto",
+            "setfsgid",
+            "setfsgid32",
+            "setfsuid",
+            "setfsuid32",
+            "setgid",
+            "setgid32",
+            "setgroups",
+            "setgroups32",
+            "setitimer",
+            "setpgid",
+            "setpriority",
+            "setregid",
+            "setregid32",
+            "setresgid",
+            "setresgid32",
+            "setresuid",
+            "setresuid32",
+            "setreuid",
+            "setreuid32",
+            "setrlimit",
+            "set_robust_list",
+            "setsid",
+            "setsockopt",
+            "set_thread_area",
+            "set_tid_address",
+            "setuid",
+            "setuid32",
+            "setxattr",
+            "setxattrat",
+            "shmat",
+            "shmctl",
+            "shmdt",
+            "shmget",
+            "shutdown",
+            "sigaltstack",
+            "signalfd",
+            "signalfd4",
+            "sigprocmask",
+            "sigreturn",
+            "socketcall",
+            "socketpair",
+            "splice",
+            "stat",
+            "stat64",
+            "statfs",
+            "statfs64",
+            "statmount",
+            "statx",
+            "symlink",
+            "symlinkat",
+            "sync",
+            "sync_file_range",
+            "syncfs",
+            "sysinfo",
+            "tee",
+            "tgkill",
+            "time",
+            "timer_create",
+            "timer_delete",
+            "timer_getoverrun",
+            "timer_gettime",
+            "timer_gettime64",
+            "timer_settime",
+            "timer_settime64",
+            "timerfd_create",
+            "timerfd_gettime",
+            "timerfd_gettime64",
+            "timerfd_settime",
+            "timerfd_settime64",
+            "times",
+            "tkill",
+            "truncate",
+            "truncate64",
+            "ugetrlimit",
+            "umask",
+            "uname",
+            "unlink",
+            "unlinkat",
+            "uretprobe",
+            "utime",
+            "utimensat",
+            "utimensat_time64",
+            "utimes",
+            "vfork",
+            "vmsplice",
+            "wait4",
+            "waitid",
+            "waitpid",
+            "write",
+            "writev"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "args": [
+            {
+              "index": 0,
+              "op": "SCMP_CMP_LT",
+              "value": 38
+            }
+          ],
+          "names": [
+            "socket"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "args": [
+            {
+              "index": 0,
+              "op": "SCMP_CMP_EQ",
+              "value": 39
+            }
+          ],
+          "names": [
+            "socket"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "args": [
+            {
+              "index": 0,
+              "op": "SCMP_CMP_GT",
+              "value": 40
+            }
+          ],
+          "names": [
+            "socket"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "args": [
+            {
+              "index": 0,
+              "op": "SCMP_CMP_EQ",
+              "value": 0
+            }
+          ],
+          "names": [
+            "personality"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "args": [
+            {
+              "index": 0,
+              "op": "SCMP_CMP_EQ",
+              "value": 8
+            }
+          ],
+          "names": [
+            "personality"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "args": [
+            {
+              "index": 0,
+              "op": "SCMP_CMP_EQ",
+              "value": 131072
+            }
+          ],
+          "names": [
+            "personality"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "args": [
+            {
+              "index": 0,
+              "op": "SCMP_CMP_EQ",
+              "value": 131080
+            }
+          ],
+          "names": [
+            "personality"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "args": [
+            {
+              "index": 0,
+              "op": "SCMP_CMP_EQ",
+              "value": 4294967295
+            }
+          ],
+          "names": [
+            "personality"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "names": [
+            "process_vm_readv",
+            "process_vm_writev",
+            "ptrace"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "names": [
+            "arch_prctl",
+            "modify_ldt"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ALLOW",
+          "args": [
+            {
+              "index": 0,
+              "op": "SCMP_CMP_MASKED_EQ",
+              "value": 2114060288
+            }
+          ],
+          "names": [
+            "clone"
+          ]
+        },
+        {
+          "action": "SCMP_ACT_ERRNO",
+          "errnoRet": 38,
+          "names": [
+            "clone3"
+          ]
+        }
+      ]
+    },
+    "namespaces": [
+      {
+        "type": "pid"
+      },
+      {
+        "path": "/proc/208181/ns/ipc",
+        "type": "ipc"
+      },
+      {
+        "path": "/proc/208181/ns/uts",
+        "type": "uts"
+      },
+      {
+        "type": "mount"
+      },
+      {
+        "path": "/proc/208181/ns/net",
+        "type": "network"
+      },
+      {
+        "type": "cgroup"
+      }
+    ],
+    "uidMappings": null,
+    "gidMappings": null,
+    "apparmor": "cri-containerd.apparmor.d",
+    "selinux": null,
+    "noNewPrivileges": true,
+    "capabilities": {}
+  },
+  "task_oci_matches_cri": true,
+  "runtime": {
+    "process": {
+      "status": "Name:\tdumb-init\nPid:\t208681\nPPid:\t208157\nUid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nNSpid:\t208681\t1\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t0000000000000000\nCapAmb:\t0000000000000000\nNoNewPrivs:\t1\nSeccomp:\t2\nSeccomp_filters:\t1",
+      "attr/current": "cri-containerd.apparmor.d (enforce)\n",
+      "attr/apparmor/current": "cri-containerd.apparmor.d (enforce)\n",
+      "attr/selinux/current": "[Errno 2] No such file or directory: '/proc/208681/attr/selinux/current'",
+      "uid_map": "         0          0 4294967295\n",
+      "gid_map": "         0          0 4294967295\n",
+      "setgroups": "allow\n",
+      "ns/user": "user:[4026531837]",
+      "ns/mnt": "mnt:[4026532975]",
+      "ns/pid": "pid:[4026532976]",
+      "ns/net": "net:[4026532892]",
+      "ns/ipc": "ipc:[4026532973]",
+      "ns/uts": "uts:[4026532972]",
+      "ns/cgroup": "cgroup:[4026532977]"
+    },
+    "node_userns": "user:[4026531837]",
+    "lsm": "lockdown,capability,landlock,yama,apparmor,tomoyo,bpf,ipe,ima,evm",
+    "selinux": "[Errno 2] No such file or directory: '/sys/fs/selinux/enforce'",
+    "apparmor_profiles": "cri-containerd.apparmor.d (enforce)",
+    "apparmor_entries": [
+      "/sys/kernel/security/apparmor/policy/profiles/cri-containerd.apparmor.d.106"
+    ],
+    "runtime_task": {
+      "ID": "7fb7f56e84c5acac1c6dfbc7de463db835565440a9b3acd9db55383fa65dc766",
+      "Runtime": {
+        "Name": "io.containerd.runc.v2",
+        "Options": {
+          "type_url": "containerd.runc.v1.Options",
+          "value": "SAE="
+        }
+      }
+    },
+    "config_runtime_lines": "[plugins.'io.containerd.cri.v1.runtime']\n  enable_selinux = false\n[plugins.'io.containerd.cri.v1.runtime'.cni]\n[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc]\n  runtime_type = \"io.containerd.runc.v2\"\n[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]\n  SystemdCgroup = true\n[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runhcs-wcow-process]\n  runtime_type = \"io.containerd.runhcs.v1\"",
+    "audit": {
+      "rc": 0,
+      "out": "",
+      "err": ""
+    }
+  },
+  "binaries_and_lsm": {
+    "shim_exe": "/var/lib/rancher/k3s/data/65415f7708224bbfc7865f032e84da4a5123a3acebef70c8ee40fa991aa68555/bin/containerd-shim-runc-v2",
+    "/var/lib/rancher/k3s/data/65415f7708224bbfc7865f032e84da4a5123a3acebef70c8ee40fa991aa68555/bin/containerd-shim-runc-v2": {
+      "real": "/var/lib/rancher/k3s/data/65415f7708224bbfc7865f032e84da4a5123a3acebef70c8ee40fa991aa68555/bin/containerd-shim-runc-v2",
+      "sha256": "c5173f235db147168c7c232445b49292d3a53162cc535eaf030ec1efbd90ab7b",
+      "version": ""
+    },
+    "/var/lib/rancher/k3s/data/65415f7708224bbfc7865f032e84da4a5123a3acebef70c8ee40fa991aa68555/bin/runc": {
+      "real": "/var/lib/rancher/k3s/data/65415f7708224bbfc7865f032e84da4a5123a3acebef70c8ee40fa991aa68555/bin/runc",
+      "sha256": "3a41b3a95d3843bbffff6f8ea07eb3daffa77eb608f3a6c18d7c547072e7e59f",
+      "version": "runc version 1.4.2\ncommit: v1.4.2-0-gc241c0b\nspec: 1.3.0\ngo: go1.25.11\nlibseccomp: 2.6.0\n"
+    },
+    "/var/lib/rancher/k3s/data/current/bin/runc": {
+      "real": "/var/lib/rancher/k3s/data/65415f7708224bbfc7865f032e84da4a5123a3acebef70c8ee40fa991aa68555/bin/runc",
+      "sha256": "3a41b3a95d3843bbffff6f8ea07eb3daffa77eb608f3a6c18d7c547072e7e59f",
+      "version": "runc version 1.4.2\ncommit: v1.4.2-0-gc241c0b\nspec: 1.3.0\ngo: go1.25.11\nlibseccomp: 2.6.0\n"
+    },
+    "aa_files": [
+      "raw_data",
+      "raw_abi",
+      "raw_sha256",
+      "sha256",
+      "attach",
+      "mode",
+      "name"
+    ],
+    "aa_raw_data": {
+      "size": 15041,
+      "sha256": "356e0471cd5453e69956aaf145637606c5a015ad504c0c82277a67201e23120b"
+    },
+    "aa_raw_abi": {
+      "size": 3,
+      "sha256": "b73ce4dd68dd4edc4730c5ea90a55751387089205178e86e07fbbf6eaa3a5e03",
+      "text": "v7\n"
+    },
+    "aa_raw_sha256": {
+      "size": 65,
+      "sha256": "30d60826d2ed15f38df6470a91a1774ddeb915ed37625272fb26d5695a21baf1",
+      "text": "356e0471cd5453e69956aaf145637606c5a015ad504c0c82277a67201e23120b\n"
+    },
+    "aa_sha256": {
+      "size": 65,
+      "sha256": "8c0d4dc138a70db9ab131b8ed36b0f6ed87f61d17fccf2a6ece46a077ebc5e3c",
+      "text": "77d4797e628aafbb0e3bac521ca8a81b3636850d39005b02fc99688992ee7d59\n"
+    },
+    "aa_attach": {
+      "size": 26,
+      "sha256": "85d203885ad6b4e758d81addb0819919c680ac541693f59987962089764a6530",
+      "text": "cri-containerd.apparmor.d\n"
+    },
+    "aa_mode": {
+      "size": 8,
+      "sha256": "3875c1bdb05e4cbf9e7072e2fcd76699ddd1fab8455c53a4007dbaca2a2920be",
+      "text": "enforce\n"
+    },
+    "aa_name": {
+      "size": 26,
+      "sha256": "85d203885ad6b4e758d81addb0819919c680ac541693f59987962089764a6530",
+      "text": "cri-containerd.apparmor.d\n"
+    },
+    "aa_source_present": false,
+    "task_config_present": true
+  },
+  "apparmor": {
+    "rc": 0,
+    "stderr": "",
+    "daemon_profile": "unconfined",
+    "compiled_size": 15041,
+    "compiled_sha256": "356e0471cd5453e69956aaf145637606c5a015ad504c0c82277a67201e23120b",
+    "loaded_raw_sha256": "356e0471cd5453e69956aaf145637606c5a015ad504c0c82277a67201e23120b",
+    "byte_equal": true,
+    "rendered_source": "\nabi <abi/3.0>,\n#include <tunables/global>\n\nprofile cri-containerd.apparmor.d flags=(attach_disconnected,mediate_deleted) {\n  #include <abstractions/base>\n\n  network,\n  capability,\n  file,\n  umount,\n  # Host (privileged) processes may send signals to container processes.\n  signal (receive) peer=unconfined,\n  # runc may send signals to container processes.\n  signal (receive) peer=runc,\n  # crun may send signals to container processes.\n  signal (receive) peer=crun,\n  # Manager may send signals to container processes.\n  signal (receive) peer=unconfined,\n  # Container processes may send signals amongst themselves.\n  signal (send,receive) peer=cri-containerd.apparmor.d,\n\n\n  deny @{PROC}/* w,   # deny write for all files directly in /proc (not in a subdir)\n  # deny write to files not in /proc/<number>/** or /proc/sys/**\n  deny @{PROC}/{[^1-9],[^1-9][^0-9],[^1-9s][^0-9y][^0-9s],[^1-9][^0-9][^0-9][^0-9]*}/** w,\n  deny @{PROC}/sys/[^k]** w,  # deny /proc/sys except /proc/sys/k* (effectively /proc/sys/kernel)\n  deny @{PROC}/sys/kernel/{?,??,[^s][^h][^m]**} w,  # deny everything except shm* in /proc/sys/kernel/\n  deny @{PROC}/sysrq-trigger rwklx,\n  deny @{PROC}/mem rwklx,\n  deny @{PROC}/kmem rwklx,\n  deny @{PROC}/kcore rwklx,\n\n  deny mount,\n\n  deny /sys/[^f]*/** wklx,\n  deny /sys/f[^s]*/** wklx,\n  deny /sys/fs/[^c]*/** wklx,\n  deny /sys/fs/c[^g]*/** wklx,\n  deny /sys/fs/cg[^r]*/** wklx,\n  deny /sys/firmware/** rwklx,\n  deny /sys/devices/virtual/powercap/** rwklx,\n  deny /sys/kernel/security/** rwklx,\n\n  # allow processes within the container to trace each other,\n  # provided all other LSM and yama setting allow it.\n  ptrace (trace,tracedby,read,readby) peer=cri-containerd.apparmor.d,\n}\n",
+    "preprocessed_source": "\nabi <abi/3.0>,\n \n\n##included <tunables/global>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2006-2009 Novell/SUSE\n#    Copyright (C) 2010-2014 Canonical Ltd.\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# All the tunables definitions that should be available to every profile\n# should be included here\n\n \n\n##included <tunables/home>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2006-2009 Novell/SUSE\n#    Copyright (C) 2010 Canonical Ltd.\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# @{HOMEDIRS} is a space-separated list of where user home directories\n# are stored, for programs that must enumerate all home directories on a\n# system.\n@{HOMEDIRS}=/home/\n\n\n# @{HOME} is a space-separated list of all user home directories. While\n# it doesn't refer to a specific home directory (AppArmor doesn't\n# enforce discretionary access controls) it can be used as if it did\n# refer to a specific home directory\n@{HOME}=@{HOMEDIRS}/*/ /root/\n\n\n# Also, include files in tunables/home.d for site-specific adjustments\n \n\n##included <tunables/home.d>\n# This file is auto-generated. It is recommended you update it using:\n# $ sudo dpkg-reconfigure apparmor\n#\n# The following is a space-separated list of where additional user home\n# directories are stored, each must have a trailing '/'. Directories added\n# here are appended to @{HOMEDIRS}.  See tunables/home for details.\n#@{HOMEDIRS}+=\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2010 Canonical Ltd.\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# The following is a space-separated list of where additional user home\n# directories are stored, each must have a trailing '/'. Directories added\n# here are appended to @{HOMEDIRS}.  See tunables/home for details. Eg:\n#@{HOMEDIRS}+=/srv/nfs/home/ /mnt/home/\n\n\n \n\n##included <tunables/multiarch>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2010 Canonical Ltd.\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# @{multiarch} is the set of patterns matching multi-arch library\n# install prefixes.\n@{multiarch}=*-linux-gnu*\n\n\n# Also, include files in tunables/multiarch.d for site-specific adjustments\n \n\n##included <tunables/multiarch.d>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2011 Canonical Ltd.\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# The following is a space-separated list of where additional multipath\n# prefixes are stored, each should not have a trailing '/'. Directories\n# added here are appended to @{multiarch}. See tunables/mutliarch for details. Eg:\n#@{multiarch}+=*-freebsd* s390-hurd-zomg\n\n\n \n\n##included <tunables/proc>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2006 Novell/SUSE\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# @{PROC} is the location where procfs is mounted.\n@{PROC}=/proc/\n\n\n# Also, include files in tunables/proc.d for site-specific adjustments\n \n\n##failed include <tunables/proc.d>\n\n\n \n\n##included <tunables/alias>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2010 Canonical Ltd.\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# Alias rules can be used to rewrite paths and are done after variable\n# resolution. For example, if '/usr' is on removable media:\n# alias /usr/ -> /mnt/usr/,\n#\n# Or if mysql databases are stored in /home:\n# alias /var/lib/mysql/ -> /home/mysql/,\n\n# Also, include files in tunables/alias.d for site-specific adjustments\n \n\n##failed include <tunables/alias.d>\n\n\n \n\n##included <tunables/kernelvars>\n#    Copyright (C) 2012 Canonical Ltd.\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# This file should contain declarations to kernel vars or variables\n# that will become kernel vars at some point\n\n# until kernel vars are implemented\n# and until the parser supports nested groupings like\n#   @{pid}=[1-9]{[0-9]{[0-9]{[0-9]{[0-9]{[0-9],},},},},}\n# use\n@{pid}={[1-9],[1-9][0-9],[1-9][0-9][0-9],[1-9][0-9][0-9][0-9],[1-9][0-9][0-9][0-9][0-9],[1-9][0-9][0-9][0-9][0-9][0-9],[1-4][0-9][0-9][0-9][0-9][0-9][0-9]}\n\n\n#same pattern as @{pid} for now\n@{tid}=@{pid}\n\n\n#A pattern for pids that can appear\n@{pids}=@{pid}\n\n\n# Placeholder for user id until kernel var is implemented to match\n# current user of the confined application.\n# Values are 0...4,294,967,295 (32-bit unsigned, 10 digits).\n@{uid}={[0-9],[1-9][0-9],[1-9][0-9][0-9],[1-9][0-9][0-9][0-9],[1-9][0-9][0-9][0-9][0-9],[1-9][0-9][0-9][0-9][0-9][0-9],[1-9][0-9][0-9][0-9][0-9][0-9][0-9],[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9],[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9],[1-4][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]}\n\n\n#same pattern as @{uid} for now\n@{uids}=@{uid}\n\n\n# until kernel var is implemented\n@{sys}=/sys/\n\n\n# Also, include files in tunables/kernelvars.d for site-specific adjustments\n \n\n##failed include <tunables/kernelvars.d>\n\n\n \n\n##included <tunables/system>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2025 Alexandre Pujol <alexandre@pujol.io>\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# Any digit\n@{d}=[0-9]\n\n\n# Any letter\n@{l}=[a-zA-Z]\n\n\n# Single alphanumeric character\n@{c}=[0-9a-zA-Z]\n\n\n# Word character: matches any letter, digit or underscore.\n@{w}=[a-zA-Z0-9_]\n\n\n# Single hexadecimal character\n@{h}=[0-9a-fA-F]\n\n\n# Integer up to 10 digits (0-9999999999)\n@{int}=@{d}{@{d},}{@{d},}{@{d},}{@{d},}{@{d},}{@{d},}{@{d},}{@{d},}{@{d},}\n\n\n# hexadecimal, alphanumeric and word up to 64 characters\n@{hex}=@{h}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}{@{h},}\n\n@{rand}=@{c}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}{@{c},}\n\n@{word}=@{w}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}{@{w},}\n\n\n# Unsigned integer over 8 bits (0...255)\n@{u8}=[0-9]{[0-9],} 1[0-9][0-9] 2[0-4][0-9] 25[0-5]\n\n\n# Unsigned integer over 16 bits (0...65,535 5 digits)\n@{u16}={@{d},[1-9]@{d},[1-9][@{d}@{d},[1-9]@{d}@{d}@{d},[1-6]@{d}@{d}@{d}@{d}}\n\n\n# Unsigned integer over 32 bits (0...4,294,967,295 10 digits)\n@{u32}={@{d},[1-9]@{d},[1-9]@{d}@{d},[1-9]@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-4]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}}\n\n\n# Unsigned integer over 64 bits (0...18,446,744,073,709,551,615 20 digits).\n@{u64}={@{d},[1-9]@{d},[1-9]@{d}@{d},[1-9]@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},[1-9]@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d},1@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}@{d}}\n\n\n# Any x digits characters\n@{int2}=@{d}@{d}\n\n@{int4}=@{int2}@{int2}\n\n@{int6}=@{int4}@{int2}\n\n@{int8}=@{int4}@{int4}\n\n@{int9}=@{int8}@{d}\n\n@{int10}=@{int8}@{int2}\n\n@{int12}=@{int8}@{int4}\n\n@{int15}=@{int8}@{int4}@{int2}@{d}\n\n@{int16}=@{int8}@{int8}\n\n@{int32}=@{int16}@{int16}\n\n@{int64}=@{int32}@{int32}\n\n\n# Any x hexadecimal characters\n@{hex2}=@{h}@{h}\n\n@{hex4}=@{hex2}@{hex2}\n\n@{hex6}=@{hex4}@{hex2}\n\n@{hex8}=@{hex4}@{hex4}\n\n@{hex9}=@{hex8}@{h}\n\n@{hex10}=@{hex8}@{hex2}\n\n@{hex12}=@{hex8}@{hex4}\n\n@{hex15}=@{hex8}@{hex4}@{hex2}@{h}\n\n@{hex16}=@{hex8}@{hex8}\n\n@{hex32}=@{hex16}@{hex16}\n\n@{hex38}=@{hex32}@{hex6}\n\n@{hex64}=@{hex32}@{hex32}\n\n\n# Any x alphanumeric characters\n@{rand2}=@{c}@{c}\n\n@{rand4}=@{rand2}@{rand2}\n\n@{rand6}=@{rand4}@{rand2}\n\n@{rand8}=@{rand4}@{rand4}\n\n@{rand9}=@{rand8}@{c}\n\n@{rand10}=@{rand8}@{rand2}\n\n@{rand12}=@{rand8}@{rand4}\n\n@{rand15}=@{rand8}@{rand4}@{rand2}@{c}\n\n@{rand16}=@{rand8}@{rand8}\n\n@{rand32}=@{rand16}@{rand16}\n\n@{rand64}=@{rand32}@{rand32}\n\n\n# Any x word characters\n@{word2}=@{w}@{w}\n\n@{word4}=@{word2}@{word2}\n\n@{word6}=@{word4}@{word2}\n\n@{word8}=@{word4}@{word4}\n\n@{word9}=@{word8}@{w}\n\n@{word10}=@{word8}@{word2}\n\n@{word12}=@{word8}@{word4}\n\n@{word15}=@{word8}@{word4}@{word2}@{w}\n\n@{word16}=@{word8}@{word8}\n\n@{word32}=@{word16}@{word16}\n\n@{word64}=@{word32}@{word32}\n\n\n \n\n##failed include <tunables/system.d>\n\n\n \n\n##included <tunables/xdg-user-dirs>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2014 Canonical Ltd.\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# Define the common set of XDG user directories (usually defined in\n# /etc/xdg/user-dirs.defaults)\n@{XDG_DESKTOP_DIR}=\"Desktop\"\n\n@{XDG_DOWNLOAD_DIR}=\"Downloads\"\n\n@{XDG_TEMPLATES_DIR}=\"Templates\"\n\n@{XDG_PUBLICSHARE_DIR}=\"Public\"\n\n@{XDG_DOCUMENTS_DIR}=\"Documents\"\n\n@{XDG_MUSIC_DIR}=\"Music\"\n\n@{XDG_PICTURES_DIR}=\"Pictures\"\n\n@{XDG_VIDEOS_DIR}=\"Videos\"\n\n\n# Also, include files in tunables/xdg-user-dirs.d for site-specific adjustments\n \n\n##included <tunables/xdg-user-dirs.d>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2014 Canonical Ltd.\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# The following may be used to add additional entries such as for\n# translations. See tunables/xdg-user-dirs for details. Eg:\n#@{XDG_MUSIC_DIR}+=\"Musique\"\n\n#@{XDG_DESKTOP_DIR}+=\"\"\n#@{XDG_DOWNLOAD_DIR}+=\"\"\n#@{XDG_TEMPLATES_DIR}+=\"\"\n#@{XDG_PUBLICSHARE_DIR}+=\"\"\n#@{XDG_DOCUMENTS_DIR}+=\"\"\n#@{XDG_MUSIC_DIR}+=\"\"\n#@{XDG_PICTURES_DIR}+=\"\"\n#@{XDG_VIDEOS_DIR}+=\"\"\n\n\n \n\n##included <tunables/share>\n@{flatpak_exports_root} = {flatpak/exports,flatpak/{app,runtime}/*/*/*/*/export}\n\n\n# System-wide directories with behaviour analogous to /usr/share\n# in patterns like the freedesktop.org basedir spec. These are\n# owned by root or a system user, appear in XDG_DATA_DIRS, and\n# are the parent directory for `applications`, `themes`,\n# `dbus-1/services`, etc.\n@{system_share_dirs} = /{usr,usr/local,var/lib/@{flatpak_exports_root}}/share\n\n\n# Per-user/personal directories with behaviour analogous to\n# ~/.local/share in patterns like the freedesktop.org basedir spec.\n# These are owned by the user running an application, appear in\n# XDG_DATA_DIRS or XDG_DATA_HOME, and are the parent directory\n# for the same subdirectories as @{system_share_dirs}\n@{user_share_dirs} = @{HOME}/.local{,/share/@{flatpak_exports_root}}/share\n\n\n# Also, include files in tunables/share.d for site-specific adjustments\n \n\n##failed include <tunables/share.d>\n\n\n \n\n##included <tunables/etc>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2020 Christian Boltz\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n# @{etc_ro} contains a space-separated list of the system configuration directories.\n# Traditionally this means /etc/, but when using a read-only / filesystem and/or\n# with the goal of having only user-modified config files in /etc/, directories\n# like /usr/etc/ get introduced for storing the default config.\n\n# @{etc_ro} contains directories with configuration files, including read-only directories.\n# Do not use @{etc_ro} in rules that allow write access.\n@{etc_ro}=/etc/ /usr/etc/\n\n\n# @{etc_rw} contains directories where writing to configuration files is allowed.\n# @{etc_rw} should always be a subset of @{etc_ro}.\n#\n# Only use @{etc_rw} if the profile allows writing to a configuration file.\n# For rules that only allows read access, use @{etc_ro}.\n@{etc_rw}=/etc/\n\n\n# Also, include files in tunables/etc.d for site-specific adjustments\n \n\n##failed include <tunables/etc.d>\n\n\n \n\n##included <tunables/run>\n@{run}=/run/ /var/run/\n\n\n# Also, include files in tunables/run.d for site-specific adjustments\n \n\n##failed include <tunables/run.d>\n\n\n\n# Also, include files in tunables/global.d for site-specific adjustments\n \n\n##failed include <tunables/global.d>\n\n\n\nprofile cri-containerd.apparmor.d flags=(attach_disconnected,mediate_deleted) {\n   \n\n##included <abstractions/base>\n# vim:syntax=apparmor\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2002-2009 Novell/SUSE\n#    Copyright (C) 2009-2011 Canonical Ltd.\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n  abi <abi/4.0>,\n\n   \n\n##included <abstractions/crypto>\n# vim:syntax=apparmor\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2002-2009 Novell/SUSE\n#    Copyright (C) 2009-2011 Canonical Ltd.\n#    Copyright (C) 2021 Christian Boltz\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n  abi <abi/4.0>,\n\n  # Global config of openssl\n   \n\n##included <abstractions/openssl>\n# ------------------------------------------------------------------\n#\n#    Copyright (C) 2011 Novell/SUSE\n#\n#    This program is free software; you can redistribute it and/or\n#    modify it under the terms of version 2 of the GNU General Public\n#    License published by the Free Software Foundation.\n#\n# ------------------------------------------------------------------\n\n  abi <abi/4.0>,\n\n  /etc/ssl/openssl.cnf r,\n  /etc/ssl/openssl-*.cnf r,\n  /etc/ssl/{engdef*,engines*}.d/ r,\n  /etc/ssl/{engdef*,engines*}.d/*.cnf r,\n  /usr/share/ssl/openssl.cnf r,\n\n  # Include additions to the abstraction\n   \n\n##failed include <abstractions/openssl.d>\n\n\n\n  @{etc_ro}/gcrypt/hwf.deny r,\n  @{etc_ro}/gcrypt/random.conf r,\n  @{PROC}/sys/crypto/fips_enabled r,\n\n  # libgcrypt reads some flags from /proc\n  @{PROC}/sys/crypto/* r,\n\n  # crypto policies used by various libraries\n  /etc/crypto-policies/*/*.txt r,\n  /usr/share/crypto-policies/*/*.txt r,\n\n  # Global gnutls config\n  @{etc_ro}/gnutls/config r,\n  @{etc_ro}/gnutls/pkcs11.conf r,\n\n   \n\n##failed include <abstractions/crypto.d>\n\n\n\n  # (Note that the ldd profile has inlined this file; if you make\n  # modifications here, please consider including them in the ldd\n  # profile as well.)\n\n  # The __canary_death_handler function writes a time-stamped log\n  # message to /dev/log for logging by syslogd. So, /dev/log, timezones,\n  # and localisations of date should be available EVERYWHERE, so\n  # StackGuard, FormatGuard, etc., alerts can be properly logged.\n  /dev/log                       w,\n  /dev/random                    r,\n  /dev/urandom                   r,\n  # Allow access to the uuidd daemon (this daemon is a thin wrapper around\n  # time and getrandom()/{,u}random and, when available, runs under an\n  # unprivilged, dedicated user).\n  @{run}/uuidd/request           r,\n  @{etc_ro}/locale/**          r,\n  @{etc_ro}/locale.alias       r,\n  @{etc_ro}/localtime          r,\n  @{etc_rw}/localtime          r,\n  /etc/writable/localtime        r,\n  /usr/share/locale-bundle/**    r,\n  /usr/share/locale-langpack/**  r,\n  /usr/share/locale/             r,\n  /usr/share/locale/**           r,\n  /usr/share/**/locale/**        r,\n  /usr/share/zoneinfo{,-icu}/    r,\n  /usr/share/zoneinfo{,-icu}/**  r,\n  /usr/share/X11/locale/**       r,\n  @{run}/systemd/journal/dev-log w,\n  # systemd native journal API (see sd_journal_print(4))\n  @{run}/systemd/journal/socket  w,\n  # Nested containers and anything using systemd-cat need this. 'r' shouldn't\n  # be required but applications fail without it. journald doesn't leak\n  # anything when reading so this is ok.\n  @{run}/systemd/journal/stdout  rw,\n\n  /usr/lib{,32,64}/locale/**             mr,\n  /usr/lib{,32,64}/gconv/*.so            mr,\n  /usr/lib{,32,64}/gconv/gconv-modules*  mr,\n  /usr/lib/@{multiarch}/gconv/*.so           mr,\n  /usr/lib/@{multiarch}/gconv/gconv-modules* mr,\n\n  # used by glibc when binding to ephemeral ports\n  @{etc_ro}/bindresvport.blacklist    r,\n\n  # ld.so.cache and ld are used to load shared libraries; they are best\n  # available everywhere\n  @{etc_ro}/ld.so.cache               mr,\n  @{etc_ro}/ld.so.conf                r,\n  @{etc_ro}/ld.so.conf.d/{,*.conf}    r,\n  @{etc_ro}/ld.so.preload             r,\n  @{etc_ro}/ld-musl-*.path            r,\n  /{usr/,}lib{,32,64}/ld{,32,64}-*.so   mr,\n  /{usr/,}lib/@{multiarch}/ld{,32,64}-*.so    mr,\n  /{usr/,}lib/tls/i686/{cmov,nosegneg}/ld-*.so     mr,\n  /{usr/,}lib/i386-linux-gnu/tls/i686/{cmov,nosegneg}/ld-*.so     mr,\n  /opt/*-linux-uclibc/lib/ld-uClibc*so* mr,\n\n  # we might as well allow everything to use common libraries\n  /{usr/,}lib{,32,64}/**                r,\n  /{usr/,}lib{,32,64}/**.so*       mr,\n  /{usr/,}lib/@{multiarch}/**            r,\n  /{usr/,}lib/@{multiarch}/**.so*   mr,\n  /{usr/,}lib/tls/i686/{cmov,nosegneg}/*.so*    mr,\n  /{usr/,}lib/i386-linux-gnu/tls/i686/{cmov,nosegneg}/*.so*    mr,\n\n  # FIPS-140-2 versions of some crypto libraries need to access their\n  # associated integrity verification file, or they will abort.\n  /{usr/,}lib{,32,64}/.lib*.so*.hmac      r,\n  /{usr/,}lib/@{multiarch}/.lib*.so*.hmac r,\n\n  # /dev/null is pretty harmless and frequently used\n  /dev/null                      rw,\n  # as is /dev/zero\n  /dev/zero                      rw,\n  # recent glibc uses /dev/full in preference to /dev/null for programs\n  # that don't have open fds at exec()\n  /dev/full                      rw,\n\n  # Sometimes used to determine kernel/user interfaces to use\n  @{PROC}/sys/kernel/version     r,\n  # Depending on which glibc routine uses this file, base may not be the\n  # best place -- but many profiles require it, and it is quite harmless.\n  @{PROC}/sys/kernel/ngroups_max r,\n\n  # Used to determine if Linux is running in FIPS mode\n  @{PROC}/sys/crypto/fips_enabled r,\n\n  # glibc's sysconf(3) routine to determine free memory, etc\n  @{PROC}/meminfo                r,\n  @{PROC}/stat                   r,\n  @{PROC}/cpuinfo                r,\n  @{sys}/devices/system/cpu/       r,\n  @{sys}/devices/system/cpu/online r,\n  @{sys}/devices/system/cpu/possible r,\n\n  # transparent hugepage support\n  @{sys}/kernel/mm/transparent_hugepage/hpage_pmd_size r,\n\n  # glibc's *printf protections read the maps file\n  @{PROC}/@{pid}/{maps,auxv,status} r,\n\n  # some applications will display license information\n  /usr/share/common-licenses/**  r,\n\n  # glibc statvfs\n  @{PROC}/filesystems            r,\n\n  # glibc malloc (man 5 proc)\n  @{PROC}/sys/vm/overcommit_memory r,\n\n  # Allow determining the highest valid capability of the running kernel\n  @{PROC}/sys/kernel/cap_last_cap r,\n\n  # Allow other processes to read our /proc entries, futexes, perf tracing and\n  # kcmp for now (they will need 'read' in the first place). Administrators can\n  # override with:\n  #   deny ptrace (readby) ...\n  ptrace (readby),\n\n  # Allow other processes to trace us by default (they will need 'trace' in\n  # the first place). Administrators can override with:\n  #   deny ptrace (tracedby) ...\n  ptrace (tracedby),\n\n  # Allow us to ptrace read ourselves\n  ptrace (read) peer=@{profile_name},\n\n  # Allow unconfined processes to send us signals by default\n  signal (receive) peer=unconfined,\n\n  # Allow us to signal ourselves\n  signal peer=@{profile_name},\n\n  # Checking for PID existence is quite common so add it by default for now\n  signal (receive, send) set=(\"exists\"),\n\n  # Allow us to create and use abstract and anonymous sockets\n  unix peer=(label=@{profile_name}),\n\n  # Allow unconfined processes to us via unix sockets\n  unix (receive) peer=(label=unconfined),\n\n  # Allow us to create abstract and anonymous sockets\n  unix (create),\n\n  # Allow us to getattr, getopt, setop and shutdown on unix sockets\n  unix (getattr, getopt, setopt, shutdown),\n\n  # Workaround https://launchpad.net/bugs/359338 until upstream handles stacked\n  # filesystems generally. This does not appreciably decrease security with\n  # Ubuntu profiles because the user is expected to have access to files owned\n  # by him/her. Exceptions to this are explicit in the profiles. While this rule\n  # grants access to those exceptions, the intended privacy is maintained due to\n  # the encrypted contents of the files in this directory. Files in this\n  # directory will also use filename encryption by default, so the files are\n  # further protected. Also, with the use of 'owner', this rule properly\n  # prevents access to the files from processes running under a different uid.\n\n  # encrypted ~/.Private and old-style encrypted $HOME\n  owner @{HOME}/.Private/ r,\n  owner @{HOME}/.Private/** mrixwlk,\n  # new-style encrypted $HOME\n  owner @{HOMEDIRS}/.ecryptfs/*/.Private/ r,\n  owner @{HOMEDIRS}/.ecryptfs/*/.Private/** mrixwlk,\n\n\n  # Include additions to the abstraction\n   \n\n##failed include <abstractions/base.d>\n\n\n\n  network,\n  capability,\n  file,\n  umount,\n  # Host (privileged) processes may send signals to container processes.\n  signal (receive) peer=unconfined,\n  # runc may send signals to container processes.\n  signal (receive) peer=runc,\n  # crun may send signals to container processes.\n  signal (receive) peer=crun,\n  # Manager may send signals to container processes.\n  signal (receive) peer=unconfined,\n  # Container processes may send signals amongst themselves.\n  signal (send,receive) peer=cri-containerd.apparmor.d,\n\n\n  deny @{PROC}/* w,   # deny write for all files directly in /proc (not in a subdir)\n  # deny write to files not in /proc/<number>/** or /proc/sys/**\n  deny @{PROC}/{[^1-9],[^1-9][^0-9],[^1-9s][^0-9y][^0-9s],[^1-9][^0-9][^0-9][^0-9]*}/** w,\n  deny @{PROC}/sys/[^k]** w,  # deny /proc/sys except /proc/sys/k* (effectively /proc/sys/kernel)\n  deny @{PROC}/sys/kernel/{?,??,[^s][^h][^m]**} w,  # deny everything except shm* in /proc/sys/kernel/\n  deny @{PROC}/sysrq-trigger rwklx,\n  deny @{PROC}/mem rwklx,\n  deny @{PROC}/kmem rwklx,\n  deny @{PROC}/kcore rwklx,\n\n  deny mount,\n\n  deny /sys/[^f]*/** wklx,\n  deny /sys/f[^s]*/** wklx,\n  deny /sys/fs/[^c]*/** wklx,\n  deny /sys/fs/c[^g]*/** wklx,\n  deny /sys/fs/cg[^r]*/** wklx,\n  deny /sys/firmware/** rwklx,\n  deny /sys/devices/virtual/powercap/** rwklx,\n  deny /sys/kernel/security/** rwklx,\n\n  # allow processes within the container to trace each other,\n  # provided all other LSM and yama setting allow it.\n  ptrace (trace,tracedby,read,readby) peer=cri-containerd.apparmor.d,\n}\n",
+    "preprocessed_sha256": "3731ec5d1bb66acab6a95047a06244ec63ba5b323e04ee39e6de1b2eba28b8ce",
+    "loaded_raw_base64": "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ACEAIgAjACQAagAlACYAOgAoACkAKgArACwALQAuAC8AMAAAADEAMgAzAEgASQBKAGwASwBMADoAKAApAE0AKwAsAC0ALgAvADAAAgAxADIAMwAjACQAbgAlACYAOgAoACkAKgArACwALQAuAC8AMABwADEAMgAzACQAXwAlACYAOgAoACkAKgArACwALQAuAC8AMAAAADEAMgAzACUAJgA6ACgAKQAqACsALAAtAC4ALwAwAGIAMQAyADMAQAByAEEAQgBDAEQARQBGAEcAMAAAADEAMgAzACgAKQBNACsALAAtAC4ALwAwAAAAMQAyADMATQArACwALQAuAC8AMABcADEAMgAzACwALQAuAC8AMAB0ADEAMgAzAC0ALgAvADAAdgAxADIAMwAuAC8AMAB4ADEAMgAzAC8AMAAAADEAMgAzADAAcwAxADIAMwAoACkATQArACwALQAuAC8AMAB6ADEAMgAzADwAPQA+AD8AawAlACYAQAAAAEEAQgBDAEQARQBGAEcAMAB8ADEAMgAzAFgAWQBaAHEASwBMAEAAfgBBAFsAQwBEAEUARgBHADAAgAAxADIAMwA+AD8AAAAlACYAQACCAEEAQgBDAEQARQBGAEcAMAAAADEAMgAzAD8AAAAlACYAQAAAAEEAQgBDAEQARQBGAEcAMACEADEAMgAzACUAJgBAAAAAQQBCAEMARABFAEYARwAwAHcAMQAyADMAQQBbAEMARABFAEYARwAwAAAAMQAyADMAWwBDAEQARQBGAEcAMABoADEAMgAzAEMARABFAEYARwAwAIYAMQAyADMARABFAEYARwAwAIgAMQAyADMARQBGAEcAMABlADEAMgAzAEYARwAwAAAAMQAyADMARwAwAHUAMQAyADMAMAB7ADEAMgAzAEkASgCJAEsATAA6ACgAKQBNACsALAAtAC4ALwAwAHkAMQAyADMASgBtAEsATAA6ACgAKQBNACsALAAtAC4ALwAwAAAAMQAyADMASwBMADoAKAApAE0AKwAsAC0ALgAvADAAfwAxADIAMwBMAEAAAABBAFsAQwBEAEUARgBHADAAAAAxADIAMwBAAAAAQQBbAEMARABFAEYARwAwAAAAMQAyADMAKwAsAC0ALgAvADAAAAAxADIAMwBPAFAAUQBSAFMAVAAAADIAMgAzADMAUABRAFIAUwBUAAAAAAAyAAAAMwBRAFIAUwBUAAAAAAAyAAAAMwBSAFMAVAAAAAAAMgAAADMAUwBUAFQAAAAyADIAMwAzAFkAWgAAAEsATABAAIEAQQBbAEMARABFAEYARwAwAAAAMQAyADMAWgAAAEsATABAAAAAQQBbAEMARABFAEYARwAwAIUAMQAyADMASwBMAEAAbwBBAFsAQwBEAEUARgBHADAAAAAxADIAMwBDAEQARQBGAEcAMAAAADEAMgAzAAAAfQAAAAAAAAAAAAAAhwAAAAAAAACDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAgAAAAAAAAP4AAAAAwABAAQABgAIAAkAAQAKAAEAAQAHAAcADAABAA8AAQAOABAAFAAlACUANAAlACUAJQAlACUAJQAlACUAMgAlACUAJQAFAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0AKgAqACoAKgAqACoAFwAqACoAKgAoACgAKAAoACgAKAAoAAsAGgAoAAQAKAAwADAAMAAYADEAMQATABkANQA2AAsAEQAOAAsAEgAYADcANAAKABAAFgAWABYAFgAWABYAFgAWABYAFwAWABYAFgAWABYAFgAWABYAFgAWABYAFgA4ABYAFgAWABwAHAAcABwAHAAcABwAHABWABwAHAAcABwAHAAcABwAHAAcABwAHAAcAFcAHAAcABwAHQAdAB0AHQAdAB0AHQBdAB0AHQAdAF4AHQAdAB0AHQAdAB0AHQAdAFwAHQAdAB0AHgAeAB4AHgAeAB4AYAAeAB4AHgBhAB4AHgAeAB4AHgAeAB4AHgBfAB4AHgAeAB8AHwAfAB8AHwBjAB8AHwAfAGQAHwAfAB8AHwAfAB8AHwAfAGYAHwAfAB8AIAAgACAAIABnACAAIAAgACAAIAAgACAAIAAgACAAIAAgAFUAIAAgACAAIQAhACEAaQAhACEAIQAhACEAIQAhACEAIQAhACEAIQBqACEAIQAhACIAIgBsACIAIgAiACIAIgAiACIAIgAiACIAIgAiAG4AIgAiACIAIwBcACMAIwAjACMAIwAjACMAIwAjACMAIwAjAGgAIwAjACMAJAAkACQAJAAkACQAJAAkACQAJAAkACQAXwAkACQAJAAmAHAAJgAmACYAJgAmACYAJgAmAG8AJgAmACYAJwAnACcAJwAnACcAJwAnACcAcQAnACcAJwApACkAKQApACkAKQApAFUAKQApACkAKwArACsAKwArAHIAKwArACsALAAsACwALAB0ACwALAAsAC0ALQAtAHYALQAtAC0ALgAuAHUALgAuAC4ALwBxAC8ALwAvADoAOgA6ADoAOgA6ADoAOgA6AHgAOgA6ADoAOwA7ADsAOwBoADsAOwA7AGUAOwA7ADsAOwA7ADsAOwA7AHoAOwA7ADsAPAA8ADwAbwA8ADwAPAB8ADwAPAA8ADwAPAA8ADwAPAB+ADwAPAA8AD0APQBiAD0APQA9AIAAPQA9AD0APQA9AD0APQA9AHMAPQA9AD0APgB5AD4APgA+AHcAPgA+AD4APgA+AD4APgA+AIIAPgA+AD4APwA/AD8AawA/AD8APwA/AD8APwA/AD8AdQA/AD8APwBAAEAAQABAAEAAQABAAEAAfQBAAEAAQABBAEEAQQBBAEEAQQBBAGUAQQBBAEEAQgBCAEIAQgBCAEIAhABCAEIAQgBDAEMAQwBDAEMAhgBDAEMAQwBEAEQARABEAGIARABEAEQARQBFAEUAhwBFAEUARQBGAEYAcwBGAEYARgBHAHkARwBHAEcASABIAIgASABIAEgASABIAEgASABIAEgASABIAEgAdwBIAEgASABJAGsASQBJAEkASQBJAEkASQBJAEkASQBJAEkAfwBJAEkASQBKAEoASgBKAEoASgBKAEoASgBKAEoASgB9AEoASgBKAEsASwAAAEsASwBLAEsASwBLAEsASwBtAEsASwBLAEwAAABMAEwATABMAEwATABMAEwAAABMAEwATABNAE0ATQBNAE0ATQB7AE0ATQBNAE4ATgBOAE4ATgBOAIEAVABOAFQATgBPAE8ATwBPAE8AhQAAAE8AAABPAFAAUABQAFAAAAAAAFAAAABQAFEAUQBRAIMAAABRAAAAUQBSAFIAUwAAAFIAUwBSAFMAWABYAAAAWABYAFgAfwBYAFgAWABYAFgAWABYAFgAAABYAFgAWABZAAAAWQBZAFkAAABZAFkAWQBZAFkAWQBZAFkAgwBZAFkAWQBaAFoAWgBtAFoAWgBaAFoAWgBaAFoAWgAAAFoAWgBaAFsAWwBbAFsAWwBbAAAAWwBbAFsAAAB7AAAAAAAAAAAAAACFAAAAAAAAAIEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBAYAYWFkZmEABhkiAAAAG154PQAAABgAACIYAABub3RmbGV4AAAAAAEABAAAAAAAAAD+AAAAAAAAAAAAn8J/AJ/CfwAAAAAAn8J/AJ/CfwAAAAAAn8J/AJ/CfwAEADAAn8J/AJ/CfwCfwn8An8J/AJ/CfwCfwn8AAAAAAJ/CfwCfwn8An8J/AJ1CdQAAAAAAn8J/AJ1CdQCdQnUAnUJ1AJ1CdQCdQnUAnUJ1AJ1CdQCfwn8AAAAAAAAAAACfwn8An8J/AJ/CfwCfwn8AnUJ1AAAAAACfwn8AnUJ1AJ1CdQAAAAAAAAAAAAAAAACfwn8An8J/AJ1CdQCdQnUAnUJ1AJ1CdQCdQnUAnUJ1AAAAAACfwn8AnUJ1AJ1CdQAVAFQAAAAAAAQAEACfwn8An8J/AJ/CfwCfwn8AnUJ1AAAAAACfwn8AnUJ1AAAAAAAAAAAAAAAAAJ1CdQCdQnUAAAAAAJ/CfwAAAAAABAAwAAQAMAAEADAAAAAAAJ/CfwCfwn8AnUJ1AJ1CdQCdQnUAFABQAAAAAACdQnUAAAAAAAAAAAAEADAAn8J/AJ/CfwCfwn8An8J/AJ1CdQAAAAAAn8J/AAAAAAAAAAAAn8J/AAAAAAAEADAAAAAAAAAAAAAAAAAABAAwAJ1CdQCdQnUAFABQAAAAAACfwn8AnUJ1AAAAAAAAAAAABAAwAJ/CfwCfwn8An8J/AJ/CfwCfwn8AAAAAAAAAAAAEADAAAAAAAJ1CdQAAAAAAAAAAAJ/CfwCdQnUAAAAAAAAAAACfwn8An8J/AJ/CfwCdQnUAAAAAAAAAAACfwn8AnUJ1AAAAAACfwn8An8J/AJ/CfwCfwn8AnUJ1AJ/CfwCfwn8AFQBUABUAVACfwn8AnUJ1ABUAVAAVAFQAn8J/ABUAVAAVAFQAn8J/AJ1CdQAVAFQAFQBUABQAUAAVAFQAFQBUAJ/CfwCdQnUAFQBUABUAVAAVAFQAFQBUAJ/CfwCdQnUAFQBUABUAVAAVAFQAFQBUAJ1CdQAAAAAAn8J/AJ1CdQAVAFQAFQBUABUAVAAVAFQAnUJ1AAAAAAAAAAAAAAAAAJ/CfwAVAFQAFQBUABUAVAAVAFQAAAAAAAAAAAAAAAAAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAFQBUABUAVAAVAFQAAAAAAAcABAAAAAAAAAD+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAFAAAAAAAAAAAAAUAFAAFABQABQAUAAUAFAAFABQABQAUAAUAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAUAAAAAAAAAAAABQAUAAUAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAFAAFABQABQAUAAUAFAAFABQABQAUAAAAAAAAAAAABQAUAAUAFAAVgFYAAAAAABWAVgAAAAAAAAAAAAAAAAAAAAAABQAUAAAAAAAAAAAABQAUAAAAAAAAAAAAAAAAAAUAFAAFABQAAAAAAAAAAAAAAAAABQAUAAAAAAAFABQAAAAAAAAAAAAAAAAABQAUAAUAFAAFABQAF4BeAAAAAAAFABQAAAAAABWAVgAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAFAAFABQAAAAAAAUAFAAFABQAF4BeAAAAAAAAAAAABQAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQAUAAUAFAAAAAAABQAUAAAAAAAFABQACAAgAAAAAAAAAAAAAAAAAAAAAAAFABQADQA0AAUAFAAAAAAABQAUAAgAIAAAAAAAAAAAAAAAAAAAAAAABQAUAAAAAAAAAAAAFYBWABWAVgAAAAAABQAUABWAVgAVgFYAAAAAABWAVgAVgFYAAAAAAAUAFAAVgFYAFYBWABeAXgAVgFYAFYBWAAAAAAAFABQAFYBWABWAVgAVgFYAFYBWAAAAAAAFABQAFYBWABWAVgAVgFYAFYBWAAUAFAAAAAAAAAAAA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ADoAOgA6ADoAOgA6ADoAOgA6ADoAOgA6ADoAOgA6ADoAOgA6ADoAOgA6ADoAOgA6ADoAOgAIAAIAAAAAAAAE8QAAAAQABAAEAAQABAAEAAQABAAEAAQAAAARAAQABAAAAAoAEQAEAAQABAAEABYAWQBbAGEABAARAGcACgBzAAAAgAAEACcAEQAAAIMAEQBZAFkAWQBZAFkAWQBZAFkAAgAHAAAAcgB0AAAAhAAKAA4ADwAfACEAAAADAB8AOwAAAAQAHwAfAD8AAwAXAAAAGAAYABgAGAAZABkAGQAZABkAHwAoACkAKQApACkAKQApACkAKQApACkALAAAAAAAAAAAAAAAAAAAAAAAAAAAAGEAZwANAAAAYQC8AGcAWQAfABIABQATACIABgAIAAsAFAAMABoAIwAnABsACQBeAFkAWQAcAMIAHQAkAD4AJQAEAD0AHgB3AIEAAACdAKQAAABZAAAABAChAJwAAABiAGYAAwBZAGUAKgBjACcAWQCnAKgAWQCgAFkAWQAAAC0AWQAnAFwAKAADAAMAAwADAAMAAwADAAMAAwADACcAAwAZABkAGQAZABkAGQAZABkAGQAZAAMAMAAwADAAMAAwADAAMAAwADAAMAAoACkAKQApACkAKQApACkAKQApACkAKAApACkAKQApACkAKQApACkAKQApAKkABAAoACkAKQApACkAKQApACkAKQApACkABAAEAAQArwCtAC8AUAAAAAAAAAAAAAAAAAAAAAAAAAAAACcAAAAAAAAAAAAAAAAAAAAAAAAAAAA2ALUAMQCqAMYAsAAyAB8AxABZAK4AKgBCADMAtgAAAAAAAABZAB8AHwAfACoANABGAAAAAAAAAAAAAAAAAAAAAAAAAAAAKgAoACkAKQApACkAKQApACkAKQApACkANwApACkAKQApACkAKQApACkAKQApAAQAQwApACkAKQApACkAKQApACkAKQApAAAAdQAEAAAAQAAEAAQAAAAKAAQAWQBCAF0AWQBfAFkAWQBZAAAAAAA1AAAARwBKAEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAfAAAACgAKAAAAKgAKAFkAAAAEALcAOABOAL4AeQB6ADkAHwB5AHsAewB5AEQAQwBJAEkASQBJAEkASQBJAEkASQBJAEIASwApACkAKQApACkAKQApACkAKQApAEoAWQB7AHwAewB9AAAAfAB5AH8AAwBHAAQATABPAE8ATwBPAE8ATwBPAE8ATwBPAEIAeAB2AAAAAAC/AAAAAADPAMkAuABDAAMAAwADAAMAAwADAAMAAwADAAMAwABLAAMAAwADAAMAAwADAAMAAwADAAMAQgADAFMAUwBTAFMAUwBTAFMAUwBTAFMAQgBDACkAKQApACkAKQApACkAKQApACkAVwAAAAAAAAAAAAAAAAAAAAAAAAAAAEIAugC6AFkAwgBZAFkAWQBZANUAUgBCAEMAKQApACkAKQApACkAKQApACkAKQDDAEMAKQApACkAKQApACkAKQApACkAKQBkAAAAAAAAAAAAAAAAAAAAAAAAAAAARABDACkAKQApACkAKQApACkAKQApACkAQwApACkAKQApACkAKQApACkAKQApAGYAAAAAAAAAAAAAAAAAAAAAAAAAAABEAEoAAAAAAAAACgAAAAAAVABZAAAAAABEAEoAWQBZAAAAAAAAAFkAWQBVAFkAAABKAEkAAwBZAFkAWQBZAFkAWQADAFkARABhAMsAWQDBAFYAxwDSAFkA0ABZAEQAYQBLAEkASQBJAEkASQBJAEkASQBJAEkAWQBLACkAKQApACkAKQApACkAKQApACkASwApACkAKQApACkAKQApACkAKQApAAoAYgApACkAKQApACkAKQApACkAKQApAGUAKQApACkAKQApACkAKQApACkAKQBoAAAAAAAAAAAAAAAAAAAAAAAAAAAAYwBrAAoACgAKAAoACgAKAAoACgAKAAoAYwAAAMgAzQDOANEA1ADYAOYA2QDaAFgAYQDWANcA2wDfANwAWQBZAFkAWQBhAN4AWQBZAN0AWQBZAFkA4ABZAOMABABZAGYAagBqAGoAagBqAGoAagBqAGoAagBhAGMAagBqAGoAagBqAGoAagBqAGoAagBhAGIAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAbABsAGwAbABsAGwAbABsAGwAbABvAFkAYgApACkAKQApACkAKQApACkAKQApAAQAYgApACkAKQApACkAKQApACkAKQApAAQABAAEAAQA4QBhAFkA4gDkAOUAWQAAAAAA5gDpAAAABADnAOsA7ADIAOgAYgApACkAKQApACkAKQApACkAKQApAAAACgB5AIMAAAAEAAAABAAEAAAABABtAAQABAB5AB8AHwAfAG4AcAApACkAKQApACkAKQApACkAKQApAAMAfgB+AH4AfgB+AH4AfgB+AH4AfgAEAFkAWQBZAFkA7wAAAAoAWQAAAIoAeQCMAB8AeQBuAB8ACgCQAAMABAAEAAQABAAEAIYABAAEAIUABAAEAAQABAAEAOoAWQDyAIcABACCAAQABAAEALIAWQBxAAQAAwCIAIgAiACIAIgAiACIAIgAiACIAAQAAAAKAFkAWQBZAGoAiwBZAHkAeQCTAB8AAwBZAHkAeQBZAAMAmwB5AAMAeQCOAKMAjwBZAHkAWQB5AKsAeQCzAMUAWQB5AFkAWQBZAFkA7gBZAFkAAAAAAPcAAAB5AMQAwwDKAMwAOgDmAAAA0wDtAAAA8wAAAAAAAAAAAAAA8QAAAJQAAAAAAAAAAAAAAAAAAACeAJUAkQAAAJcAkgCfAJYAAACYAAAApgCZAKwApQCaAAAAAAAAAAAAAAAAAAAAAAAAAAAASQC0AG4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAPQAAAAAAAAAAAAAAAAAAAD1AAAAAAD7APYAAAAAAPoAAAAAAAAAAAAAAAAAAAD5AP0A+AAAAAAAAAAAAAAAAAAAAPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAIAAAAAAAAE8QAAAAIAAwAFAAYACQALAAgADAANABAAEQAOAB8AEgAgACEAEwAiACMAJAApAA8AOgA8AEgASQA/AE0ATwBaAGoAcAAUABUAXgB9AIkAdwCVAJYAmQCaAJ0AoACiAKEAAQAEAAcAWQBbAHIAcwB0AAwADQAQABEAOwAfABIAIAAhAD0AIgAjACQAKQAPAIQADwAPAA8ADwAPAA8ADwAPAA8AFAAVABUAFQAVABUAFQAVABUAFQAVABUAFgAWABYAFgAWABYAFgAWABYAFgAWAEMARgALADsASwCyAFcAowA9AA4AAgAOABIAAgAFAAgADgAJAA8AEwAXAA8ABgA/AKcAqQAPALkADwATACMAFAAYACIADwBeAHAAuwCWAJ0AwwDpAAAAGQCaAJUAAABDAEYAdwCkAEsAFQBXABoAqgCgAKEAqACZAL8ArgCyABYArQAbAD0AFwAXABcAFwAXABcAFwAXABcAFwAXABwAGAAYABgAGAAYABgAGAAYABgAGAAYABkAGQAZABkAGQAZABkAGQAZABkAGQAaABoAGgAaABoAGgAaABoAGgAaABoAGwAbABsAGwAbABsAGwAbABsAGwAbAKMAJQAcABwAHAAcABwAHAAcABwAHAAcABwAXAA+AEAAqQCnABcALQAtAC0ALQAtAC0ALQAtAC0ALQAtAB0ARwBHAEcARwBHAEcARwBHAEcARwAeAK0AGgCkAL8AqgAbACUAugC1AKgAGgAmABwArgAAAAAAAACvAFwAPgBAABsAHAAnACcAJwAnACcAJwAnACcAJwAnACcAHAAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAF0AJgAmACYAJgAmACYAJgAmACYAJgAmALoAXABgAGEAJQBfAGIAYwBkAGUAsAAoAD4AtgBAAMUAywC3AAAAAAAdAAAAJwAqACsAKwArACsAKwArACsAKwArACsAKwBdAGYAZwBoAGkAHQBrAG4AbwB5AK8AHgAsALUAYABhAB4AXwBiAGMAZABlACYAKAAoACgAKAAoACgAKAAoACgAKAAoAC4AKgAqACoAKgAqACoAKgAqACoAKgAqAC8A0gBmAGcAaABpAAAAawBuAG8AeQArADAALAAsACwALAAsACwALAAsACwALAAsADEAXwBdAAAAAAC2AAAAAADLAMUAsAAuAC4ALgAuAC4ALgAuAC4ALgAuAC4AtwAvAC8ALwAvAC8ALwAvAC8ALwAvAC8AMgAwADAAMAAwADAAMAAwADAAMAAwADAAMwAxADEAMQAxADEAMQAxADEAMQAxADEANgA2ADYANgA2ADYANgA2ADYANgA2ADQAsQCzALgAvQDHAMAAzQDPANIALgA1ADIAMgAyADIAMgAyADIAMgAyADIAMgC8ADMAMwAzADMAMwAzADMAMwAzADMAMwBCAEIAQgBCAEIAQgBCAEIAQgBCAEIAMQA0ADQANAA0ADQANAA0ADQANAA0ADQANQA1ADUANQA1ADUANQA1ADUANQA1AEUARQBFAEUARQBFAEUARQBFAEUARQAyADcAAAAAAAAAvAAAAAAAMwDBAAAAAAAzADgA/QDRAAAAAAAAAMkAygA0AM4AAAA5ALEAswDVANYA2wDTANgA1wC9ANQANABBAMcA2QC4ADUAwADPANoAzQDfADUARAA3ADcANwA3ADcANwA3ADcANwA3ADcA3AA4ADgAOAA4ADgAOAA4ADgAOAA4ADgAOQA5ADkAOQA5ADkAOQA5ADkAOQA5AHoAQQBBAEEAQQBBAEEAQQBBAEEAQQBBAEQARABEAEQARABEAEQARABEAEQARABKAEoASgBKAEoASgBKAEoASgBKAEoATABOAE4ATgBOAE4ATgBOAE4ATgBOAE4AUAB6AMEAyQDKAM4A0QDUAP0A1QDWADkAUQDTANMA1wDbANgA3gDiAOUA4QBSANoA5ADdANkA4ADjAOYA3ADoAN8AUwDrAEwATABMAEwATABMAEwATABMAEwATABUAFAAUABQAFAAUABQAFAAUABQAFAAUABVAFEAUQBRAFEAUQBRAFEAUQBRAFEAUQBSAFIAUgBSAFIAUgBSAFIAUgBSAFMAUwBTAFMAUwBTAFMAUwBTAFMAUwBWAO4AVABUAFQAVABUAFQAVABUAFQAVABUAG0AVQBVAFUAVQBVAFUAVQBVAFUAVQBVAHEAdQB2AHgA3QBYAPEA3gDgAOEA5wAAAAAA4gDmAAAAbADjAOgA6wDkAOUAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAHsAfABtAH8AgACBAAAAhQCCAAAAhgBUAIcAiABxAHUAdgB4AFUAWABYAFgAWABYAFgAWABYAFgAWABYAGwAbABsAGwAbABsAGwAbABsAGwAbAB+AO0A7ADqAPIA7gB7AHwA9gB/AIAAgQCCAIUAggBtAIYAigCHAIgAiwCMAI4AjwCQAHYAkQCSAHUAkwCUAJcAmwCYAOcAnADxAHgAngBxAJ8ApQCmAKsAvgBYALQAfgB+AH4AfgB+AH4AfgB+AH4AfgB+AKwAwgDEAMYAyADMAIoAgQDQAIsAjACOAI8AkADvAJEAkgDwAJMAlACXAJsAmACFAJwAhgDzAJ4A9ACfAKUApgCrAL4A9QC0APcA+AD5APoA7QD7APwAAAAAAPYAAACsAMIAxADGAMgAzADqAAAA0ADsAAAA8gAAAAAAAAAAAAAA8AAAAI8AAAAAAAAAAAAAAAAAAACXAJAAiwAAAJEAjACYAJAAAACSAAAAnwCTAKYAngCTAAAAAAAAAAAAAAAAAAAAAAAAAAAAqwCsALQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7wAAAAAAAAAAAAAAAAAAAPMAAAAAAAAAAAAAAAAAAAD0AAAAAAD6APUAAAAAAPkAAAAAAAAAAAAAAAAAAAD4APwA9wAAAAAAAAAAAAAAAAAAAPsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg=",
+    "verification": "apparmor_parser 4.1.0 -Q -K -S; nessun caricamento kernel né accesso cache. Equivalenza byte per byte con raw_data del profilo caricato."
+  },
+  "final_state": {
+    "time": "2026-09-06T19:47:36Z",
+    "containerd": {
+      "pid": 831,
+      "exe": "/var/lib/rancher/k3s/data/65415f7708224bbfc7865f032e84da4a5123a3acebef70c8ee40fa991aa68555/bin/k3s",
+      "sha256": "65f864410b5c800a1471193d01ba12fb54531d257c9a0a390a8e2243f46865f3",
+      "version": "k3s version v1.34.9+k3s1 (5f72184f)\ngo version go1.25.11\n"
+    },
+    "config": {
+      "sha256": "4acb321e9961ed148abb823c848d32b5c32bb53c67395923f8f3fe49ac5d9d69",
+      "size": 279,
+      "execution_enabled": false
+    },
+    "state": {
+      "sha256": "96a601a5723e97abddc6308c4dc904d5fbac8e126bce97915cdb892550a1e025",
+      "size": 150,
+      "cursor": 5557127806,
+      "jobs": {}
+    },
+    "trace": {
+      "sha256": "0d4548949fb635fd4abf28d6d63bda96fc5e9d5fe10ba454a188c1f2387bd357",
+      "size": 6286
+    },
+    "poc_processes": []
+  },
+  "limitations": [
+    "Il BPF seccomp non è stato estratto con attach/ptrace: OCI CRI/task e attributi del processo sono le evidenze acquisite.",
+    "Il percorso runc incluso nella release e la sua versione sono verificati; non esiste una traccia execve conservata che attesti quale runc sia stato eseguito alla creazione del task. BinaryName non è impostato nelle options del task.",
+    "Nessun evento kernel LSM/seccomp correlato trovato nella finestra della traccia; assenza di audit non esclude ERRNO.",
+    "La raccolta non esegue il tratto namespace/mount del POC e non certifica un profilo sostitutivo."
+  ]
+}

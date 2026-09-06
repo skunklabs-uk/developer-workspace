@@ -148,7 +148,9 @@ Il profilo `handoff` viene accettato dal parser, ma l’esecuzione di `/bin/true
 fallisce con `bwrap: No permissions to create a new namespace`. Anche
 `unshare -Ur true` fallisce con `Operation not permitted`, pur con
 `kernel.unprivileged_userns_clone=1` e `user.max_user_namespaces=96054`.
-Non è ancora identificato quale controllo del runtime neghi la syscall.
+La successiva raccolta amministrativa identifica la regola seccomp che nega
+la combinazione di flag usata da bubblewrap e conferma anche `deny mount`
+nella policy AppArmor caricata; le evidenze sono descritte sotto.
 Il Pod mantiene `RuntimeDefault`, capability rimosse e
 `allowPrivilegeEscalation=false`; nessuno di questi confini è stato modificato.
 
@@ -159,7 +161,7 @@ seccomp o privilegi aggiuntivi come fallback. Login ChatGPT e identità GitHub
 sono verificati, ma non sostituiscono la prova del filesystem e dei tool effettivi.
 Lo stato operativo, gli head e i payload di ripartenza restano nella issue #75.
 
-### Diagnosi del diniego e prossimo accertamento
+### Diagnosi del diniego e baseline acquisita
 
 La ripresa del 6 settembre distingue la shell del coordinatore in WSL2 dal
 consumer su Linux Debian nel Pod. Nel consumer sono stati osservati
@@ -175,10 +177,10 @@ consumer su Linux Debian nel Pod. Nel consumer sono stati osservati
 
 Il [profilo sorgente della stessa versione containerd](https://github.com/k3s-io/containerd/blob/v2.2.5-k3s2/contrib/seccomp/seccomp_default.go)
 ammette `unshare` con `CAP_SYS_ADMIN` e, senza tale capability, ammette `clone`
-solo senza i flag di namespace. È un'evidenza coerente con un diniego seccomp,
-non la lettura del filtro OCI effettivamente caricato. AppArmor resta un
-ulteriore confine da verificare. Non aggiungere capability per verificare
-l'ipotesi. `strace` non è presente, `dmesg` è negato e securityfs non espone i
+solo senza i flag di namespace. Nella prima diagnosi era soltanto un indizio,
+senza lettura della baseline OCI o della policy AppArmor. La raccolta dal nodo
+descritta sotto ha colmato quel limite. Non aggiungere capability per fare
+diagnosi. Nel Pod `strace` non è presente, `dmesg` è negato e securityfs non espone i
 profili dal Pod; i sysctl già positivi non rimuovono questi limiti.
 
 Una traccia successiva del binario installato 0.153.4, raccolta il 6 settembre
@@ -187,22 +189,35 @@ il primo diniego nel percorso nativo:
 `clone(CLONE_NEWNS|CLONE_NEWIPC|CLONE_NEWUSER|CLONE_NEWPID|CLONE_NEWNET|SIGCHLD)`
 restituisce `EPERM`, prima dei mount. Consentire soltanto `unshare` non risolve
 questo ingresso. Il template AppArmor della stessa versione upstream contiene
-anche `deny mount`: occorre acquisire il profilo caricato, senza assumere che
-coincida con il template o che una modifica solo seccomp basti. Traccia,
+anche `deny mount`: la sola traccia non dimostrava che fosse caricato.
+La raccolta seguente ha verificato l'equivalenza della policy. Traccia,
 hash e proposta condizionata con impatto/rollback sono nella issue #75.
 
-Il prossimo accertamento richiede al proprietario del runtime **solo un
-estratto diagnostico dal nodo**, riferito al container corrente: sezione
-`linux.seccomp` della specifica OCI, `process.apparmorProfile`,
-`process.noNewPrivileges`, `process.capabilities` ed eventuali eventi kernel
-`SECCOMP`/`apparmor="DENIED"` correlati alla prova. Escludere environment,
-credenziali e l'output integrale di inspect. L'assenza di eventi audit non
-dimostra assenza del filtro. ID e istante della prova sono nella issue #75.
+La raccolta amministrativa successiva ha raggiunto il nodo tramite il
+ProxyJump già inventariato, senza ripetere probe nel Pod. La
+[baseline sanitizzata](workspace-handoff-runtime-baseline.json) contiene la
+sezione seccomp completa, coincidente fra CRI e specifica OCI del task, gli
+attributi del processo, le versioni e la policy AppArmor compilata.
+La regola `clone` consente solo `(flags & 0x7e020000) == 0`; i flag della
+traccia sono `0x78020011` e ricadono nel default `SCMP_ACT_ERRNO` (`EPERM`).
+Anche `unshare`, `mount`, `pivot_root` e `umount2` mancano dagli allow.
+SELinux non compare nella lista LSM del nodo; AppArmor è in enforce.
+Il sorgente AppArmor ricostruito dagli include installati produce, con
+`apparmor_parser -Q -K -S`, byte identici a `raw_data` letto da securityfs:
+il suo `deny mount` è quindi confermato. Nessun caricamento o modifica cache.
+La ricerca degli eventi kernel nella finestra della traccia non ha trovato
+eventi correlati; questo non smentisce il default ERRNO.
 
-Questa raccolta non richiede rollout o modifica del consumer. Se conferma la
-necessità di cambiare policy, preparare un diff Homelab sul profilo effettivo
+La necessità di intervenire su entrambi i confini è ora documentata.
+La raccolta non certifica le condizioni esatte dei mount successivi, mai
+raggiunti dalla traccia. Un profilo completo non può essere sostituito da
+un allow generico per mount o da una sola eccezione per clone. Il delta
+approvabile e le informazioni residue sono governati dalla issue #75.
+
+Questa raccolta non ha richiesto rollout o modifica del consumer. Per il
+rimedio, preparare un diff Homelab sul profilo effettivo
 con le sole syscall/condizioni necessarie alla sandbox, impatto sull'intero
-Pod, rollback e prova prevista, e ottenere l'autorizzazione **prima** di
+container code-server, rollback e prova prevista, e ottenere l'autorizzazione **prima** di
 applicarlo. Non proporre un profilo permissivo generico né presumere che una
 sola eccezione risolva anche AppArmor. Spostare il consumer è un'alternativa
 con conseguenze diverse, anch'essa da approvare; non clonare lo stato per

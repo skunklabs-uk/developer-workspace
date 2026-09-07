@@ -3,10 +3,9 @@
 **Stato: Draft.** Codice e verifiche locali della missione
 [developer-workspace #75](https://github.com/skunklabs-uk/developer-workspace/issues/75).
 Il [checkpoint runtime corrente](workspace-handoff-candidates/README.md#checkpoint-corrente--reality-check-del-7-settembre-2026)
-registra il Pod su proc-v4 e il probe con gli input `handoff` corretti: proc
-montato nel namespace figlio e letture ristrette verificate sul checkout
-diagnostico. Consumer disabilitato; confine completo di tool ed esecuzione,
-due incarichi e riletture restano da verificare. Le sezioni diagnostiche sotto
+registra il profilo effettivo e il collaudo della sandbox nativa. Attivazione,
+incarichi e riletture sono governati dalla missione #75; un probe superato
+non equivale al completamento del collegamento. Le sezioni diagnostiche sotto
 descrivono le prove precedenti, non lo stato live corrente.
 Questo documento non dichiara il servizio attivo.
 

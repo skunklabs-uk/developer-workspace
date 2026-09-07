@@ -265,7 +265,9 @@ class LocalCodex:
         env = self.environment(run_dir)
         self.probe(checkout, run_dir, env)
         summary = run_dir / 'summary.md'
-        instructions = (self.references + '\n\nIncarico versionato:\n' + prompt + '\n\nConsegna: riepilogo italiano con risultato effettivo, verifiche, '
+        instructions = (self.references + '\n\nRichiesta verificata dal collegamento:\n' +
+                        json.dumps(request, ensure_ascii=False, sort_keys=True) +
+                        '\n\nIncarico versionato:\n' + prompt + '\n\nConsegna: riepilogo italiano con risultato effettivo, verifiche, '
                         'limiti e documentazione. Usa agent-loop entro lo scope autorizzato. '
                         'Non inviare commenti, non rilanciare CI, non eseguire merge/deploy. '
                         'La pubblicazione del report è del collegamento, non dell\'agente.\n')

@@ -7,6 +7,42 @@ checkpoint seguente; le sezioni successive conservano le prove precedenti.
 
 ## Checkpoint corrente — reality check del 7 settembre 2026
 
+### Profilo ridotto applicato e collaudato
+
+Homelab #1112 è merged nel commit `2b13bf4d1b7f00aeff658a09f7c6eb76c21ed42f`;
+Argo lo ha applicato. Il Pod corrente è `ec539a0a-218d-4151-9e56-aed0fc64caf4`,
+Ready, init exit 0, profilo `workspace-handoff-poc-iwant`. Gli hash sorgente
+e compilato del profilo ridotto sono nella sezione di riesame sotto.
+La riconciliazione ha richiesto un refresh nativo della sola Application;
+nessuna modifica alla syncPolicy o ai permessi del service account.
+
+Sul profilo ridotto, `LocalCodex.probe` del commit `3fff82f` passa con ambiente
+del consumer: proc presente, checkout diagnostico leggibile, lettura/scrittura
+esterne e scrittura nel checkout negate. Namespace del figlio:
+PID `4026533325`, mount `4026533137`, network `4026533607`; quelli del padre
+sono rispettivamente `4026532686`, `4026532685`, `4026532412`.
+Mountinfo del figlio mostra filesystem proc montato su `/proc`.
+
+Le prove delle connessioni IPv4/IPv6 e Unix pathname/abstract restituiscono
+EPERM nel figlio, con controlli positivi raggiungibili dal padre. AF_UNIX può
+creare il socket: è la connessione a essere negata. Le prove usano Perl
+installato nell'immagine; `/usr/bin/python3` è assente e curl non esponeva
+l'errno necessario. Questi errori del materiale diagnostico non sono deny
+aggiuntivi del profilo e non hanno causato aperture.
+Anche la creazione di socket UDP IPv4/IPv6 è negata EPERM. L'apertura in lettura
+di `/proc/keys`, esistente, è negata EACCES anche attraverso l'alias
+`/proc/self/root/proc/keys`; nessun contenuto è stato letto.
+
+UID/GID mapping del Pod: `0 3765764096 65536`; home/workspaces mantengono
+owner interno `1000:1000`, senza chown. Healthz risponde alive. Config e stato
+restano agli hash attesi, `execution_enabled=false`, jobs vuoti. Il collaudo
+non ha ancora avviato un incarico LLM: la prova completa di exec resta g1.
+Il profilo proc-v4 è stato scaricato e il suo file rimosso dai tre worker
+soltanto dopo la verifica di assenza di processi che lo usavano. Seccomp v1 e
+il profilo IWANT restano installati e in uso.
+
+### Evidenze del reality check precedente al rollout
+
 Revisione esaminata: `3ccaa80bb33482cea2e540e455e8546a22ba8f9a`, con il delta
 locale `handoff-inputs.diff` ora applicato a `scripts/workspace_handoff_io.py`.
 Il Pod `23b20a02-8104-4ed3-bd50-ce6c51a726b7` usa ancora proc-v4,

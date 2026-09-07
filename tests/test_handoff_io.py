@@ -166,6 +166,31 @@ class CheckoutTests(unittest.TestCase):
         with self.assertRaises(self.m.HandoffError):
             runner(self.request, self.root / 'run')
 
+    def test_executor_receives_verified_head_without_remote_lookup(self):
+        runner = self.m.LocalCodex({'execution_enabled': True, 'sandbox': 'read-only'})
+        runner.references = 'Fonti canoniche verificate'
+        run_dir = self.root / 'run'
+        captured = []
+        prepare = self.m.prepare_checkout
+        popen = subprocess.Popen
+
+        class Child:
+            returncode = 0
+
+            def communicate(self, payload, timeout):
+                captured.append(payload.decode())
+                (run_dir / 'summary.md').write_text('Verifica completata')
+
+        with patch.object(self.m, 'prepare_checkout', side_effect=lambda request, origin, target:
+                          prepare(request, str(self.origin), target)), \
+                patch.object(runner, 'probe'), \
+                patch.object(self.m.subprocess, 'Popen', side_effect=lambda args, **kwargs:
+                             Child() if args[0] == 'codex' else popen(args, **kwargs)):
+            result = runner(self.request, run_dir)
+        self.assertEqual(result['exit_code'], 0)
+        self.assertIn(self.request['head'], captured[0])
+        self.assertIn(self.request['repository'], captured[0])
+
     def test_process_configuration_does_not_inherit_personal_tool_credentials(self):
         config = {'execution_enabled': True, 'sandbox': 'read-only'}
         runner = self.m.LocalCodex(config)

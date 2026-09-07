@@ -194,6 +194,29 @@ Nessun nuovo delta è applicato e nessun incarico IWANT è abilitato.
 Review indipendente delle evidenze completata; closeout della missione ancora
 aperto finché mancano i due giri e le riletture ChatGPT.
 
+### Aggiornamento proc-v2 — prova runtime del 7 settembre 2026
+
+Il successivo trial proc-v2 è stato applicato via Homelab GitOps e poi ritirato
+con rollback. Con `hostUsers: false`, `procMount: Unmasked` e i profili locali
+referenziati soltanto da `code-server`, il probe nativo
+`codex sandbox -- /bin/true` si è fermato su bubblewrap prima del mount della
+sandbox. Il journal di `k3s-worker1` registra AppArmor `DENIED` su
+`mount /oldroot/ -> /newroot/`, `info="failed srcname match"`, `error=-13`.
+Il problema è quindi nel match AppArmor del candidato; non è stata introdotta
+una nuova apertura per aggirarlo.
+
+Il rollback è stato completato su GitOps con `b49bfabba4b9ba21d22cdfd376c95bd2d045e3d9`:
+Argo è `Synced`, il Pod è stato ricreato con UID
+`6a11b497-27be-45af-a129-858d42710e40`, e i riferimenti proc-v2 non sono più
+presenti. Ansible ha scaricato e rimosso i profili temporanei dai tre worker.
+Config e stato sono invariati (`4acb321e...d69` e `96a601a...025`),
+`execution_enabled=false`, `jobs={}`; nessun consumer o incarico LLM è stato
+avviato. I test del repository sono 42/42 OK.
+
+Esito: **NO-GO** per il delta proc-v2 approvato. Una correzione del match
+AppArmor richiede una nuova proposta e review; non è parte del closeout
+operativo corrente.
+
 ## Preparazione originaria — 6 settembre 2026
 
 Le sezioni seguenti descrivono gli input e la proposta prima dell'applicazione;

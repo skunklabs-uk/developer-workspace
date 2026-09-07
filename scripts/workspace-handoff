@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""Opt-in IWANT POC. No daemon install, no credentials setup, no CI dispatch."""
+import argparse
+import json
+import os
+from pathlib import Path
+import sys
+import time
+
+from workspace_handoff import Consumer, HandoffError, unique_object
+from workspace_handoff_io import GitHub, LocalCodex, RateLimited
+
+
+def configuration(path):
+    value = json.loads(Path(path).read_text(encoding='utf-8'), object_pairs_hook=unique_object)
+    allowed = {'repository', 'thread', 'actor_ids', 'publisher_id', 'execution_enabled',
+               'poll_seconds', 'timeout_seconds', 'sandbox', 'gh', 'codex'}
+    if not isinstance(value, dict) or set(value) - allowed:
+        raise HandoffError('Configurazione non valida o campi non supportati')
+    if value.get('repository') != 'skunklabs-uk/iwant':
+        raise HandoffError('Il POC ammette soltanto skunklabs-uk/iwant')
+    for key in ('thread', 'publisher_id'):
+        if type(value.get(key)) is not int or value[key] < 1:
+            raise HandoffError(key + ' deve essere un ID numerico positivo')
+    actors = value.get('actor_ids')
+    if not isinstance(actors, list) or not actors or any(type(x) is not int or x < 1 for x in actors):
+        raise HandoffError('actor_ids deve contenere ID numerici positivi')
+    if len(set(actors)) != len(actors):
+        raise HandoffError('actor_ids contiene duplicati')
+    for key, default, low, high in [('poll_seconds', 60, 60, 3600),
+                                     ('timeout_seconds', 1200, 30, 7200)]:
+        value.setdefault(key, default)
+        if type(value[key]) is not int or not low <= value[key] <= high:
+            raise HandoffError(f'{key} deve essere compreso fra {low} e {high}')
+    if value.get('sandbox', 'read-only') not in ('read-only', 'workspace-write'):
+        raise HandoffError('Sandbox non supportata: nessun bypass consentito')
+    if type(value.get('execution_enabled', False)) is not bool:
+        raise HandoffError('execution_enabled deve essere booleano')
+    for key in ('gh', 'codex'):
+        if key in value and (not isinstance(value[key], str) or not value[key] or '\x00' in value[key]):
+            raise HandoffError(key + ' deve identificare un eseguibile')
+    return value
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--config', required=True, help='Configurazione locale approvata, senza segreti')
+    parser.add_argument('--state', required=True, help='Directory privata persistente, separata dai checkout')
+    parser.add_argument('operation', choices=('init', 'once', 'watch', 'status'))
+    args = parser.parse_args()
+    try:
+        config = configuration(args.config)
+        root = Path(args.state)
+        if args.operation == 'status':
+            if not (root / 'state.json').exists():
+                print('Consumer non inizializzato; nessuna esecuzione.')
+            else:
+                print((root / 'state.json').read_text(encoding='utf-8'))
+                if (root / 'transport.json').exists():
+                    metrics = json.loads((root / 'transport.json').read_text())
+                    print(json.dumps({k: v for k, v in metrics.items() if k != 'cache'}, indent=2))
+            return 0
+        if args.operation in ('once', 'watch') and config.get('execution_enabled') is not True:
+            raise HandoffError('Esecuzione disabilitata: verificare il profilo e attivare localmente')
+        os.umask(0o077)
+        # Validate state permissions before any adapter writes its private cache.
+        consumer = Consumer(root, config, None, None)
+        consumer.github = GitHub(config, root)
+        consumer.runner = LocalCodex(config, consumer.github)
+        if args.operation == 'init':
+            consumer.enroll()
+            print('Enrollment registrato. I commenti preesistenti non saranno eseguiti.')
+            return 0
+        attempts = 0
+        while True:
+            try:
+                consumer.tick()
+                attempts = 0
+            except RateLimited as error:
+                attempts += 1
+                if args.operation != 'watch' or attempts >= 5:
+                    raise
+                time.sleep(max(config['poll_seconds'], error.until - time.time()))
+                continue
+            except TimeoutError:
+                attempts += 1
+                if args.operation != 'watch' or attempts >= 3:
+                    raise
+                time.sleep(config['poll_seconds'] * 2 ** (attempts - 1))
+                continue
+            if args.operation == 'once':
+                return 0
+            time.sleep(config['poll_seconds'])
+    except (HandoffError, OSError, ValueError, TimeoutError) as error:
+        # Do not echo external command output, tokens or raw API responses.
+        message = str(error) if isinstance(error, HandoffError) else type(error).__name__
+        print('Arresto: ' + message, file=sys.stderr)
+        return 2
+    except KeyboardInterrupt:
+        print('Interrotto. Conservare lo stato e riconciliare prima di riavviare.', file=sys.stderr)
+        return 130
+
+
+if __name__ == '__main__':
+    sys.exit(main())

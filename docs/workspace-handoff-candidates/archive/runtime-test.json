@@ -1,0 +1,276 @@
+{
+  "date_utc": "2026-09-07",
+  "overall_result": "NO",
+  "reason": "Il criterio approvato richiede proc montato senza fallback; mount proc restituisce EPERM e Codex usa il fallback nativo no-proc.",
+  "approved_artifacts_commit": "221b31dc075da8786c31b0098cdd436b726458b6",
+  "scope": "Solo collaudo di sicurezza; nessun LLM, consumer disabilitato",
+  "tested_io_sha256": "f0ffe067fdd4c23ccfa1ad18bc8106390a1899d14a90c9596d0dfd91a6060528",
+  "runtime_oci": {
+    "container_id": "08f4ad4352c8a9c96ca9949bd1655a43ce1fb0f32c9328e2a8943ba1b0784629",
+    "pid": 1007716,
+    "runtime_type": "io.containerd.runc.v2",
+    "seccomp_sha256": "26dcd77a221c256efbfa2d30df5b5372b54a89c22408d0ccb4d5c1b808832eb8",
+    "process": {
+      "apparmorProfile": "workspace-handoff-poc-v1",
+      "noNewPrivileges": true,
+      "capabilities": {},
+      "user": {
+        "uid": 1000,
+        "gid": 1000,
+        "additionalGids": [
+          1000
+        ]
+      }
+    },
+    "status": [
+      "Uid:\t1000\t1000\t1000\t1000",
+      "Gid:\t1000\t1000\t1000\t1000",
+      "CapPrm:\t0000000000000000",
+      "CapEff:\t0000000000000000",
+      "CapBnd:\t0000000000000000",
+      "NoNewPrivs:\t1",
+      "Seccomp:\t2",
+      "Seccomp_filters:\t1"
+    ],
+    "apparmor": "workspace-handoff-poc-v1 (enforce)"
+  },
+  "native_probe": {
+    "probe": "PASS",
+    "processes": [
+      {
+        "argv": [
+          "/home/coder/.local/libexec/codex/codex",
+          "sandbox",
+          "--include-managed-config",
+          "--permission-profile",
+          "handoff",
+          "--cd",
+          "/workspaces/developer-workspace/.worktrees/handoff-75",
+          "-c",
+          "default_permissions=\"handoff\"",
+          "-c",
+          "permissions.handoff={filesystem={\":minimal\"=\"read\",\":workspace_roots\"=\"read\",\"/etc/developer-workspace\"=\"deny\",\"/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/bin/codex\"=\"read\"},network={enabled=false}}",
+          "-c",
+          "approval_policy=\"never\"",
+          "-c",
+          "web_search=\"disabled\"",
+          "-c",
+          "shell_environment_policy.inherit=\"none\"",
+          "--",
+          "/bin/sh",
+          "-c",
+          "test -r \"$1\" || exit 11; if cat \"$2\" >/dev/null 2>&1; then exit 12; fi; if (printf probe >\"$3\") 2>/dev/null; then exit 13; fi; if [ \"$5\" = write ]; then printf probe >\"$4\" || exit 14; else if (printf probe >\"$4\") 2>/dev/null; then exit 15; fi; fi",
+          "probe",
+          "/workspaces/developer-workspace/.worktrees/handoff-75/AGENTS.md",
+          "/home/coder/.local/state/workspace-handoff/iwant/runtime-probe/collaudo-20260907/outside-canary.txt",
+          "/home/coder/.local/state/workspace-handoff/iwant/runtime-probe/collaudo-20260907/outside-write.txt",
+          "/workspaces/developer-workspace/.worktrees/handoff-75/.handoff-probe",
+          "read"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ]
+  },
+  "boundary_probe": {
+    "parent_positive_controls": {
+      "ipv4": "parent_reachable",
+      "ipv6": "parent_reachable",
+      "unix_path": "parent_reachable",
+      "unix_abstract": "parent_reachable"
+    },
+    "parent_ns": {
+      "pid": "pid:[4026533045]",
+      "mnt": "mnt:[4026533044]",
+      "net": "net:[4026532352]"
+    },
+    "returncode": 0,
+    "stderr": "",
+    "child": {
+      "ns_pid": {
+        "ok": false,
+        "code": "ENOENT"
+      },
+      "ns_mnt": {
+        "ok": false,
+        "code": "ENOENT"
+      },
+      "ns_net": {
+        "ok": false,
+        "code": "ENOENT"
+      },
+      "proc_type": {
+        "ok": false,
+        "code": "ENOENT"
+      },
+      "admin_directory": {
+        "ok": false,
+        "code": "EACCES"
+      },
+      "minimal_read": {
+        "ok": true,
+        "value": 286
+      },
+      "ipv4": {
+        "connected": false,
+        "code": "EPERM"
+      },
+      "ipv6": {
+        "connected": false,
+        "code": "EPERM"
+      },
+      "unix_path": {
+        "connected": false,
+        "code": "EPERM"
+      },
+      "unix_abstract": {
+        "connected": false,
+        "code": "EPERM"
+      },
+      "dns": {
+        "resolved": false,
+        "code": "ECONNREFUSED"
+      }
+    }
+  },
+  "dns_controlled": {
+    "udp_parent_echo": "PASS",
+    "child_returncode": 0,
+    "child_dns": {
+      "code": "ECONNREFUSED",
+      "resolved": false
+    },
+    "child_datagrams_observed_by_parent": 0,
+    "stderr": ""
+  },
+  "mount_trace": {
+    "state_path": "runtime-probe/collaudo-20260907/mount-trace.txt",
+    "sha256": "8ce11e53a6f699bf530aca009cba41cee0c112537a30cf4bda69bf093bd7f254",
+    "selected_lines": [
+      "415   pivot_root(\"/tmp\", \"oldroot\")     = 0",
+      "415   mount(\"proc\", \"/newroot/proc\", \"proc\", MS_NOSUID|MS_NODEV|MS_NOEXEC, NULL) = -1 EPERM (Operation not permitted)",
+      "416   pivot_root(\"/tmp\", \"oldroot\")     = 0",
+      "416   pivot_root(\".\", \".\")              = 0",
+      "416   unshare(CLONE_NEWUSER)            = 0"
+    ]
+  },
+  "rollback_oci": {
+    "container_id": "39b7d762529910130a524f8b9d9391b6dbd078c64b638480d044de70be6e4e20",
+    "pid": 1015308,
+    "seccomp_sha256": "78ff78a367b4eb58d9520e1e742bed04daf6ca9cd05260162b6e4d4393c99114",
+    "apparmor": "cri-containerd.apparmor.d (enforce)",
+    "noNewPrivileges": true,
+    "capabilities": {}
+  },
+  "rollback_pod": {
+    "uid": "e14979d2-8b9b-4d7c-9e57-d14b0697b1cd",
+    "node": "k3s-worker1",
+    "pod_security": {
+      "fsGroup": 1000,
+      "fsGroupChangePolicy": "OnRootMismatch",
+      "runAsGroup": 1000,
+      "runAsNonRoot": true,
+      "runAsUser": 1000,
+      "seccompProfile": {
+        "type": "RuntimeDefault"
+      }
+    },
+    "code_security": {
+      "allowPrivilegeEscalation": false,
+      "capabilities": {
+        "drop": [
+          "ALL"
+        ]
+      },
+      "readOnlyRootFilesystem": true
+    },
+    "container_id": "containerd://39b7d762529910130a524f8b9d9391b6dbd078c64b638480d044de70be6e4e20",
+    "ready": true,
+    "ready_evidence": "kubectl rollout status concluso con exit 0 sullo stesso Pod/revisione"
+  },
+  "final_state": {
+    "config": {
+      "sha256": "4acb321e9961ed148abb823c848d32b5c32bb53c67395923f8f3fe49ac5d9d69",
+      "execution_enabled": false
+    },
+    "state": {
+      "sha256": "96a601a5723e97abddc6308c4dc904d5fbac8e126bce97915cdb892550a1e025",
+      "jobs": {},
+      "cursor": 5557127806
+    },
+    "healthz_status": 200,
+    "processes": [
+      {
+        "pid": "1",
+        "comm": "dumb-init"
+      },
+      {
+        "pid": "7",
+        "comm": "MainThread"
+      },
+      {
+        "pid": "90",
+        "comm": "MainThread"
+      },
+      {
+        "pid": "102",
+        "comm": "python3"
+      }
+    ]
+  },
+  "argocd_final": {
+    "skip": null,
+    "policy": {
+      "automated": {
+        "prune": true,
+        "selfHeal": true
+      },
+      "syncOptions": [
+        "CreateNamespace=true"
+      ]
+    },
+    "sync": "Synced",
+    "reconciledAt": "2026-09-07T01:59:37Z",
+    "phase": "Succeeded"
+  },
+  "tests": {
+    "local": "42 OK, 2.192 s",
+    "pod": "42 OK, 24.776 s",
+    "py_compile": "PASS locale e Pod",
+    "github_codex": "Simulati nella suite; prove native distinte sopra"
+  },
+  "quota": {
+    "adapter_calls_this_test": 0,
+    "adapter_calls_total": 5,
+    "shared_core_snapshot": {
+      "limit": 5000,
+      "remaining": 5000,
+      "used": 0,
+      "reset": 1788750029
+    }
+  },
+  "residuals": [
+    "Causa precisa del nuovo EPERM su mount proc non attribuita: nessun evento AppArmor pertinente nel journal letto.",
+    "Percorso codex exec e tool/MCP/plugin effettivi non collaudati; nessuna esecuzione LLM autorizzata in questa fase.",
+    "Compatibilità del workspace attestata da Pod Ready e healthz HTTP 200; non da una sessione browser interattiva."
+  ],
+  "review": "Review indipendente: esito complessivo NO; alternativa no-proc nativa da sottoporre a decisione, non adottata implicitamente.",
+  "rollback_workers": {
+    "k3s-worker1": {
+      "seccomp_file": false,
+      "apparmor_file": false,
+      "apparmor_loaded": false
+    },
+    "k3s-worker2": {
+      "seccomp_file": false,
+      "apparmor_file": false,
+      "apparmor_loaded": false
+    },
+    "k3s-worker3": {
+      "seccomp_file": false,
+      "apparmor_file": false,
+      "apparmor_loaded": false
+    }
+  }
+}

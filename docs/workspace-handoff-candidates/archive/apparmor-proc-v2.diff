@@ -1,0 +1,42 @@
+--- a/apparmor.profile
++++ b/apparmor-proc-v2.profile
+@@ -514,7 +514,7 @@
+ 
+ 
+ 
+-profile workspace-handoff-poc-v1 flags=(attach_disconnected,mediate_deleted) {
++profile workspace-handoff-poc-proc-v2 flags=(attach_disconnected,mediate_deleted) {
+    
+ 
+ ##included <abstractions/base>
+@@ -787,7 +787,7 @@
+   # Manager may send signals to container processes.
+   signal (receive) peer=unconfined,
+   # Container processes may send signals amongst themselves.
+-  signal (send,receive) peer=workspace-handoff-poc-v1,
++  signal (send,receive) peer=workspace-handoff-poc-proc-v2,
+ 
+ 
+   deny @{PROC}/* w,   # deny write for all files directly in /proc (not in a subdir)
+@@ -799,6 +799,14 @@
+   deny @{PROC}/mem rwklx,
+   deny @{PROC}/kmem rwklx,
+   deny @{PROC}/kcore rwklx,
++
++  # Compensazioni candidate per procMount Unmasked: solo percorsi della baseline OCI.
++  # Include gli alias durante i due pivot; nessun mount aggiuntivo.
++  deny /{,oldroot/,newroot/}proc/{asound,acpi,scsi}{,/**} mrwklx,
++  deny /{,oldroot/,newroot/}proc/{interrupts,kcore,keys,latency_stats,timer_list,timer_stats,sched_debug} mrwklx,
++  deny /{,oldroot/}sys/{firmware,devices/virtual/powercap}{,/**} mrwklx,
++  deny /{,oldroot/,newroot/}proc/{bus,fs,irq,sys}{,/**} w,
++  deny /{,oldroot/,newroot/}proc/sysrq-trigger w,
+ 
+   # Candidato Draft: nessun caricamento o collaudo runtime eseguito.
+   # Operazioni strutturali bubblewrap: percorsi costanti, non TMPDIR.
+@@ -872,5 +880,5 @@
+ 
+   # allow processes within the container to trace each other,
+   # provided all other LSM and yama setting allow it.
+-  ptrace (trace,tracedby,read,readby) peer=workspace-handoff-poc-v1,
++  ptrace (trace,tracedby,read,readby) peer=workspace-handoff-poc-proc-v2,
+ }

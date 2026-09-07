@@ -1,0 +1,31 @@
+{
+  "status": "Draft",
+  "apparmor": {
+    "rc": 0,
+    "stderr": "",
+    "compiled_size": 39897,
+    "compiled_sha256": "a43a317d26bc4ee08bb19ecb72ac64786260a55568190e1f6fae67b055a57e0a"
+  },
+  "seccomp": {
+    "libseccomp_version": "2.6.0",
+    "errors": [],
+    "bpf_bytes": 8600,
+    "bpf_sha256": "3f7e13e2d82f4f02eba78a44443e826d4ede2ea159500fabb9fa178409f6ac4c",
+    "filter_loaded": false
+  },
+  "references_patch_dry_run": "PASS",
+  "handoff_input_diff": "6 settembre: Python compilato in memoria e TOML verificato, diff non applicato. 7 settembre: diff applicato per il collaudo e poi ripristinato.",
+  "code_tests": "Preparazione del 6 settembre: codice invariato, test non ripetuti. Collaudo del 7 settembre con diff nativo applicato: 42 locali e 42 Pod OK, py_compile PASS; input poi ripristinato.",
+  "runtime_test": "Eseguito il 7 settembre 2026: esito complessivo NO, rollback completato. Evidenze in runtime-test.json.",
+  "independent_review": "Review statica del 6 settembre senza finding. Review delle evidenze runtime del 7 settembre: esito complessivo NO per proc assente, pur con verifiche filesystem/rete positive; exec/tool restano da dimostrare.",
+  "artifact_sha256": {
+    "seccomp.json": "8657dc596023b63a3501932caf19e55e416ff795d1724e68612812fd865f1d53",
+    "apparmor.profile": "ff91f6bfaa2322e8c75047df1019adbf6540aa08c4e93a5b0810615f02ff1097",
+    "seccomp.diff": "67f259f3042d7f212f3a99f221201e981fb29da991a04945de598537a7eac565",
+    "apparmor.diff": "04bae9c3f4272985ded1cf5c4fd1e0b5d27959480a1dba60637bf25e1756c766",
+    "references.diff": "b1e623cf34d5bfbd43b702d50384d4d178cb6c2312d3b4da39adef1d5a2267e3",
+    "handoff-inputs.diff": "e681df788ea816563702efdc76ca24bf79dcdfade0a513c9e3befd27269b80ce",
+    "inputs.json": "c59c7d976ee725a623412180b1fee564ed14a49fff7bfe2d39c075c25bfa5253"
+  },
+  "offline_context": "Campi apparmor/seccomp: compilazione offline del 6 settembre. filter_loaded=false riguarda quella compilazione, non il successivo collaudo autorizzato del 7 settembre, seguito da rollback."
+}

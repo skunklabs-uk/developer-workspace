@@ -1,0 +1,377 @@
+{
+  "status": "Collaudo approvato, non applicato; stop preflight accesso",
+  "date_utc": "2026-09-07",
+  "requirement": "Utente conferma proc obbligatorio; fallback no-proc non adottato",
+  "kernel_inputs": {
+    "pid": 1015308,
+    "container_id": "39b7d762529910130a524f8b9d9391b6dbd078c64b638480d044de70be6e4e20",
+    "kernel_release": "6.12.101+deb13-cloud-amd64",
+    "oci_proc_masked": [
+      "/proc/asound",
+      "/proc/acpi",
+      "/proc/interrupts",
+      "/proc/kcore",
+      "/proc/keys",
+      "/proc/latency_stats",
+      "/proc/timer_list",
+      "/proc/timer_stats",
+      "/proc/sched_debug",
+      "/proc/scsi"
+    ],
+    "oci_proc_readonly": [
+      "/proc/bus",
+      "/proc/fs",
+      "/proc/irq",
+      "/proc/sys",
+      "/proc/sysrq-trigger"
+    ],
+    "proc_mounts": [
+      {
+        "id": "3536",
+        "parent_id": "3534",
+        "root": "/",
+        "mountpoint": "/proc",
+        "options": "rw,nosuid,nodev,noexec,relatime",
+        "fstype": "proc"
+      },
+      {
+        "id": "1290",
+        "parent_id": "3536",
+        "root": "/bus",
+        "mountpoint": "/proc/bus",
+        "options": "ro,nosuid,nodev,noexec,relatime",
+        "fstype": "proc"
+      },
+      {
+        "id": "1291",
+        "parent_id": "3536",
+        "root": "/fs",
+        "mountpoint": "/proc/fs",
+        "options": "ro,nosuid,nodev,noexec,relatime",
+        "fstype": "proc"
+      },
+      {
+        "id": "1292",
+        "parent_id": "3536",
+        "root": "/irq",
+        "mountpoint": "/proc/irq",
+        "options": "ro,nosuid,nodev,noexec,relatime",
+        "fstype": "proc"
+      },
+      {
+        "id": "1317",
+        "parent_id": "3536",
+        "root": "/sys",
+        "mountpoint": "/proc/sys",
+        "options": "ro,nosuid,nodev,noexec,relatime",
+        "fstype": "proc"
+      },
+      {
+        "id": "1320",
+        "parent_id": "3536",
+        "root": "/sysrq-trigger",
+        "mountpoint": "/proc/sysrq-trigger",
+        "options": "ro,nosuid,nodev,noexec,relatime",
+        "fstype": "proc"
+      },
+      {
+        "id": "1321",
+        "parent_id": "3536",
+        "root": "/",
+        "mountpoint": "/proc/acpi",
+        "options": "ro,relatime",
+        "fstype": "tmpfs"
+      },
+      {
+        "id": "1322",
+        "parent_id": "3536",
+        "root": "/null",
+        "mountpoint": "/proc/interrupts",
+        "options": "rw,nosuid",
+        "fstype": "tmpfs"
+      },
+      {
+        "id": "1324",
+        "parent_id": "3536",
+        "root": "/null",
+        "mountpoint": "/proc/kcore",
+        "options": "rw,nosuid",
+        "fstype": "tmpfs"
+      },
+      {
+        "id": "1325",
+        "parent_id": "3536",
+        "root": "/null",
+        "mountpoint": "/proc/keys",
+        "options": "rw,nosuid",
+        "fstype": "tmpfs"
+      },
+      {
+        "id": "1326",
+        "parent_id": "3536",
+        "root": "/null",
+        "mountpoint": "/proc/timer_list",
+        "options": "rw,nosuid",
+        "fstype": "tmpfs"
+      }
+    ],
+    "kernel_package": "linux-image-6.12.101+deb13-cloud-amd64 6.12.101-1 linux-signed-amd64 6.12.101+1",
+    "instrumentation_available": {
+      "/usr/bin/bpftrace": false,
+      "/usr/bin/perf": false,
+      "/sys/kernel/btf/vmlinux": true,
+      "/sys/kernel/tracing/available_filter_functions": true
+    }
+  },
+  "oci_path_protections": {
+    "maskedPaths": [
+      "/proc/asound",
+      "/proc/acpi",
+      "/proc/interrupts",
+      "/proc/kcore",
+      "/proc/keys",
+      "/proc/latency_stats",
+      "/proc/timer_list",
+      "/proc/timer_stats",
+      "/proc/sched_debug",
+      "/proc/scsi",
+      "/sys/firmware",
+      "/sys/devices/virtual/powercap"
+    ],
+    "readonlyPaths": [
+      "/proc/bus",
+      "/proc/fs",
+      "/proc/irq",
+      "/proc/sys",
+      "/proc/sysrq-trigger"
+    ],
+    "historical_test_oci": "Non disponibile tramite crictl inspect, nessuna ricostruzione inventata"
+  },
+  "runtime_handlers": [
+    {
+      "name": "k3s-worker1",
+      "runtime": "containerd://2.2.5-k3s2",
+      "kubelet": "v1.34.9+k3s1",
+      "runtimeHandlers": [
+        {
+          "features": {
+            "recursiveReadOnlyMounts": true,
+            "userNamespaces": true
+          },
+          "name": ""
+        },
+        {
+          "features": {
+            "recursiveReadOnlyMounts": true,
+            "userNamespaces": true
+          },
+          "name": "runc"
+        },
+        {
+          "features": {
+            "recursiveReadOnlyMounts": false,
+            "userNamespaces": false
+          },
+          "name": "runhcs-wcow-process"
+        }
+      ]
+    },
+    {
+      "name": "k3s-worker2",
+      "runtime": "containerd://2.2.5-k3s2",
+      "kubelet": "v1.34.9+k3s1",
+      "runtimeHandlers": [
+        {
+          "features": {
+            "recursiveReadOnlyMounts": true,
+            "userNamespaces": true
+          },
+          "name": ""
+        },
+        {
+          "features": {
+            "recursiveReadOnlyMounts": true,
+            "userNamespaces": true
+          },
+          "name": "runc"
+        },
+        {
+          "features": {
+            "recursiveReadOnlyMounts": false,
+            "userNamespaces": false
+          },
+          "name": "runhcs-wcow-process"
+        }
+      ]
+    },
+    {
+      "name": "k3s-worker3",
+      "runtime": "containerd://2.2.5-k3s2",
+      "kubelet": "v1.34.9+k3s1",
+      "runtimeHandlers": [
+        {
+          "features": {
+            "recursiveReadOnlyMounts": true,
+            "userNamespaces": true
+          },
+          "name": ""
+        },
+        {
+          "features": {
+            "recursiveReadOnlyMounts": true,
+            "userNamespaces": true
+          },
+          "name": "runc"
+        },
+        {
+          "features": {
+            "recursiveReadOnlyMounts": false,
+            "userNamespaces": false
+          },
+          "name": "runhcs-wcow-process"
+        }
+      ]
+    }
+  ],
+  "volumes": {
+    "volume_mounts": [
+      {
+        "target": "/workspaces",
+        "filesystem": "ext4",
+        "options": "rw,relatime"
+      },
+      {
+        "target": "/tmp",
+        "filesystem": "ext4",
+        "options": "rw,relatime"
+      },
+      {
+        "target": "/home/coder",
+        "filesystem": "ext4",
+        "options": "rw,relatime"
+      },
+      {
+        "target": "/etc/developer-workspace/kubeconfig",
+        "filesystem": "ext4",
+        "options": "ro,relatime"
+      },
+      {
+        "target": "/etc/developer-workspace/proxmox",
+        "filesystem": "ext4",
+        "options": "ro,relatime"
+      },
+      {
+        "target": "/run/secrets/kubernetes.io/serviceaccount",
+        "filesystem": "tmpfs",
+        "options": "ro,relatime"
+      }
+    ],
+    "metadata": {
+      "/home/coder": {
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0o2770"
+      },
+      "/workspaces": {
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0o2770"
+      },
+      "/home/coder/.local/state/workspace-handoff/iwant": {
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0o2700"
+      }
+    },
+    "preserved_state": {
+      "config": {
+        "sha256": "4acb321e9961ed148abb823c848d32b5c32bb53c67395923f8f3fe49ac5d9d69",
+        "execution_enabled": false
+      },
+      "state": {
+        "sha256": "96a601a5723e97abddc6308c4dc904d5fbac8e126bce97915cdb892550a1e025",
+        "cursor": 5557127806,
+        "jobs": {}
+      }
+    }
+  },
+  "kubelet_filesystems": {
+    "k3s-worker1": "ext4",
+    "k3s-worker2": "ext4",
+    "k3s-worker3": "ext4"
+  },
+  "sources": {
+    "namespace.c": {
+      "debian_url": "https://sources.debian.org/data/main/l/linux/6.12.101-1/fs/namespace.c",
+      "upstream_tag": "v6.12.101",
+      "sha256": "5a2ec1784898c5dd04110cf221c82df010f76390fe6897882c0fa817fb8e46dc",
+      "debian_equals_upstream": true
+    },
+    "proc-root.c": {
+      "debian_url": "https://sources.debian.org/data/main/l/linux/6.12.101-1/fs/proc/root.c",
+      "upstream_tag": "v6.12.101",
+      "sha256": "6ab155206f72d8b935474a0e73ec7758fab8c16809b2f16a42a4019512bf3c66",
+      "debian_equals_upstream": true
+    },
+    "kubernetes_version": "v1.34.9",
+    "homelab_manifest_sha256": "f1b11a2a63f8220b0493bc2f1aa791dda9eac95642507a799d8c3a188fc0483e"
+  },
+  "verification": {
+    "apparmor_offline": {
+      "source_sha256": "3adf6c8b4b723d3a31289aa265c99fdcdcc82de54db66ca49d98a404dfaf8bf2",
+      "returncode": 0,
+      "stderr": "",
+      "compiled_bytes": 45489,
+      "compiled_sha256": "5a30179694a4894707b8cc898f70860be1ac6bc8e77bced28ad684141bc7963d",
+      "loaded": false,
+      "cache_modified": false
+    },
+    "kubernetes_server_dryrun": {
+      "hostUsers": false,
+      "code_server_security": {
+        "allowPrivilegeEscalation": false,
+        "appArmorProfile": {
+          "localhostProfile": "workspace-handoff-poc-proc-v2",
+          "type": "Localhost"
+        },
+        "capabilities": {
+          "drop": [
+            "ALL"
+          ]
+        },
+        "procMount": "Unmasked",
+        "readOnlyRootFilesystem": true,
+        "seccompProfile": {
+          "localhostProfile": "profiles/workspace-handoff-poc-v1.json",
+          "type": "Localhost"
+        }
+      }
+    },
+    "runtime_test": "Non eseguito per proc-v2; nessun profilo caricato o distribuito, nessun rollout",
+    "independent_review": "Nessun finding statico; equivalenza alle maschere OCI non dichiarata, test di alias/idmap/proc necessari"
+  },
+  "deduction": "Nel clone NEWUSER/NEWNS i figli proc ereditati diventano MNT_LOCKED; unico proc con root intera ha figli su file, altri proc hanno root parziale: mnt_already_visible=false, mount_too_revealing=true. Restrizione sufficiente per la topologia corrente, non kretprobe del tentativo storico.",
+  "missing_evidence": [
+    "Ritorno delle funzioni kernel durante il vecchio tentativo non tracciato; OCI storico test non più disponibile.",
+    "ID mapping e compatibilità volumi/init dell’effettivo Pod candidato non provati dal solo supporto dichiarato.",
+    "Protezioni AppArmor candidate prima/dopo pivot e proc realmente montato da collaudare."
+  ],
+  "artifacts_sha256": {
+    "apparmor-proc-v2.profile": "3adf6c8b4b723d3a31289aa265c99fdcdcc82de54db66ca49d98a404dfaf8bf2",
+    "apparmor-proc-v2.diff": "27509fdd1a31823feaa1d97cfe8a63dc1f8df332adc96b564b18355328304fff",
+    "references-proc-v2.diff": "2481f4bfddab0f37b39795374e300a769ad5a43945c0ccb5c12e41b3d7ee55f9",
+    "seccomp.json": "8657dc596023b63a3501932caf19e55e416ff795d1724e68612812fd865f1d53",
+    "handoff-inputs.diff": "e681df788ea816563702efdc76ca24bf79dcdfade0a513c9e3befd27269b80ce"
+  },
+  "preflight_stop": {
+    "recorded_utc": "2026-09-07T06:46:33Z",
+    "kubernetes": "TLS handshake timeout; bounded retry context deadline exceeded",
+    "administrative_ssh": "pve1 192.168.1.201:22 No route to host, prima del worker",
+    "runtime_mutations": false,
+    "pod_probes": false,
+    "current_identity_reverified": false,
+    "required_resource": "Raggiungibilità del canale amministrativo esistente dal coordinatore; poi ripetere solo preflight",
+    "consumer_last_verified": "Fermo, execution_enabled=false; non riconfermato dopo perdita accesso",
+    "authorization": "Continua sul delta descritto: solo collaudo di sicurezza proc-v2"
+  }
+}

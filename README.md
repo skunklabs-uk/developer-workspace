@@ -33,6 +33,16 @@ Personal SSH agent sharing is managed by chezmoi, not by project repositories
 or this image repository. The expected layout, Bash snippet, checks, and manual
 post-Pod-recreation step are documented in `docs/SSH-AGENT.md`.
 
+## POC ChatGPT → Codex su IWANT
+
+La [missione #75](https://github.com/skunklabs-uk/developer-workspace/issues/75)
+aggiunge il collegamento opt-in `scripts/workspace-handoff`, con test locali
+eseguibili tramite `python3 -m unittest discover -s tests -v`.
+Il [runbook del POC](docs/WORKSPACE-HANDOFF.md) è **Active**: due iterazioni
+read-only sono state eseguite nel Pod e i report riletti dalla chat. Il consumer
+resta opt-in, disabilitato a fine collaudo; i permessi approvati rimangono. Il codice non
+installa servizi, non parte automaticamente e non introduce Actions di orchestrazione.
+
 ## Work on two repositories at the same time
 
 Keep each repository in its own browser tab and tmux session. The example below

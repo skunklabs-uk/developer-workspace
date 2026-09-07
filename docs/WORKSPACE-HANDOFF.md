@@ -1,13 +1,20 @@
 # Collegamento ChatGPT → Codex: POC IWANT
 
-**Stato: Draft.** Codice e verifiche locali della missione
-[developer-workspace #75](https://github.com/skunklabs-uk/developer-workspace/issues/75).
-Il [checkpoint runtime corrente](workspace-handoff-candidates/README.md#checkpoint-corrente--reality-check-del-7-settembre-2026)
-registra il profilo effettivo e il collaudo della sandbox nativa. Attivazione,
-incarichi e riletture sono governati dalla missione #75; un probe superato
-non equivale al completamento del collegamento. Le sezioni diagnostiche sotto
-descrivono le prove precedenti, non lo stato live corrente.
-Questo documento non dichiara il servizio attivo.
+**Stato: Active.** Owner: maintainer Developer Workspace.
+Missione [#75](https://github.com/skunklabs-uk/developer-workspace/issues/75).
+Il 7 settembre 2026 g1 e g2 sono stati eseguiti, consegnati e riletti dalla chat,
+con HEAD, digest e checkout puliti verificati. Il consumer foreground è terminato
+ed è nuovamente disabilitato; configurazione e risultati sono conservati.
+Nessun servizio è avviato automaticamente.
+
+| Iterazione | HEAD eseguito | Report riletto dalla chat |
+| --- | --- | --- |
+| g1 | `9384c1808da6926e7eb222b974ac78f7661200fd` | [5570838436](https://github.com/skunklabs-uk/iwant/pull/524#issuecomment-5570838436) |
+| g2 | `dd0ce7de6e517f235d7906ed71a1de4986d67d64` | [5571022274](https://github.com/skunklabs-uk/iwant/pull/524#issuecomment-5571022274) |
+
+Entrambi exit 0: g1 verifica la subordinazione dei prompt alle fonti autorevoli;
+g2 conferma g1 e distingue successo del processo da closeout. Le risposte e i
+riferimenti sono stati confrontati con le fonti dello stesso commit.
 
 ## Perimetro
 
@@ -113,7 +120,9 @@ meccanismo di cancellazione di un processo già avviato.
 Il processo padre usa `gh` per GitHub e Git per un clone nuovo, senza reset,
 pulizia o cambio branch nel checkout interattivo. Recupera per ogni esecuzione
 la RFC corrente e la skill `agent-loop` dalle fonti canoniche e le passa come
-contesto con il blob SHA, senza copiarle nel repository.
+contesto con il blob SHA, senza copiarle nel repository. Fornisce anche la
+richiesta verificata e il suo head: il figlio non deve interrogare GitHub per
+ricostruire questi dati.
 
 L'invocazione Codex non carica la configurazione utente (`--ignore-user-config`),
 non inoltra variabili come `GH_TOKEN`, `BW_SESSION`, `SSH_AUTH_SOCK` e
@@ -124,8 +133,9 @@ Non esiste fallback `danger-full-access` o bypass delle approvazioni.
 
 I permission profile upstream sono **beta** e non si combinano con i vecchi
 `sandbox_mode`. Prima del modello, `codex sandbox` prova il profilo su
-file sentinella non segreti: lettura nel checkout, lettura/scrittura negate
-fuori, scrittura nel checkout coerente con la modalità scelta. Un esito negativo
+file sentinella non segreti: lettura nel checkout, lettura esterna negata,
+assenza di mutazioni persistenti esterne e scrittura nel checkout coerente
+con la modalità scelta. Un esito negativo
 ferma il tentativo. Non allargare il profilo automaticamente per farlo passare.
 
 Questa prova **non certifica** tutti i tool gestiti, MCP, plug-in, gli effetti di
@@ -138,110 +148,51 @@ Fonti upstream: [esecuzione non interattiva](https://developers.openai.com/codex
 [permission profile](https://developers.openai.com/codex/permissions),
 [CLI sandbox](https://developers.openai.com/codex/cli/reference).
 
-### Compatibilità verificata il 6 settembre 2026
+### Runtime corrente e lifecycle
 
-Nel Pod `developer-workspace-0`, Codex CLI 0.153.4 espone il comando sandbox
-senza sottocomando `linux`. Usare il binario già verificato
-`/home/coder/.local/libexec/codex/codex` nel campo `codex`: il wrapper
-`/usr/local/bin/codex` può aggiornare automaticamente la CLI anche per `--version`.
-La verifica iniziale ha attivato quel comportamento preesistente e installato
-0.153.4; le prove successive hanno usato direttamente il binario.
+Il collaudo del 7 settembre 2026 usa Codex CLI `0.153.4`, binario diretto
+`/home/coder/.local/libexec/codex/codex`, SHA-256
+`56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da`.
+Non usare il launcher `/usr/local/bin/codex` per verifiche riproducibili:
+può aggiornare la CLI anche invocando `--version`.
 
-Il profilo `handoff` viene accettato dal parser, ma l’esecuzione di `/bin/true`
-fallisce con `bwrap: No permissions to create a new namespace`. Anche
-`unshare -Ur true` fallisce con `Operation not permitted`, pur con
-`kernel.unprivileged_userns_clone=1` e `user.max_user_namespaces=96054`.
-La successiva raccolta amministrativa identifica la regola seccomp che nega
-la combinazione di flag usata da bubblewrap e conferma anche `deny mount`
-nella policy AppArmor caricata; le evidenze sono descritte sotto.
-Il Pod mantiene `RuntimeDefault`, capability rimosse e
-`allowPrivilegeEscalation=false`; nessuno di questi confini è stato modificato.
+Homelab possiede manifest, RBAC e distribuzione delle
+[policy correnti](workspace-handoff-candidates/README.md) sui worker.
+I permessi approvati rimangono installati anche a consumer fermo; ciò non
+autorizza nuovi incarichi. I profili limitano i percorsi al checkout diagnostico
+e a g1/g2: non costituiscono una sandbox generica per altri task.
 
-L’attivazione richiede quindi una soluzione approvata dal proprietario del
-runtime che renda eseguibile la sandbox nativa mantenendo il confine richiesto.
-Non usare sandbox legacy con lettura globale, full access, disabilitazione di
-seccomp o privilegi aggiuntivi come fallback. Login ChatGPT e identità GitHub
-sono verificati, ma non sostituiscono la prova del filesystem e dei tool effettivi.
-Lo stato operativo, gli head e i payload di ripartenza restano nella issue #75.
+Il Pod usa user namespace, `procMount: Unmasked` nel solo code-server,
+seccomp locale e AppArmor ridotto con compensazioni delle protezioni proc.
+Proc è realmente montato; PID, mount e network namespace del comando figlio
+sono distinti dal padre. Il collaudo ha verificato letture ristrette, checkout
+non scrivibile, connessioni IPv4/IPv6 e Unix pathname/abstract negate,
+socket UDP negati e apertura di `/proc/keys` negata anche attraverso alias proc.
+AF_UNIX può creare socket: è la connessione a essere negata.
+Le sentinelle non contengono segreti.
 
-### Diagnosi del diniego e baseline acquisita
+Il padre mantiene login ChatGPT e autenticazione GitHub per modello e trasporto.
+L'isolamento dei comandi figli non rende la postazione interattiva priva di
+segreti. Exec ignora il config utente e disabilita app, plugin, hook e web search
+con override nativi condivisi col probe. La configurazione effettiva riesaminata
+non presenta requisiti gestiti o MCP attivi. Il profilo nega
+`/etc/developer-workspace` e rende leggibile il solo helper Codex fissato.
+Prima di cambiare CLI, profilo, tool gestiti o checkout ammesso, verificare
+nuovamente il confine pertinente. Non ampliare i permessi per far passare un test.
 
-La ripresa del 6 settembre distingue la shell del coordinatore in WSL2 dal
-consumer su Linux Debian nel Pod. Nel consumer sono stati osservati
-`Seccomp: 2`, un filtro, `NoNewPrivs: 1`, capability tutte a zero e AppArmor
-`cri-containerd.apparmor.d (enforce)`. Il runtime del nodo è
-`containerd://2.2.5-k3s2`. Senza cambiare queste condizioni:
+Il probe usa lo stesso profilo `handoff` di exec e richiede proc montato.
+Una scrittura nel tmpfs privato può riuscire senza modificare il filesystem
+persistente: il controllo esterno viene fatto dal padre. `read-only` protegge
+i dati persistenti, non vieta file temporanei privati.
+Gli strumenti figli possono richiedere percorsi assoluti, come
+`/usr/bin/git` e `/usr/bin/sha256sum`, perché il PATH è ristretto.
 
-- `unshare(0)` e `unshare(CLONE_NEWUSER)` restituiscono `EPERM`;
-- `clone(SIGCHLD)` crea un figlio che termina subito;
-  `clone(CLONE_NEWUSER | SIGCHLD)` restituisce `EPERM`;
-- il probe del codice, riusando `runtime-probe` nello stato esistente,
-  termina con exit 1; anche il comando nativo `/bin/true` fallisce in bwrap.
-
-Il [profilo sorgente della stessa versione containerd](https://github.com/k3s-io/containerd/blob/v2.2.5-k3s2/contrib/seccomp/seccomp_default.go)
-ammette `unshare` con `CAP_SYS_ADMIN` e, senza tale capability, ammette `clone`
-solo senza i flag di namespace. Nella prima diagnosi era soltanto un indizio,
-senza lettura della baseline OCI o della policy AppArmor. La raccolta dal nodo
-descritta sotto ha colmato quel limite. Non aggiungere capability per fare
-diagnosi. Nel Pod `strace` non è presente, `dmesg` è negato e securityfs non espone i
-profili dal Pod; i sysctl già positivi non rimuovono questi limiti.
-
-Una traccia successiva del binario installato 0.153.4, raccolta il 6 settembre
-alle 19:17 UTC con `strace` temporaneo e senza avviare il consumer, identifica
-il primo diniego nel percorso nativo:
-`clone(CLONE_NEWNS|CLONE_NEWIPC|CLONE_NEWUSER|CLONE_NEWPID|CLONE_NEWNET|SIGCHLD)`
-restituisce `EPERM`, prima dei mount. Consentire soltanto `unshare` non risolve
-questo ingresso. Il template AppArmor della stessa versione upstream contiene
-anche `deny mount`: la sola traccia non dimostrava che fosse caricato.
-La raccolta seguente ha verificato l'equivalenza della policy. Traccia,
-hash e proposta condizionata con impatto/rollback sono nella issue #75.
-
-La raccolta amministrativa successiva ha raggiunto il nodo tramite il
-ProxyJump già inventariato, senza ripetere probe nel Pod. La
-[baseline sanitizzata](workspace-handoff-runtime-baseline.json) contiene la
-sezione seccomp completa, coincidente fra CRI e specifica OCI del task, gli
-attributi del processo, le versioni e la policy AppArmor compilata.
-La regola `clone` consente solo `(flags & 0x7e020000) == 0`; i flag della
-traccia sono `0x78020011` e ricadono nel default `SCMP_ACT_ERRNO` (`EPERM`).
-Anche `unshare`, `mount`, `pivot_root` e `umount2` mancano dagli allow.
-SELinux non compare nella lista LSM del nodo; AppArmor è in enforce.
-Il sorgente AppArmor ricostruito dagli include installati produce, con
-`apparmor_parser -Q -K -S`, byte identici a `raw_data` letto da securityfs:
-il suo `deny mount` è quindi confermato. Nessun caricamento o modifica cache.
-La ricerca degli eventi kernel nella finestra della traccia non ha trovato
-eventi correlati; questo non smentisce il default ERRNO.
-
-Il [collaudo dei candidati approvati](workspace-handoff-candidates/README.md)
-del 7 settembre 2026 ha verificato OCI e AppArmor effettivi, probe filesystem,
-maschera amministrativa e dinieghi di rete/socket. **Esito complessivo NO:**
-la traccia osserva EPERM sul mount proc e la release prosegue silenziosamente
-con il ramo bubblewrap nativo senza proc. Non è legacy/full access, ma non
-soddisfa il criterio approvato di proc montato senza fallback. Le
-[evidenze separate](workspace-handoff-candidates/runtime-test.json) riportano
-anche i limiti della prova; exec/tool/MCP/plugin e LLM non sono collaudati.
-
-Rollback completato: input nativo ripristinato, Pod Ready sulla baseline
-seccomp/AppArmor, profili rimossi dai tre worker, Argo CD riconciliato senza
-modifiche alla syncPolicy. Config, enrollment e stato invariati, consumer
-sempre fermo. I candidati e i diff restano conservati agli hash approvati,
-non rappresentano una configurazione attiva. L'utente ha confermato proc obbligatorio: la proposta corrente
-[proc-v2](workspace-handoff-candidates/README.md) usa `hostUsers: false` sull’intero Pod e
-`procMount: Unmasked` nel solo code-server, con compensazioni AppArmor per le protezioni OCI
-rimosse. Non aggiunge capability. La topologia proc corrente e il sorgente Debian
-corrispondente dimostrano una restrizione VFS sufficiente; non è un kretprobe del
-precedente processo. Dry-run API e compilazione offline passano, ma mapping dei
-volumi e nuovo proc restano da collaudare. Nessuna applicazione del nuovo delta:
-il solo collaudo descritto è approvato dal successivo «continua» dell’utente,
-ma il preflight del 7 settembre alle 06:46 UTC trova API Kubernetes in timeout
-e bastion pve1 irraggiungibile (No route to host). Ripristinare la raggiungibilità
-del canale amministrativo esistente, poi rileggere identità, processi e stato
-prima dell’applicazione. Nessuna nuova approvazione del medesimo delta richiesta.
-Non ampliare i profili né qualificare i risultati parziali come collaudo completo.
-
-Dopo un rimedio approvato, ripetere il probe filesystem e verificare
-separatamente rete e tool/MCP/plugin effettivi del figlio con la stessa
-configurazione. Login ChatGPT, assenza dei file gestiti locali e filtro delle
-variabili sono verifiche preliminari: non certificano da soli quel confine.
+I risultati del collaudo non dichiarano già rilasciata una nuova immagine:
+gli script sono stati eseguiti dal checkout verificato.
+Prima di rimuovere il collegamento conservare risultati e stato. Revocare i
+riferimenti runtime tramite Homelab prima di scaricare policy non più in uso.
+Le [prove diagnostiche archiviate](workspace-handoff-candidates/archive/README.md)
+non sono istruzioni operative.
 
 ## Recupero ed evidenze
 
@@ -284,6 +235,41 @@ strumentati con un proxy. Fonte: [GitHub REST best practices](https://docs.githu
 
 I test usano filesystem e repository Git locali reali, risposte HTTP controllate
 ed esecutori finti. Non consumano token e non dimostrano un'esecuzione Codex live.
-Per chiudere #75 servono ancora: profilo verificato nel workspace, un incarico
-reale e una successiva iterazione, entrambi ricevuti e riletti da ChatGPT,
-misura del trasporto e closeout delle fonti Homelab/IWANT interessate.
+Il collaudo ha registrato 19 chiamate del consumer, da 5 dopo l'enrollment:
+5 per il preflight iniziale fallito, 4 per la ripresa controllata g1 e 5 per g2.
+Ultima quota osservata 4994/5000, senza errori trasporto o pausa pendente.
+Non attribuire alla missione l'intera variazione della quota condivisa.
+Entrambi i risultati sono `delivered`, exit 0, con checkout puliti e digest
+confrontati dal coordinatore. Questo prova il POC circoscritto, non altri
+incarichi, modalità write o un servizio permanente in background.
+
+
+## Necessità e riesame cumulativo
+
+La baseline non collegava i commenti della chat a un processo locale con
+restituzione del risultato. Il POC approvato in #75 riusa connettore GitHub,
+`gh api`, Git e sandbox Codex; il consumer copre soltanto il tratto mancante.
+Eliminandolo manca quel passaggio; un runner, servizio pubblico, workflow CI
+o proxy introdurrebbe più operatività senza un requisito aggiuntivo.
+Le esecuzioni reali verificano il beneficio, non i soli test interni.
+
+| Controlli collegati | Esito e necessità |
+| --- | --- |
+| Consumer seriale e richiesta stretta | KEEP: il collegamento chat/processo non è coperto dai singoli tool; un repository/thread/attore, nessun scheduler. |
+| Clone, head e prompt verificati | KEEP: impediscono esecuzione di una revisione diversa, symlink, prompt stale o configurazione progetto non riesaminata. |
+| Lock, stato e ricevuta unica | KEEP: i test di interruzione e consegna incerta mostrano perché non rilanciare modello o POST; riuso di flock, file atomici e PATCH, nessun ledger distribuito. |
+| Sandbox nativa, policy e compensazioni | KEEP: la baseline negava namespace/mount necessari; letture globali e privilegi personali non soddisfano il confine. Profili ridotti e probe proteggono dati persistenti e rete dei comandi. |
+| Override app/plugin/hook e ambiente | KEEP: il config utente conteneva un plugin; exec e sandbox caricavano layer diversi. Override nativi, nessun nuovo checker. |
+| Quote, paginazione e backoff | KEEP: rispettano gli header e limitano il trasporto seriale; i retry di consegna non rilanciano Codex. |
+| Aperture globali proc-v3/v4 e checkpoint preparatori | DELETE dal percorso operativo; REPLACE con profilo ristretto e fonti correnti. Prove conservate in archivio. |
+
+Owner del codice: maintainer Developer Workspace; del runtime/RBAC: maintainer
+Homelab. Il costo corrente comprende tre moduli, test dei contratti, una
+configurazione e uno stato privati, due policy native e documentazione nei
+repository già coinvolti. Nessuna nuova identità, dipendenza, Action o servizio.
+Prima di altri consumer o capacità riesaminare l'insieme; sostituire il custom
+quando una capacità nativa copre lo stesso requisito.
+
+Il recupero una tantum del preflight g1 ha conservato l'intera directory e
+riconciliato la sola fase sotto il lock, dopo aver provato dal percorso
+d'errore che il modello non era partito. Non aggiunge retry automatici.

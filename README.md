@@ -38,8 +38,9 @@ post-Pod-recreation step are documented in `docs/SSH-AGENT.md`.
 La [missione #75](https://github.com/skunklabs-uk/developer-workspace/issues/75)
 aggiunge il collegamento opt-in `scripts/workspace-handoff`, con test locali
 eseguibili tramite `python3 -m unittest discover -s tests -v`.
-Il [runbook del POC](docs/WORKSPACE-HANDOFF.md) è **Draft**: attivazione nel Pod,
-permessi effettivi e collaudo con Codex restano da verificare. Il codice non
+Il [runbook del POC](docs/WORKSPACE-HANDOFF.md) è **Active**: due iterazioni
+read-only sono state eseguite nel Pod e i report riletti dalla chat. Il consumer
+resta opt-in, disabilitato a fine collaudo; i permessi approvati rimangono. Il codice non
 installa servizi, non parte automaticamente e non introduce Actions di orchestrazione.
 
 ## Work on two repositories at the same time

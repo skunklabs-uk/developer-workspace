@@ -2,11 +2,59 @@
 
 **Stato: Draft.** Missione [#75](https://github.com/skunklabs-uk/developer-workspace/issues/75).
 Candidati completi come file di policy, derivati dalla baseline di
-`f712903f5fac019058a4cd59d8314468a66c28e5`. Compilati offline, mai caricati.
+`f712903f5fac019058a4cd59d8314468a66c28e5`. Compilati offline; applicati e poi rimossi nel collaudo del 7 settembre 2026.
 **Proposta congiunta:** i due profili richiedono anche il diff nativo handoff
 preparato sotto per affrontare i due finding. Non applicare i soli profili
 al POC invariato. Non sono un profilo
 predefinito per altri repository, versioni o comandi interattivi.
+
+## Collaudo approvato del 7 settembre 2026
+
+**Esito complessivo: NO; rollback completato.** Le [evidenze runtime](runtime-test.json)
+separano la suite simulata dalle prove native. I file di policy e i diff qui
+conservati restano identici agli hash approvati; i commenti interni descrivono
+la loro preparazione originaria, non lo stato operativo successivo.
+
+I profili sono stati distribuiti con Ansible sui tre worker e referenziati
+soltanto da code-server. OCI seccomp identico al candidato, AppArmor in enforce,
+capability zero e noNewPrivileges verificati sul nuovo container. Il probe
+filesystem del collegamento passa; maschera amministrativa EACCES, TCP IPv4/IPv6
+e socket Unix negati EPERM con controlli positivi nel padre. Il controllo UDP
+locale è raggiungibile dal padre, ma non riceve datagrammi dal resolver figlio.
+Questi risultati non sono un incarico LLM né una prova dei tool alternativi.
+
+La traccia mirata osserva `mount("proc", "/newroot/proc", "proc", 0xe, NULL)`
+negato EPERM. La release usa quindi il fallback **nativo bubblewrap senza proc**,
+in modo silenzioso; il comando termina correttamente ma /proc è assente.
+Non è legacy/full access e non amplia le readable roots. Il criterio approvato
+"proc montato, nessun fallback qualificato PASS" non è però soddisfatto.
+Non attribuiamo il nuovo diniego a seccomp o AppArmor senza ulteriore evidenza:
+il filtro OCI contiene l'allow dei flag 0xe e il journal letto non contiene
+un evento AppArmor pertinente. Nessuna nuova apertura è stata applicata.
+
+Rollback verificato: input handoff originale nel checkout locale e nel Pod,
+RuntimeDefault e `cri-containerd.apparmor.d` effettivi, Pod Ready e healthz 200.
+Profili scaricati e file rimossi dai tre worker solo dopo assenza di processi
+che li usavano. Argo CD 3.5.2 è stato sospeso con l'annotazione nativa
+skip-reconcile della sola Application durante la prova; annotazione rimossa,
+riconciliazione ripresa e syncPolicy originale invariata. Nessun merge GitOps,
+upgrade immagine, modifica del parent Argo o nuova PR Homelab.
+Config/stato/enrollment conservati; consumer sempre disabilitato. Gli strumenti
+strace temporanei sono rimossi; tracce ed evidenze restano nello stato esistente.
+
+**Decisione residua:** accettare per questo POC il ramo nativo senza proc come
+criterio di compatibilità, mantenendo i dinieghi filesystem/rete e verificando
+separatamente exec/helper/tool; oppure mantenere l'obbligo di proc e autorizzare
+la sola diagnosi del nuovo EPERM. La prima alternativa evita ulteriori aperture
+di sicurezza, ma non viene adottata implicitamente. Nessun incarico IWANT,
+riattivazione del consumer o collaudo LLM è autorizzato da questa documentazione.
+Review indipendente delle evidenze completata; closeout della missione ancora
+aperto finché mancano i due giri e le riletture ChatGPT.
+
+## Preparazione originaria — 6 settembre 2026
+
+Le sezioni seguenti descrivono gli input e la proposta prima dell'applicazione;
+per lo stato attuale prevale il checkpoint di collaudo sopra.
 
 ## Artefatti e verifica
 

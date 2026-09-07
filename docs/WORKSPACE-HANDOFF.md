@@ -208,21 +208,23 @@ il suo `deny mount` è quindi confermato. Nessun caricamento o modifica cache.
 La ricerca degli eventi kernel nella finestra della traccia non ha trovato
 eventi correlati; questo non smentisce il default ERRNO.
 
-I [candidati completi seccomp e AppArmor](workspace-handoff-candidates/README.md)
-sono ora preparati dalla baseline e dal sorgente della release Codex 0.153.4
-verificata. La documentazione separa input osservati, invocazione e operazioni
-derivate, matching e isolamento ancora da dimostrare. Entrambi compilano
-offline senza caricamento; diff e hash sono versionati e revisionati.
+Il [collaudo dei candidati approvati](workspace-handoff-candidates/README.md)
+del 7 settembre 2026 ha verificato OCI e AppArmor effettivi, probe filesystem,
+maschera amministrativa e dinieghi di rete/socket. **Esito complessivo NO:**
+la traccia osserva EPERM sul mount proc e la release prosegue silenziosamente
+con il ramo bubblewrap nativo senza proc. Non è legacy/full access, ma non
+soddisfa il criterio approvato di proc montato senza fallback. Le
+[evidenze separate](workspace-handoff-candidates/runtime-test.json) riportano
+anche i limiti della prova; exec/tool/MCP/plugin e LLM non sono collaudati.
 
-La proposta comprende anche un **diff non applicato dell’input nativo handoff**:
-mascherare /etc/developer-workspace e leggere il solo eseguibile Codex della
-release. Risolve sulla carta due finding degli input correnti; non è una
-prova runtime. I soli profili applicati al POC invariato non sono raccomandati.
-Il diff Homelab limita i riferimenti Localhost al container code-server,
-ma le aperture interessano tutti i suoi processi, incluso il workspace
-interattivo. Distribuzione, finestra di ricreazione, accettazione e rollback
-sono descritti insieme ai candidati. Nessuna applicazione è autorizzata da
-questo runbook; consumer disabilitato e stato esistente conservato.
+Rollback completato: input nativo ripristinato, Pod Ready sulla baseline
+seccomp/AppArmor, profili rimossi dai tre worker, Argo CD riconciliato senza
+modifiche alla syncPolicy. Config, enrollment e stato invariati, consumer
+sempre fermo. I candidati e i diff restano conservati agli hash approvati,
+non rappresentano una configurazione attiva. La decisione residua nella #75
+è se accettare il ramo nativo senza proc per il POC o mantenere l'obbligo proc
+e procedere con la sola diagnosi mirata del nuovo diniego. Non ampliare i profili
+né qualificare i risultati parziali come collaudo completo.
 
 Dopo un rimedio approvato, ripetere il probe filesystem e verificare
 separatamente rete e tool/MCP/plugin effettivi del figlio con la stessa

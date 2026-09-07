@@ -2,13 +2,69 @@
 
 **Stato: Draft.** Missione [#75](https://github.com/skunklabs-uk/developer-workspace/issues/75).
 Candidati completi come file di policy, derivati dalla baseline di
-`f712903f5fac019058a4cd59d8314468a66c28e5`. La revisione originaria v1 è stata applicata e poi rimossa nel collaudo del 7 settembre 2026; proc-v2 è compilata offline ma non applicata.
+`f712903f5fac019058a4cd59d8314468a66c28e5`. Per lo stato operativo prevale il
+checkpoint seguente; le sezioni successive conservano le prove precedenti.
+
+## Checkpoint corrente — reality check del 7 settembre 2026
+
+Revisione esaminata: `3ccaa80bb33482cea2e540e455e8546a22ba8f9a`, con il delta
+locale `handoff-inputs.diff` ora applicato a `scripts/workspace_handoff_io.py`.
+Il Pod `23b20a02-8104-4ed3-bd50-ce6c51a726b7` usa ancora proc-v4,
+`hostUsers: false`, `procMount: Unmasked`, seccomp v1, capability rimosse e
+noNewPrivileges. Il profilo sul worker ha SHA-256
+`1bcdd08732b4788b916ec39752ab5f1191c6882b5a38cadfea18540e136515b7`.
+Non è una baseline ripristinata né un runtime accettato.
+
+**Finding della diagnosi:** i probe proc-v2/v3/v4 con il solo
+`codex sandbox -- /bin/true` non specificavano il profilo del POC. Il builder
+della release distingue root globale readonly da root vuota con readable roots
+ristrette. I deny sul bind `/oldroot/ -> /newroot/` e sui remount successivi
+non dimostrano che quelle aperture siano necessarie al profilo `handoff`.
+Il journal proc-v4 mostra un deny sul remount `/newroot/proc/`; il messaggio
+bubblewrap indica `/newroot/dev`. Senza una traccia correlata non si identifica
+quest'ultimo errore con il solo evento AppArmor.
+
+**Nuova prova discriminante: SÌ, limitata al probe.** Il binario diretto
+0.153.4, verificato SHA-256 `56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da`,
+con `--include-managed-config --permission-profile handoff`, gli override
+del delta nativo e cwd `/workspaces/developer-workspace/.worktrees/handoff-75`
+termina correttamente. Il checkout diagnostico è stato ricreato allo SHA sopra.
+`AGENTS.md` è leggibile e ha SHA-256
+`d5cd254e15da5bee89e283a0fe4197431ad693c4c344697e5b6b6f06fbd9e0b3`;
+mountinfo del figlio mostra proc montato su `/proc`; namespace PID figlio
+`4026533325`, padre `4026532684`. Il comando verifica soltanto la leggibilità,
+senza aprirne i contenuti, del kubeconfig amministrativo e della configurazione
+del consumer: entrambi non leggibili nel figlio. Nessuna nuova regola runtime
+è stata aggiunta per questa prova. Il PASS su proc-v4 non dimostra ancora che
+le aperture globali aggiunte in v3/v4 siano inutilizzate: verificarlo sul profilo
+ridotto prima di qualificarne la rimozione come collaudata.
+
+Config e stato conservano gli hash completi riportati sotto; consumer disabilitato,
+`jobs={}`, cursor `5557127806`. Suite dopo il delta nativo: 42/42 OK.
+Nessun incarico LLM avviato. Non è ancora accettazione della missione.
+
+Prosecuzione determinata dal riesame, prima di altri rollout:
+
+- Riesaminare insieme input, syscall, mount e tool di `sandbox` e `exec`;
+  il PASS di una shell non certifica MCP, plugin o processo Codex padre.
+- Classificare le due aperture globali v3/v4 come candidate alla rimozione:
+  la loro prova di necessità usava un'invocazione diversa dal POC.
+- Derivare i due checkout esatti da assignment/generation per g1 e g2;
+  non ampliare a tutta la home o `runs/**`. Il profilo attuale copre solo g1.
+  Non precreare i checkout dei job: il lifecycle ordinario rifiuta target esistenti.
+- Verificare il set effettivo di tool, l'autenticazione e le differenze di
+  configurazione gestita prima dell'attivazione; preservare il primo giro e
+  la seconda iterazione con riletture, come richiesto da ADR 0007.
+- Riallineare runbook e tracker allo stato live; conservare separatamente
+  evidenze storiche e criteri ancora non soddisfatti.
+
+## Proposta storica v1
 **Proposta originaria v1:** i due profili richiedono anche il diff nativo handoff
 preparato sotto per affrontare i due finding. Non applicare i soli profili
 al POC invariato. Non sono un profilo
 predefinito per altri repository, versioni o comandi interattivi.
 
-## Proposta corrente: proc obbligatorio, revisione proc-v2
+## Proposta storica: proc obbligatorio, revisione proc-v2
 
 L'utente ha scelto di mantenere `/proc` come requisito. Il ramo no-proc non è
 accettato per il POC. La disponibilità a valutare nuovi diritti non è stata

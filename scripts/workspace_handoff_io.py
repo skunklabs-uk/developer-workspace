@@ -214,7 +214,9 @@ class LocalCodex:
         values = [
             'default_permissions="handoff"',
             'permissions.handoff={filesystem={":minimal"="read",":workspace_roots"="' + access +
-                '"},network={enabled=false}}',
+                '","/etc/developer-workspace"="deny",'
+                '"/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/bin/codex"='
+                '"read"},network={enabled=false}}',
             'approval_policy="never"', 'web_search="disabled"',
             'shell_environment_policy.inherit="none"',
         ]

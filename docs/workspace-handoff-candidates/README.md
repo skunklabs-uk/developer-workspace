@@ -2,11 +2,157 @@
 
 **Stato: Draft.** Missione [#75](https://github.com/skunklabs-uk/developer-workspace/issues/75).
 Candidati completi come file di policy, derivati dalla baseline di
-`f712903f5fac019058a4cd59d8314468a66c28e5`. Compilati offline; applicati e poi rimossi nel collaudo del 7 settembre 2026.
-**Proposta congiunta:** i due profili richiedono anche il diff nativo handoff
+`f712903f5fac019058a4cd59d8314468a66c28e5`. La revisione originaria v1 è stata applicata e poi rimossa nel collaudo del 7 settembre 2026; proc-v2 è compilata offline ma non applicata.
+**Proposta originaria v1:** i due profili richiedono anche il diff nativo handoff
 preparato sotto per affrontare i due finding. Non applicare i soli profili
 al POC invariato. Non sono un profilo
 predefinito per altri repository, versioni o comandi interattivi.
+
+## Proposta corrente: proc obbligatorio, revisione proc-v2
+
+L'utente ha scelto di mantenere `/proc` come requisito. Il ramo no-proc non è
+accettato per il POC. La disponibilità a valutare nuovi diritti non è stata
+usata per applicare privilegi non definiti. Il successivo «continua» approva
+il delta concreto descritto sotto per il solo collaudo di sicurezza.
+**proc-v2 non è applicata: il preflight è bloccato dall’accesso amministrativo.**
+
+### Restrizione identificata e forza dell'evidenza
+
+Le [letture mirate e verifiche](proc-v2-evidence.json) appartengono al Pod di
+rollback corrente, UID `e14979d2-8b9b-4d7c-9e57-d14b0697b1cd`, container
+`39b7d762529910130a524f8b9d9391b6dbd078c64b638480d044de70be6e4e20`.
+Il kernel è Debian `6.12.101-1`; namespace.c e proc/root.c della sorgente Debian
+sono byte-identici ai file del tag upstream v6.12.101 verificato.
+
+**Deduzione sufficiente sulla baseline corrente:** esiste un solo mount proc
+con root intera `/`; contiene figli su file come sysrq-trigger, kcore e keys,
+oltre ai bind readonly. Al clone NEWUSER/NEWNS, `copy_mnt_ns()` chiama
+`lock_mnt_tree()`: quei figli diventano MNT_LOCKED. Non sono directory
+permanentemente vuote; `mnt_already_visible()` rifiuta quindi questo proc e
+scarta gli altri perché hanno root parziale. `mount_too_revealing()` restituisce
+true, che `do_new_mount_fc()` traduce in EPERM.
+
+È una restrizione VFS indipendente, non una nuova regola seccomp da allargare.
+La deduzione è coerente con la traccia del precedente collaudo, ma non è un
+kretprobe del ramo attraversato dal vecchio processo: il suo OCI non è più
+recuperabile con crictl. Non si attribuisce retroattivamente un'unica causa
+esclusiva. Sono conservati mountpoint, parent/root, opzioni e liste OCI,
+non contenuti proc sensibili né environment.
+
+Fonti della versione installata:
+[namespace.c](https://sources.debian.org/src/linux/6.12.101-1/fs/namespace.c/),
+[proc/root.c](https://sources.debian.org/src/linux/6.12.101-1/fs/proc/root.c/),
+[validazione Kubernetes 1.34.9](https://github.com/kubernetes/kubernetes/blob/v1.34.9/pkg/apis/core/validation/validation.go#L8078),
+[conversione procMount](https://github.com/kubernetes/kubernetes/blob/v1.34.9/pkg/securitycontext/util.go#L232).
+
+### Delta minimo nativo proposto
+
+- [Riferimenti proc-v2](references-proc-v2.diff): `hostUsers: false` per il Pod;
+  `procMount: Unmasked` solo per code-server, con seccomp v1 e AppArmor proc-v2.
+  Kubernetes 1.34.9 richiede hostUsers false per Unmasked: non è un'opzione
+  aggiunta arbitrariamente. Nessuna capability, privilegi, immagine o servizio nuovi.
+- [AppArmor proc-v2 completo](apparmor-proc-v2.profile) e
+  [diff rispetto a v1](apparmor-proc-v2.diff): cinque gruppi deny compensano
+  i percorsi delle liste OCI rimosse da Unmasked. Nessun nuovo allow mount;
+  nome/self-peer distinti per distribuzione e rollback senza sovrascrivere v1.
+- [Seccomp v1](seccomp.json) e [input nativo handoff](handoff-inputs.diff)
+  invariati, da applicare insieme al nuovo delta durante il solo collaudo.
+
+- `apparmor-proc-v2.profile`: SHA-256 `3adf6c8b4b723d3a31289aa265c99fdcdcc82de54db66ca49d98a404dfaf8bf2`.
+- `apparmor-proc-v2.diff`: SHA-256 `27509fdd1a31823feaa1d97cfe8a63dc1f8df332adc96b564b18355328304fff`.
+- `references-proc-v2.diff`: SHA-256 `2481f4bfddab0f37b39795374e300a769ad5a43945c0ccb5c12e41b3d7ee55f9`.
+- `seccomp.json`: SHA-256 `8657dc596023b63a3501932caf19e55e416ff795d1724e68612812fd865f1d53`.
+- `handoff-inputs.diff`: SHA-256 `e681df788ea816563702efdc76ca24bf79dcdfade0a513c9e3befd27269b80ce`.
+
+### Impatto e limiti delle compensazioni
+
+Unmasked svuota entrambe le liste OCI, anche per i due percorsi /sys:
+non significa soltanto rendere leggibile /proc. La proposta mantiene negate
+le letture dei contenuti prima mascherati e le scritture prima impedite dai
+bind readonly, mediante AppArmor sul container intero.
+
+I gruppi coprono: tre directory e sette file proc mascherati, due directory
+sys mascherate, quattro directory proc readonly e sysrq-trigger readonly.
+Le regole proc includono `/proc`, `/oldroot/proc` e `/newroot/proc`, cioè gli
+alias dei pivot osservati; quelle sys coprono `/sys` e `/oldroot/sys`. Il builder
+non monta sys in newroot. I pattern sono limitati ai percorsi OCI elencati,
+non a pathname arbitrari o descriptor casuali.
+
+**Non è equivalenza semantica alle maschere:** un programma può ricevere EACCES
+invece di vedere una directory vuota o leggere EOF da un file; nomi/stat possono
+restare visibili. Le compensazioni proteggono l'accesso ai contenuti, non
+promettono invisibilità dei metadati. Per questo la compatibilità di shell,
+estensioni e comandi del workspace va collaudata.
+
+`hostUsers: false` interessa tutti i container del Pod, incluso l'init.
+Il runtime assegna UID/GID host distinti, mentre runAsUser/runAsGroup/fsGroup
+restano 1000 dentro il Pod. Kubernetes usa mount idmapped per i volumi;
+non si propone chown dei dati, modifica di credenziali o assegnazione manuale
+di intervalli UID. L'init esistente esegue mkdir/chmod delle due directory:
+va verificato con la rimappatura prima di procedere.
+
+Tutti i worker dichiarano userNamespaces=true per i runtime default/runc;
+kubelet è 1.34.9+k3s1 e containerd 2.2.5-k3s2. Filesystem osservati: ext4 per
+kubelet e volumi ordinari, tmpfs per il volume projected. Sono tipi supportati,
+ma ciò **non prova** l'effettivo montaggio idmapped dei PVC/subPath in questo Pod.
+Nessuna scansione o modifica degli owner di tutti i file è stata effettuata.
+
+Alternative valutate: aggiungere CAP_SYS_ADMIN non elimina da solo il controllo
+VFS nel nuovo user namespace; non è proposto. Un bind del proc padre conserva
+la vista PID del padre e non soddisfa il requisito. La documentazione kernel
+più recente descrive un'eccezione subset=pid, ma il sorgente 6.12.101 esaminato
+imposta SB_I_USERNS_VISIBLE senza quell'eccezione e il comando osservato passa
+mount data NULL: non si importa quel comportamento da una main più nuova.
+Non si propongono upgrade kernel, runtime custom o ricompilazione di Codex.
+
+### Verifiche eseguite e decisione richiesta
+
+AppArmor 4.1.0 compila con `-Q -K -S`, exit 0: 45489 byte,
+SHA-256 `5a30179694a4894707b8cc898f70860be1ac6bc8e77bced28ad684141bc7963d`.
+Nessun caricamento o modifica cache. I diff superano patch --dry-run;
+il server Kubernetes accetta la patch in dry-run e conserva i campi proposti.
+Il manifest live è stato riletto: hostUsers/procMount non sono applicati.
+Review indipendente statica completata senza finding; nessun test del codice
+invariato o nuovo probe sandbox eseguito in questa diagnosi.
+
+**Collaudo approvato:** l’utente ha risposto «continua» dopo la descrizione del
+namespace dedicato al Pod, nuovo proc e compensazioni AppArmor senza capability.
+L’autorizzazione copre l’insieme agli hash sopra per la finestra di sicurezza;
+non copre consumer, incarichi LLM o ulteriori aperture.
+
+**Stop prima dell’applicazione, 7 settembre 2026, 06:46 UTC:** le letture di
+Pod, StatefulSet e Application falliscono con TLS handshake timeout; una
+rilettura limitata a 10 secondi termina con context deadline exceeded.
+L’accesso amministrativo già autorizzato via pve1 fallisce prima del worker:
+`ssh: connect to host 192.168.1.201 port 22: No route to host`.
+Nessun profilo distribuito/caricato, patch, pausa Argo o rollout proc-v2.
+Nessun probe nel Pod o modifica a configurazione/stato; il consumer resta
+fermo nell’ultima verifica disponibile, non riconfermata dopo la perdita d’accesso.
+
+Unica risorsa esterna necessaria: ripristino della raggiungibilità del canale
+amministrativo esistente dal coordinatore (API Kubernetes e bastion pve1).
+Non sono state cambiate rete, firewall, credenziali o policy per ripristinarlo.
+Al ripristino: verificare nuovamente identità del Pod, processi interattivi,
+hash di configurazione/stato e assenza di operazioni Argo, poi proseguire il
+collaudo già approvato. Non occorre una nuova approvazione del medesimo delta.
+
+Distribuzione Ansible sui tre worker prima dei riferimenti, profilo proc-v2
+separato e immutable; eventuale sospensione temporanea della sola Application
+Argo tramite skip-reconcile come nel precedente collaudo, parent/syncPolicy
+invariati. Una ricreazione del Pod, previa conservazione delle sessioni.
+
+Accettazione: OCI userns e mapping effettivi, init concluso, PVC/subPath leggibili
+con identità corrette e stato invariato; proc realmente montato nel PID namespace
+del figlio senza fallback; nuove regole AppArmor verificate anche lungo gli
+alias dei pivot con sentinelle non segrete, senza leggere file sensibili;
+probe filesystem, maschera amministrativa, rete/socket e tool coerenti.
+Verificare il workspace interattivo. Consumer disabilitato, nessun incarico LLM.
+
+Rollback: ripristinare input handoff e riferimenti, rimuovere anche hostUsers e
+procMount aggiunti, ricreare il Pod e verificare baseline/owner/stato. Riprendere
+Argo soltanto dopo la verifica; scaricare e rimuovere i profili quando inutilizzati.
+Se servono nuove aperture, owner changes o modifiche ai nodi, fermarsi prima
+senza adottare una variante non approvata. La missione rimane aperta.
 
 ## Collaudo approvato del 7 settembre 2026
 
@@ -42,12 +188,9 @@ upgrade immagine, modifica del parent Argo o nuova PR Homelab.
 Config/stato/enrollment conservati; consumer sempre disabilitato. Gli strumenti
 strace temporanei sono rimossi; tracce ed evidenze restano nello stato esistente.
 
-**Decisione residua:** accettare per questo POC il ramo nativo senza proc come
-criterio di compatibilità, mantenendo i dinieghi filesystem/rete e verificando
-separatamente exec/helper/tool; oppure mantenere l'obbligo di proc e autorizzare
-la sola diagnosi del nuovo EPERM. La prima alternativa evita ulteriori aperture
-di sicurezza, ma non viene adottata implicitamente. Nessun incarico IWANT,
-riattivazione del consumer o collaudo LLM è autorizzato da questa documentazione.
+**Decisione successiva dell'utente:** mantenere proc obbligatorio. L'alternativa
+no-proc non è stata adottata; la proposta corrente proc-v2 è descritta sopra.
+Nessun nuovo delta è applicato e nessun incarico IWANT è abilitato.
 Review indipendente delle evidenze completata; closeout della missione ancora
 aperto finché mancano i due giri e le riletture ChatGPT.
 

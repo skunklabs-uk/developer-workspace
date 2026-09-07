@@ -2,9 +2,9 @@
 
 **Stato: Draft.** Codice e verifiche locali della missione
 [developer-workspace #75](https://github.com/skunklabs-uk/developer-workspace/issues/75).
-I test sono stati rieseguiti nel Pod. L’attivazione resta bloccata dalla
-creazione dei namespace richiesta dalla sandbox nativa; il giro completo con
-Codex non è collaudato. Questo documento non dichiara il servizio attivo.
+I test sono stati rieseguiti nel Pod. L’attivazione resta sospesa in attesa del collaudo proc-v2 della sandbox
+nativa; l’applicazione approvata è ferma al preflight per accesso amministrativo
+irraggiungibile. Il giro completo con Codex non è collaudato. Questo documento non dichiara il servizio attivo.
 
 ## Perimetro
 
@@ -221,10 +221,19 @@ Rollback completato: input nativo ripristinato, Pod Ready sulla baseline
 seccomp/AppArmor, profili rimossi dai tre worker, Argo CD riconciliato senza
 modifiche alla syncPolicy. Config, enrollment e stato invariati, consumer
 sempre fermo. I candidati e i diff restano conservati agli hash approvati,
-non rappresentano una configurazione attiva. La decisione residua nella #75
-è se accettare il ramo nativo senza proc per il POC o mantenere l'obbligo proc
-e procedere con la sola diagnosi mirata del nuovo diniego. Non ampliare i profili
-né qualificare i risultati parziali come collaudo completo.
+non rappresentano una configurazione attiva. L'utente ha confermato proc obbligatorio: la proposta corrente
+[proc-v2](workspace-handoff-candidates/README.md) usa `hostUsers: false` sull’intero Pod e
+`procMount: Unmasked` nel solo code-server, con compensazioni AppArmor per le protezioni OCI
+rimosse. Non aggiunge capability. La topologia proc corrente e il sorgente Debian
+corrispondente dimostrano una restrizione VFS sufficiente; non è un kretprobe del
+precedente processo. Dry-run API e compilazione offline passano, ma mapping dei
+volumi e nuovo proc restano da collaudare. Nessuna applicazione del nuovo delta:
+il solo collaudo descritto è approvato dal successivo «continua» dell’utente,
+ma il preflight del 7 settembre alle 06:46 UTC trova API Kubernetes in timeout
+e bastion pve1 irraggiungibile (No route to host). Ripristinare la raggiungibilità
+del canale amministrativo esistente, poi rileggere identità, processi e stato
+prima dell’applicazione. Nessuna nuova approvazione del medesimo delta richiesta.
+Non ampliare i profili né qualificare i risultati parziali come collaudo completo.
 
 Dopo un rimedio approvato, ripetere il probe filesystem e verificare
 separatamente rete e tool/MCP/plugin effettivi del figlio con la stessa

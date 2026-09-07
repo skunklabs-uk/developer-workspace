@@ -58,7 +58,55 @@ Prosecuzione determinata dal riesame, prima di altri rollout:
 - Riallineare runbook e tracker allo stato live; conservare separatamente
   evidenze storiche e criteri ancora non soddisfatti.
 
-## Proposta storica v1
+## Riesame dei tool e candidato ridotto
+
+L'ispezione sanitizzata rileva un plugin Figma abilitato nella configurazione
+utente. `exec --ignore-user-config` esclude quel layer, ma il probe lo carica;
+la sola esclusione non equivale a disabilitare plugin remoti e app. Per il
+POC si usano i flag nativi `features.plugins=false`, `features.apps=false`
+e `features.hooks=false` in entrambe le invocazioni. Sono una restrizione
+del perimetro esistente, senza un nuovo gestore di tool o credenziali.
+Il manager upstream della release verificata restituisce un insieme vuoto
+di plugin quando `plugins_enabled` è falso, anche nei percorsi remoti.
+
+Prova di necessità e proporzionalità del delta:
+
+| Campo | Evidenza |
+|---|---|
+| Requisito | ADR 0007: il POC non eredita i poteri personali tramite tool/MCP/plugin. |
+| Failure mode | Configurazione utente con plugin abilitato; differenza documentata tra loader di probe ed exec. |
+| Copertura esistente | Filesystem/rete dei comandi e `--ignore-user-config`; non certificano gli strumenti esterni al figlio sandboxato. |
+| Alternative e gap | Eliminare app/plugin/hook dal POC riusando i flag nativi; nessun proxy o inventario custom persistente necessario. Il solo filtro environment non disabilita i tool. |
+| Beneficio e verifica | Risoluzione nativa della configurazione e inventario MCP senza turni LLM; successivo riscontro nell'esecuzione reale. |
+| Costo e impatto cumulativo | Tre override nel punto già condiviso da probe/exec. Nessun servizio, identità o permesso nuovo; riduce il set operativo del POC. |
+| Lifecycle | Owner missione #75; KEEP per il POC ristretto, riesame prima di nuove capacità. Revocabile insieme al profilo handoff. |
+
+La lettura `config/read` di un app-server temporaneo con gli override sopra
+conferma profilo handoff, approvazioni never e app/plugin/hook disabilitati.
+I layer osservati sono sessionFlags, user e system; il layer system non
+contiene MCP o plugin. `mcpServerStatus/list` mostra soltanto cloudflare-api,
+disabilitato dalla configurazione utente e senza tool, senza pagina successiva.
+Nessun thread o turno creato; processo diagnostico terminato. Questo inventario
+è dell'app-server con layer utente: l'equivalenza completa con `exec` non è
+affermata. Il login diretto riporta ChatGPT, senza esportare credenziali.
+
+Il [candidato ridotto IWANT](apparmor-iwant.profile), SHA-256
+`b28fec1792b33cb77cd0e9ae1dc4c4af269a9a8ad12ef786c23313b74f592cc2`,
+riusa proc-v2 con nome/self-peer distinti e la sola coppia bind/remount g2.
+Rispetto a proc-v4 elimina le due concessioni globali sulla root. Review
+indipendente statica senza finding; compilazione sul worker con
+`apparmor_parser -Q -K -S /dev/stdin` senza caricamento o cache, exit 0,
+SHA-256 compilato `56f2927e628ceed16235be16e9ed21d5c97e281cd2b496cfccf0c09ab03815df`.
+Il profilo ridotto non è ancora applicato. Mantiene le compensazioni Unmasked,
+i due checkout esatti, il checkout diagnostico e la release verificata;
+non aggiunge bind dell'intera home né della root. La restrizione delle letture
+è applicata dalla sandbox nativa; AppArmor conserva la regola baseline `file,`.
+
+Il probe deve inoltre verificare proc nel figlio: il precedente collaudo v1
+ha dimostrato che l'exit 0 della shell può convivere con il fallback no-proc.
+La verifica di `/proc/self/status` rende osservabile il requisito già approvato.
+
+## Preparazione storica v1
 **Proposta originaria v1:** i due profili richiedono anche il diff nativo handoff
 preparato sotto per affrontare i due finding. Non applicare i soli profili
 al POC invariato. Non sono un profilo

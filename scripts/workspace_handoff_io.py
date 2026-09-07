@@ -219,6 +219,7 @@ class LocalCodex:
                 '"read"},network={enabled=false}}',
             'approval_policy="never"', 'web_search="disabled"',
             'shell_environment_policy.inherit="none"',
+            'features.plugins=false', 'features.apps=false', 'features.hooks=false',
         ]
         return [part for value in values for part in ('-c', value)]
 
@@ -232,7 +233,8 @@ class LocalCodex:
         hidden.write_text('non-secret filesystem boundary probe\n')
         outside_write = run_dir / 'outside-write.txt'
         inside_write = checkout / '.handoff-probe'
-        script = ('test -r "$1" || exit 11; '
+        script = ('test -r /proc/self/status || exit 16; '
+                  'test -r "$1" || exit 11; '
                   'if cat "$2" >/dev/null 2>&1; then exit 12; fi; '
                   'if (printf probe >"$3") 2>/dev/null; then exit 13; fi; '
                   'if [ "$5" = write ]; then printf probe >"$4" || exit 14; '

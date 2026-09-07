@@ -236,7 +236,7 @@ class LocalCodex:
         script = ('test -r /proc/self/status || exit 16; '
                   'test -r "$1" || exit 11; '
                   'if cat "$2" >/dev/null 2>&1; then exit 12; fi; '
-                  'if (printf probe >"$3") 2>/dev/null; then exit 13; fi; '
+                  '(printf probe >"$3") 2>/dev/null || :; '
                   'if [ "$5" = write ]; then printf probe >"$4" || exit 14; '
                   'else if (printf probe >"$4") 2>/dev/null; then exit 15; fi; fi')
         access = 'read' if self.config.get('sandbox', 'read-only') == 'read-only' else 'write'
@@ -246,6 +246,10 @@ class LocalCodex:
                 str(inside_write), access]
         result = subprocess.run(args, capture_output=True, timeout=30, env=env)
         atomic_json(run_dir / 'permissions-probe.json', {'exit_code': result.returncode})
+        # Restricted bwrap roots have private tmpfs ancestors. A successful
+        # write there is not a host write; inspect the persistent side instead.
+        if outside_write.exists():
+            raise HandoffError('La sandbox ha modificato il filesystem esterno del padre')
         if inside_write.exists():
             inside_write.unlink()
         if result.returncode:

@@ -166,6 +166,17 @@ class CheckoutTests(unittest.TestCase):
         with self.assertRaises(self.m.HandoffError):
             runner(self.request, self.root / 'run')
 
+    def test_probe_rejects_host_write_despite_successful_child(self):
+        runner = self.m.LocalCodex({'sandbox': 'read-only'})
+
+        def host_mutation(args, **kwargs):
+            (self.root / 'outside-write.txt').write_text('unexpected host mutation')
+            return subprocess.CompletedProcess(args, 0)
+
+        with patch.object(self.m.subprocess, 'run', side_effect=host_mutation):
+            with self.assertRaises(self.m.HandoffError):
+                runner.probe(self.origin, self.root, {})
+
     def test_executor_receives_verified_head_without_remote_lookup(self):
         runner = self.m.LocalCodex({'execution_enabled': True, 'sandbox': 'read-only'})
         runner.references = 'Fonti canoniche verificate'

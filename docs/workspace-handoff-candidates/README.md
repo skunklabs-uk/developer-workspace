@@ -9,6 +9,35 @@ checkpoint seguente; le sezioni successive conservano le prove precedenti.
 
 ### Profilo ridotto applicato e collaudato
 
+**Primo invio g1:** richiesta `5570835818`, ricevuta `5570838436` su IWANT #524.
+Il collegamento ha consegnato un errore di preflight, prima dell'avvio del modello:
+`LocalCodex.probe` del commit `ca05503` ha restituito 13. La causa è il controllo
+di scrittura, non un nuovo deny AppArmor. Nel checkout reale sotto `runs/<key>`,
+gli antenati creati da bubblewrap appartengono al tmpfs privato della root:
+la scrittura della sentinella può riuscire nel figlio senza creare il file nel
+padre. La verifica nativa ha osservato root tmpfs rw, file presente solo nel
+figlio e assente sul filesystem persistente. Il divieto di leggere la sentinella
+del padre resta rispettato.
+
+Il probe corretto tenta la stessa scrittura e verifica dal padre che il file
+persistente non sia stato creato. Mantiene i controlli su proc, letture esterne
+e scritture del checkout. Il test di regressione rileva una mutazione del padre
+anche se il processo figlio restituisce 0: fallisce senza correzione e passa
+con essa. Anche il probe nativo sul checkout reale g1 passa. `read-only` protegge
+i dati persistenti; non significa assenza di file temporanei nel tmpfs privato.
+Nessun permesso o profilo runtime è stato ampliato per questa correzione.
+
+Consumer nuovamente disabilitato durante il riesame. Richiesta, ricevuta e
+generation g1 restano invariati; errore e risultato iniziali sono conservati.
+Il modello non è stato avviato: l'errore identificato è prodotto dal probe
+prima dell'apertura di `codex.log` e di `Popen` nel percorso verificato.
+La review indipendente del delta dopo `ca05503` approva la correzione e la
+ripresa una tantum del coordinatore: sotto il lock esistente, conservare l'intera
+directory iniziale in `runtime-probe/g1-preflight-20260907` e riconciliare soltanto
+la fase da `delivered` a `ready`. Identità, richiesta, head, generation e ricevuta
+restano invariati. Non è un nuovo meccanismo di retry del consumer; il modello
+non è mai partito. Lo stato operativo successivo è tracciato in #75.
+
 Homelab #1112 è merged nel commit `2b13bf4d1b7f00aeff658a09f7c6eb76c21ed42f`;
 Argo lo ha applicato. Il Pod corrente è `ec539a0a-218d-4151-9e56-aed0fc64caf4`,
 Ready, init exit 0, profilo `workspace-handoff-poc-iwant`. Gli hash sorgente
@@ -34,9 +63,10 @@ di `/proc/keys`, esistente, è negata EACCES anche attraverso l'alias
 `/proc/self/root/proc/keys`; nessun contenuto è stato letto.
 
 UID/GID mapping del Pod: `0 3765764096 65536`; home/workspaces mantengono
-owner interno `1000:1000`, senza chown. Healthz risponde alive. Config e stato
-restano agli hash attesi, `execution_enabled=false`, jobs vuoti. Il collaudo
-non ha ancora avviato un incarico LLM: la prova completa di exec resta g1.
+owner interno `1000:1000`, senza chown. Healthz risponde alive. Al termine del
+collaudo precedente all'invio g1, config e stato erano agli hash attesi,
+`execution_enabled=false`, jobs vuoti. Nessun incarico LLM era stato avviato:
+la prova completa di exec resta g1.
 Il profilo proc-v4 è stato scaricato e il suo file rimosso dai tre worker
 soltanto dopo la verifica di assenza di processi che lo usavano. Seccomp v1 e
 il profilo IWANT restano installati e in uso.

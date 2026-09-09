@@ -72,17 +72,16 @@ class GitHubTests(unittest.TestCase):
                 self.api.list_comments()
             self.assertEqual(run.call_count, 1)
 
-    def test_required_sources_are_read_once_and_identified_by_blob(self):
+    def test_required_rfc_is_read_once_and_identified_by_blob(self):
         encoded = base64.b64encode('Fonte verificata'.encode()).decode()
         body = {'encoding': 'base64', 'content': encoded, 'sha': 'a' * 40}
         self.assertTrue(hasattr(self.m, 'reference_context'), 'Canonical source loader missing')
-        with patch.object(self.m.subprocess, 'run', side_effect=[response(200, body), response(200, body)]):
+        with patch.object(self.m.subprocess, 'run', return_value=response(200, body)):
             text = self.m.reference_context(self.api)
         self.assertIn('RFC-0001-principles.md', text)
-        self.assertIn('global/agent-loop/SKILL.md', text)
-        self.assertEqual(text.count('Fonte verificata'), 2)
+        self.assertEqual(text.count('Fonte verificata'), 1)
         self.assertIn('a' * 40, text)
-        self.assertEqual(self.api.metrics['requests'], 2)
+        self.assertEqual(self.api.metrics['requests'], 1)
 
     def test_missing_canonical_source_cannot_be_silently_ignored(self):
         self.assertTrue(hasattr(self.m, 'reference_context'), 'Canonical source loader missing')
@@ -201,6 +200,87 @@ class CheckoutTests(unittest.TestCase):
         self.assertEqual(result['exit_code'], 0)
         self.assertIn(self.request['head'], captured[0])
         self.assertIn(self.request['repository'], captured[0])
+
+    def test_final_checkout_status_does_not_run_parent_configured_filter(self):
+        item = self.origin / 'item.txt'
+        item.write_text('before\n')
+        self.git('add', 'item.txt')
+        self.git('commit', '-m', 'add item')
+        self.request['head'] = self.git('rev-parse', 'HEAD')
+        runner = self.m.LocalCodex({'execution_enabled': True, 'sandbox': 'read-only'})
+        runner.references = 'Fonti canoniche verificate'
+        run_dir = self.root / 'run'
+        marker = self.root / 'parent-filter-ran'
+        config = self.root / 'parent.gitconfig'
+        config.write_text('[filter "review"]\n\tclean = touch ' + str(marker) + '; cat\n')
+
+        class Child:
+            returncode = 0
+
+            def communicate(self, payload, timeout):
+                target = run_dir / 'checkout'
+                (target / '.gitattributes').write_text('item.txt filter=review\n')
+                (target / 'item.txt').write_text('after!\n')
+                (run_dir / 'summary.md').write_text('Verifica completata')
+
+        prepare = self.m.prepare_checkout
+        popen = subprocess.Popen
+        with patch.dict(os.environ, {'GIT_CONFIG_GLOBAL': str(config)}), \
+                patch.object(self.m, 'prepare_checkout', side_effect=lambda request, origin, target:
+                             prepare(request, str(self.origin), target)), \
+                patch.object(runner, 'probe'), \
+                patch.object(self.m.subprocess, 'Popen', side_effect=lambda args, **kwargs:
+                             Child() if args[0] == 'codex' else popen(args, **kwargs)):
+            result = runner(self.request, run_dir)
+        self.assertTrue(result['dirty'])
+        self.assertFalse(marker.exists())
+
+    def test_clone_template_cannot_supply_parent_filter_to_status_or_snapshot(self):
+        from workspace_handoff_publish import snapshot_commit
+        item = self.origin / 'item.txt'
+        item.write_text('before\n')
+        self.git('add', 'item.txt')
+        self.git('commit', '-m', 'add item')
+        self.request['head'] = self.git('rev-parse', 'HEAD')
+        template = self.root / 'parent-template'
+        (template / 'info').mkdir(parents=True)
+        (template / 'info/attributes').write_text('item.txt filter=review\n')
+        marker = self.root / 'parent-filter-ran'
+        config = self.root / 'parent.gitconfig'
+        config.write_text('[init]\n\ttemplateDir = ' + str(template) +
+                          '\n[filter "review"]\n\tclean = touch ' + str(marker) + '; tr a-z A-Z\n')
+        checkout = self.root / 'clone'
+        with patch.dict(os.environ, {'GIT_CONFIG_GLOBAL': str(config)}):
+            self.m.prepare_checkout(self.request, str(self.origin), checkout)
+            self.assertFalse((checkout / '.git/info/attributes').exists())
+            subprocess.check_call(['git', '-C', str(checkout), 'config', 'user.name', 'Fixture'])
+            subprocess.check_call(['git', '-C', str(checkout), 'config', 'user.email',
+                                   'fixture@example.invalid'])
+            content = b'after!\n'
+            (checkout / 'item.txt').write_bytes(content)
+            self.assertTrue(self.m.git(checkout, 'status', '--porcelain', safe=True))
+            revision = snapshot_commit(checkout, self.request['head'], ['item.txt'], 'chore: test')
+        self.assertFalse(marker.exists())
+        self.assertEqual(subprocess.check_output(
+            ['git', '-C', str(checkout), 'show', revision + ':item.txt']), content)
+
+    def test_prepare_checkout_ignores_parent_autocrlf_for_safe_status_and_snapshot(self):
+        """A parent conversion setting must not manufacture a publication change."""
+        from workspace_handoff_publish import snapshot_commit
+        item = self.origin / 'item.txt'
+        item.write_bytes(b'unchanged\n')
+        self.git('add', 'item.txt')
+        self.git('commit', '-m', 'add item')
+        self.request['head'] = self.git('rev-parse', 'HEAD')
+        config = self.root / 'parent.gitconfig'
+        config.write_text('[core]\n\tautocrlf = true\n')
+        checkout = self.root / 'clone'
+
+        with patch.dict(os.environ, {'GIT_CONFIG_GLOBAL': str(config)}):
+            self.m.prepare_checkout(self.request, str(self.origin), checkout)
+            self.assertEqual(self.m.git(checkout, 'status', '--porcelain', safe=True), '')
+            self.assertEqual(snapshot_commit(
+                checkout, self.request['head'], ['item.txt'], 'chore: test'), self.request['head'])
 
     def test_process_configuration_does_not_inherit_personal_tool_credentials(self):
         config = {'execution_enabled': True, 'sandbox': 'read-only'}

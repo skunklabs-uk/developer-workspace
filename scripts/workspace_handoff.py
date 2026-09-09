@@ -65,7 +65,8 @@ def parse_request(comment, config):
     except (ValueError, TypeError) as error:
         raise HandoffError('Comando JSON non valido') from error
     fields = {'repository', 'assignment', 'generation', 'branch', 'head', 'prompt'}
-    if not isinstance(request, dict) or set(request) != fields:
+    if (not isinstance(request, dict) or not fields.issubset(request)
+            or set(request) - fields - {'publish_paths'}):
         raise HandoffError('Campi del comando non validi')
     if request['repository'] != config['repository']:
         raise HandoffError('Repository non autorizzato')
@@ -88,6 +89,20 @@ def parse_request(comment, config):
             or any(part in {'.', '..', 'archive'} for part in prompt.split('/'))
             or '\\' in prompt or len(parts) < 4 or '\x00' in prompt):
         raise HandoffError('Prompt fuori dal percorso corrente autorizzato')
+    if 'publish_paths' in request:
+        paths = request['publish_paths']
+        if config.get('sandbox', 'read-only') != 'workspace-write':
+            raise HandoffError('La pubblicazione richiede il profilo workspace-write autorizzato')
+        if not isinstance(paths, list) or not paths:
+            raise HandoffError('publish_paths deve elencare i file autorizzati')
+        for path in paths:
+            if (not isinstance(path, str) or not path or path != path.strip()
+                    or path.startswith('/') or '\\' in path or any(ord(c) < 32 for c in path)
+                    or any(part in {'', '.', '..', '.git', '.codex', '.agents'}
+                           for part in path.split('/'))):
+                raise HandoffError('Percorso di pubblicazione non valido')
+        if len(set(paths)) != len(paths):
+            raise HandoffError('Percorsi di pubblicazione duplicati')
     return request
 
 
@@ -138,13 +153,23 @@ class Consumer:
         summary = result.get('summary') or 'Nessun summary prodotto. Non considerare il lavoro completato.'
         if len(summary) > 45000:
             summary = summary[:45000] + '\n[Summary troncato; copia completa nello stato locale.]'
+        publication = result.get('publication', {})
+        delivery = ''
+        if publication.get('state') == 'published':
+            head = publication['head']
+            delivery = (f"Commit pubblicato: `{head}` sul branch `{request['branch']}`.\n"
+                        f"https://github.com/{request['repository']}/commit/{head}\n")
+        elif publication.get('state') == 'unchanged':
+            delivery = 'Pubblicazione: nessuna modifica prodotta; nessun nuovo commit.\n'
+        elif publication.get('state') == 'blocked':
+            delivery = 'Pubblicazione bloccata: ' + publication['reason'] + '\n'
         return (self.marker(key) + '\n## Risultato workspace\n\n'
                 f"Incarico: `{request['assignment']}` / generation `{request['generation']}`.\n"
                 f"Richiesta: commento `{job['comment_id']}`. Esecuzione: `{key}`.\n"
                 f"Esito processo: **{outcome}**; exit code `{result.get('exit_code')}`.\n"
                 f"Base: `{request['head']}`. Head locale: `{result.get('head', 'non rilevato')}`.\n"
                 f"Modifiche locali non committate: `{result.get('dirty', 'non rilevato')}`.\n\n"
-                + summary + '\n\nIl successo del processo non equivale ad accettazione o merge.\n')
+                + delivery + '\n' + summary + '\n\nIl successo del processo non equivale ad accettazione o merge.\n')
 
     def superseded(self, request):
         return any(job['request']['assignment'] == request['assignment'] and
@@ -257,6 +282,10 @@ class Consumer:
                     self.save()
                 if job['phase'] == 'result':
                     result = json.loads((run_dir / 'result.json').read_text(encoding='utf-8'))
+                    publish = getattr(self.runner, 'publish', None)
+                    if publish is not None and job['request'].get('publish_paths'):
+                        result = publish(job['request'], run_dir, result)
+                        atomic_json(run_dir / 'result.json', result)
                     self.github.update_comment(job['receipt'], self.report(key, job, result))
                     job['phase'] = 'delivered'
                     self.save()

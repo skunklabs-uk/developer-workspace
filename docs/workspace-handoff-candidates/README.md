@@ -9,7 +9,7 @@ distribuire.
 
 | Stato | Sorgente | Destinazione sui worker K3s | SHA-256 sorgente |
 | --- | --- | --- | --- |
-| Candidato AppArmor #82, integrato ma non distribuito | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `ec0abc6b7729743825d0be469d7b5559a06a48c51a18f776d6688c0e36f0e5e6` |
+| Candidato AppArmor #82 + #83, non ancora distribuito | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `4110efffcb696a0e7436a893ae2b2cc0ec8e37562ad33d654c39cf30634a0d59` |
 | Candidato seccomp #83, non ancora distribuito | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2` |
 
 Homelab possiede distribuzione, caricamento e riferimenti GitOps; la procedura
@@ -23,9 +23,13 @@ non ancora applicato al runtime: stato dedicato
 `workspace-write`. Il candidato è stato compilato offline con
 `apparmor_parser 4.0.1`; il raw locale ha SHA-256
 `9a0f79b5f61f7c0ca480238f7dc84d3f5ab6f76cc43f5054466ab98402d42873`.
-L'ambiente locale non espone l'interfaccia kernel AppArmor: questo dato non
-sostituisce l'hash compilato nativamente che va prodotto sui worker prima del
-reload.
+L'ambiente locale non espone l'interfaccia kernel AppArmor. La PR #83 aggiunge
+al candidato il bind ricorsivo e il remount read-only del solo
+`checkout/.git/` che Codex usa per proteggere i metadati Git dopo il remount
+scrivibile del checkout. Prima del trial, `apparmor_parser 4.1.0` sui tre
+worker ha prodotto lo stesso raw SHA-256
+`a24a2503de54b12a9ef4f19d645fb3f115749d3f9e764f60e144b0ff0e23f597`;
+questo non dichiara ancora distribuito il candidato.
 
 Le regole mount/remount del profilo mantengono il checkout diagnostico e i
 checkout in `runs/<sha256>/checkout`, tramite `@{hex64}`. Il delta write non apre

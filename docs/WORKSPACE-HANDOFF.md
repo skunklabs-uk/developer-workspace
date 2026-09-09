@@ -118,8 +118,9 @@ com'è. Il branch deve ancora puntare a quello SHA al momento del clone. Il
 prompt deve essere un file Git regolare, non un symlink o un file archiviato.
 Una nuova generation è una nuova iterazione esplicitamente autorizzata, non un
 modo per aggirare un problema tecnico. Il POC #75 resta in sola lettura.
-La consegna delle modifiche descritta sotto è distinta e ancora da collaudare
-nel workspace.
+La sandbox di scrittura descritta sotto è collaudata nel workspace; restano da
+verificare con un incarico IWANT reale il commit remoto, la ricevuta e la review
+di ChatGPT.
 
 Repository, assignment e generation identificano l'incarico. Ripubblicare lo
 stesso incarico non lo riesegue; cambiarne il contenuto senza cambiare identità

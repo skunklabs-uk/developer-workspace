@@ -143,8 +143,10 @@ push. Il padre, con identità Git e autenticazione già configurate, crea una
 revisione tramite indice temporaneo e `git commit-tree`, con la base autorizzata
 come unico parent. L'implementazione è verificata con Git 2.47.3 e usa il
 supporto nativo `GIT_ATTR_SOURCE`; verificarlo prima di usarla con altre versioni.
-Lo snapshot ignora gli attributi del repository, non esegue hook, fsmonitor o
-filtri clean, e conserva i byte e i permessi eseguibili dei file regolari.
+Il clone usa un template vuoto controllato per non ereditare attributi locali
+dal Git del padre. Lo snapshot ignora gli attributi del repository, non esegue
+hook, fsmonitor o filtri clean, e conserva i byte e i permessi eseguibili dei
+file regolari.
 Il percorso write non è un publisher LFS o di submodule.
 
 Tutte le modifiche rilevate da Git devono essere comprese in `publish_paths`;

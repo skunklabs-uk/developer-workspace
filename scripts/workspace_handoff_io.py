@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import signal
 import subprocess
+import tempfile
 import time
 from urllib.parse import urlsplit
 
@@ -164,8 +165,12 @@ def prepare_checkout(request, origin, target):
     if target.exists():
         raise HandoffError('Checkout esistente: riconciliare, non cancellare né resettare')
     git(None, 'check-ref-format', '--branch', request['branch'])
-    git(None, 'clone', '--no-local', '--depth=1', '--single-branch', '--no-checkout',
-        '--branch', request['branch'], '--', origin, str(target))
+    with tempfile.TemporaryDirectory(prefix='.clone-template-', dir=target.parent) as template:
+        git(None, 'clone', '--template=' + template, '--no-local', '--depth=1', '--single-branch',
+            '--no-checkout', '--branch', request['branch'], '--', origin, str(target))
+    local_attributes = target / '.git/info/attributes'
+    if local_attributes.exists() or local_attributes.is_symlink():
+        raise HandoffError('Attributi Git locali inattesi nel checkout isolato')
     head = git(target, 'rev-parse', 'HEAD')
     if head != request['head']:
         raise HandoffError('Branch remoto diverso dallo SHA autorizzato')

@@ -235,6 +235,35 @@ class CheckoutTests(unittest.TestCase):
         self.assertTrue(result['dirty'])
         self.assertFalse(marker.exists())
 
+    def test_clone_template_cannot_supply_parent_filter_to_status_or_snapshot(self):
+        from workspace_handoff_publish import snapshot_commit
+        item = self.origin / 'item.txt'
+        item.write_text('before\n')
+        self.git('add', 'item.txt')
+        self.git('commit', '-m', 'add item')
+        self.request['head'] = self.git('rev-parse', 'HEAD')
+        template = self.root / 'parent-template'
+        (template / 'info').mkdir(parents=True)
+        (template / 'info/attributes').write_text('item.txt filter=review\n')
+        marker = self.root / 'parent-filter-ran'
+        config = self.root / 'parent.gitconfig'
+        config.write_text('[init]\n\ttemplateDir = ' + str(template) +
+                          '\n[filter "review"]\n\tclean = touch ' + str(marker) + '; tr a-z A-Z\n')
+        checkout = self.root / 'clone'
+        with patch.dict(os.environ, {'GIT_CONFIG_GLOBAL': str(config)}):
+            self.m.prepare_checkout(self.request, str(self.origin), checkout)
+            self.assertFalse((checkout / '.git/info/attributes').exists())
+            subprocess.check_call(['git', '-C', str(checkout), 'config', 'user.name', 'Fixture'])
+            subprocess.check_call(['git', '-C', str(checkout), 'config', 'user.email',
+                                   'fixture@example.invalid'])
+            content = b'after!\n'
+            (checkout / 'item.txt').write_bytes(content)
+            self.assertTrue(self.m.git(checkout, 'status', '--porcelain', safe=True))
+            revision = snapshot_commit(checkout, self.request['head'], ['item.txt'], 'chore: test')
+        self.assertFalse(marker.exists())
+        self.assertEqual(subprocess.check_output(
+            ['git', '-C', str(checkout), 'show', revision + ':item.txt']), content)
+
     def test_process_configuration_does_not_inherit_personal_tool_credentials(self):
         config = {'execution_enabled': True, 'sandbox': 'read-only'}
         runner = self.m.LocalCodex(config)

@@ -201,6 +201,40 @@ class CheckoutTests(unittest.TestCase):
         self.assertIn(self.request['head'], captured[0])
         self.assertIn(self.request['repository'], captured[0])
 
+    def test_final_checkout_status_does_not_run_parent_configured_filter(self):
+        item = self.origin / 'item.txt'
+        item.write_text('before\n')
+        self.git('add', 'item.txt')
+        self.git('commit', '-m', 'add item')
+        self.request['head'] = self.git('rev-parse', 'HEAD')
+        runner = self.m.LocalCodex({'execution_enabled': True, 'sandbox': 'read-only'})
+        runner.references = 'Fonti canoniche verificate'
+        run_dir = self.root / 'run'
+        marker = self.root / 'parent-filter-ran'
+        config = self.root / 'parent.gitconfig'
+        config.write_text('[filter "review"]\n\tclean = touch ' + str(marker) + '; cat\n')
+
+        class Child:
+            returncode = 0
+
+            def communicate(self, payload, timeout):
+                target = run_dir / 'checkout'
+                (target / '.gitattributes').write_text('item.txt filter=review\n')
+                (target / 'item.txt').write_text('after!\n')
+                (run_dir / 'summary.md').write_text('Verifica completata')
+
+        prepare = self.m.prepare_checkout
+        popen = subprocess.Popen
+        with patch.dict(os.environ, {'GIT_CONFIG_GLOBAL': str(config)}), \
+                patch.object(self.m, 'prepare_checkout', side_effect=lambda request, origin, target:
+                             prepare(request, str(self.origin), target)), \
+                patch.object(runner, 'probe'), \
+                patch.object(self.m.subprocess, 'Popen', side_effect=lambda args, **kwargs:
+                             Child() if args[0] == 'codex' else popen(args, **kwargs)):
+            result = runner(self.request, run_dir)
+        self.assertTrue(result['dirty'])
+        self.assertFalse(marker.exists())
+
     def test_process_configuration_does_not_inherit_personal_tool_credentials(self):
         config = {'execution_enabled': True, 'sandbox': 'read-only'}
         runner = self.m.LocalCodex(config)

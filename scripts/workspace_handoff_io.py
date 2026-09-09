@@ -134,12 +134,26 @@ class GitHub:
         return self.request('PATCH', f'repos/{self.repo}/issues/comments/{int(comment_id)}', {'body': body})[2]
 
 
-def git(directory, *args):
-    command = ['git', '--literal-pathspecs', '-c', 'core.hooksPath=/dev/null']
+def git(directory, *args, safe=False):
+    command = ['git', '--literal-pathspecs']
+    if safe:
+        command += ['--no-replace-objects', '-c', 'core.hooksPath=/dev/null',
+                    '-c', 'core.fsmonitor=false', '-c', 'core.attributesFile=/dev/null',
+                    '-c', 'core.autocrlf=false', '-c', 'commit.gpgsign=false']
+    else:
+        command += ['-c', 'core.hooksPath=/dev/null']
     if directory is not None:
         command += ['-C', str(directory)]
     command += list(args)
     env = dict(os.environ, GIT_TERMINAL_PROMPT='0', GIT_LFS_SKIP_SMUDGE='1')
+    if safe:
+        for name in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_COMMON_DIR', 'GIT_INDEX_FILE',
+                     'GIT_OBJECT_DIRECTORY', 'GIT_ALTERNATE_OBJECT_DIRECTORIES'):
+            env.pop(name, None)
+        empty_tree = subprocess.check_output(command[:-len(args)] + [
+            'hash-object', '-w', '-t', 'tree', '--stdin'], input='', text=True,
+            stderr=subprocess.PIPE, timeout=180, env=env).strip()
+        env['GIT_ATTR_SOURCE'] = empty_tree
     return subprocess.check_output(command, text=True, stderr=subprocess.PIPE,
                                    timeout=180, env=env).strip()
 
@@ -340,5 +354,5 @@ class LocalCodex:
                 raise
         text = summary.read_text(encoding='utf-8') if summary.is_file() else ''
         return {'exit_code': child.returncode if text else 1, 'summary': text,
-                'head': git(checkout, 'rev-parse', 'HEAD'),
-                'dirty': bool(git(checkout, 'status', '--porcelain'))}
+                'head': git(checkout, 'rev-parse', 'HEAD', safe=True),
+                'dirty': bool(git(checkout, 'status', '--porcelain', safe=True))}

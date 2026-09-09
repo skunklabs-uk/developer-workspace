@@ -173,6 +173,14 @@ class PublicationTests(unittest.TestCase):
         self.assertEqual(self.git(self.origin, 'rev-parse', 'refs/heads/agent/task'), head)
         self.assertEqual(self.git(self.origin, 'show', head + ':item.txt'), 'after')
 
+    def test_publish_does_not_follow_unrequested_tags(self):
+        self.git(self.repo, 'tag', '-a', 'outside-authorized-branch', '-m', 'fixture', self.base)
+        self.git(self.repo, 'config', 'push.followTags', 'true')
+        (self.repo / 'item.txt').write_text('after\n')
+        self.push(self.snapshot())
+        refs = self.git(self.origin, 'for-each-ref', '--format=%(refname)').splitlines()
+        self.assertEqual(refs, ['refs/heads/agent/task'])
+
     def test_external_branch_advance_is_never_overwritten(self):
         (self.repo / 'item.txt').write_text('after\n')
         head = self.snapshot()

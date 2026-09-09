@@ -77,7 +77,7 @@ def push_commit(checkout, origin, branch, base, head):
     if _git(checkout, 'rev-list', '--parents', '-n', '1', head).split() != [head, base]:
         raise HandoffError('Il commit da pubblicare non discende direttamente dalla base')
     try:
-        _git(checkout, 'push', '--porcelain', origin, head + ':' + ref)
+        _git(checkout, 'push', '--porcelain', '--no-follow-tags', origin, head + ':' + ref)
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
         observed = remote_head()
         if observed == head:

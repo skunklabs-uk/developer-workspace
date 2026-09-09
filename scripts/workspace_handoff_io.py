@@ -171,22 +171,18 @@ def prepare_checkout(request, origin, target):
 
 
 def reference_context(github):
-    """Read the two canonical sources per run; no vendored policy/skill copies."""
+    """Load the mandatory current RFC; execution skills belong to the assignment."""
     if github is None:
         raise HandoffError('Accesso alle fonti canoniche non disponibile')
-    text = []
-    for repository, path in (
-            ('skunklabs-uk/agent-os', 'rfcs/RFC-0001-principles.md'),
-            ('skunklabs-uk/codex-skills', 'global/agent-loop/SKILL.md')):
-        _, _, value = github.request('GET', f'repos/{repository}/contents/{path}?ref=main')
-        if (not isinstance(value, dict) or value.get('encoding') != 'base64' or
-                not re.fullmatch(r'[0-9a-f]{40}', str(value.get('sha', '')))):
-            raise HandoffError('Fonte canonica senza contenuto o revisione verificabile')
-        raw = base64.b64decode(''.join(value['content'].split()), validate=True)
-        if len(raw) > 262144:
-            raise HandoffError('Fonte oltre il perimetro del POC')
-        text.append(f"Fonte corrente: {repository}/{path}; blob {value['sha']}\n" + raw.decode('utf-8'))
-    return '\n\n'.join(text)
+    repository, path = 'skunklabs-uk/agent-os', 'rfcs/RFC-0001-principles.md'
+    _, _, value = github.request('GET', f'repos/{repository}/contents/{path}?ref=main')
+    if (not isinstance(value, dict) or value.get('encoding') != 'base64' or
+            not re.fullmatch(r'[0-9a-f]{40}', str(value.get('sha', '')))):
+        raise HandoffError('Fonte canonica senza contenuto o revisione verificabile')
+    raw = base64.b64decode(''.join(value['content'].split()), validate=True)
+    if len(raw) > 262144:
+        raise HandoffError('Fonte oltre il perimetro del POC')
+    return f"Fonte corrente: {repository}/{path}; blob {value['sha']}\n" + raw.decode('utf-8')
 
 
 class LocalCodex:
@@ -199,6 +195,61 @@ class LocalCodex:
 
     def prepare(self):
         self.references = reference_context(self.github)
+
+    def publish(self, request, run_dir, result):
+        """Deliver a durable result to the selected draft PR, never rerun the model."""
+        if not request.get('publish_paths') or result.get('exit_code') != 0:
+            return result
+        from workspace_handoff_publish import snapshot_commit, push_commit
+        run_dir = Path(run_dir)
+        publication = result.get('publication', {})
+        if publication.get('state') in ('published', 'unchanged', 'blocked'):
+            return result
+        try:
+            if self.config.get('sandbox') != 'workspace-write' or self.github is None:
+                raise HandoffError('Pubblicazione non autorizzata nel profilo corrente')
+            repository = request['repository']
+            _, _, metadata = self.github.request('GET', f'repos/{repository}')
+            default_branch = metadata.get('default_branch') if isinstance(metadata, dict) else None
+            if not default_branch or request['branch'] == default_branch:
+                raise HandoffError('Default branch vietato o non verificato')
+            _, _, pr = self.github.request('GET', f"repos/{repository}/pulls/{self.config['thread']}")
+            head = (pr.get('head') or {}) if isinstance(pr, dict) else {}
+            head_repo = head.get('repo') or {}
+            if (not isinstance(pr, dict) or pr.get('state') != 'open' or pr.get('draft') is not True
+                    or head_repo.get('full_name') != repository or head.get('ref') != request['branch']):
+                raise HandoffError('La destinazione deve essere la PR Draft aperta sul branch autorizzato')
+            if not re.fullmatch(r'[0-9a-f]{40}', str(head.get('sha', ''))):
+                raise HandoffError('HEAD della PR non verificabile')
+            if head['sha'] not in {request['head'], publication.get('head')}:
+                raise HandoffError('HEAD della PR cambiato: nessuna sovrascrittura autorizzata')
+            if not publication:
+                if result.get('head') != request['head']:
+                    raise HandoffError('Il figlio ha cambiato HEAD: riconciliare prima della pubblicazione')
+                try:
+                    revision = snapshot_commit(run_dir / 'checkout', request['head'],
+                        request['publish_paths'],
+                        f"chore(handoff): applica {request['assignment']} g{request['generation']}")
+                except subprocess.SubprocessError as error:
+                    raise HandoffError('Creazione commit fallita: verificare Git e identità locali') from error
+                publication = {'head': revision,
+                    'state': 'unchanged' if revision == request['head'] else 'prepared'}
+                result['publication'] = publication
+                # A lost push response must not lose the exact commit to reconcile.
+                atomic_json(run_dir / 'result.json', result)
+            if publication['state'] == 'prepared':
+                push_commit(run_dir / 'checkout', 'https://github.com/' + repository + '.git',
+                            request['branch'], request['head'], publication['head'])
+                publication['state'] = 'published'
+        except RateLimited:
+            raise  # The existing transport pause applies to delivery, not the model.
+        except HandoffError as error:
+            publication.update(state='blocked', reason=str(error))
+            result['publication'] = publication
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
+            raise TimeoutError('Verifica Git remota non conclusa; riprendere solo la consegna') from error
+        atomic_json(run_dir / 'result.json', result)
+        return result
 
     def environment(self, run_dir):
         env = {key: os.environ[key] for key in ('HOME', 'PATH', 'LANG', 'CODEX_HOME') if key in os.environ}
@@ -272,9 +323,9 @@ class LocalCodex:
         instructions = (self.references + '\n\nRichiesta verificata dal collegamento:\n' +
                         json.dumps(request, ensure_ascii=False, sort_keys=True) +
                         '\n\nIncarico versionato:\n' + prompt + '\n\nConsegna: riepilogo italiano con risultato effettivo, verifiche, '
-                        'limiti e documentazione. Usa agent-loop entro lo scope autorizzato. '
-                        'Non inviare commenti, non rilanciare CI, non eseguire merge/deploy. '
-                        'La pubblicazione del report è del collegamento, non dell\'agente.\n')
+                        'limiti e documentazione. Segui il prompt e le istruzioni del progetto. '
+                        'Non inviare commenti, non fare commit/push, non rilanciare CI, non eseguire merge/deploy. '
+                        'La pubblicazione del report e dei file autorizzati è del collegamento, non dell\'agente.\n')
         with (run_dir / 'codex.log').open('wb') as log:
             child = subprocess.Popen(self.command(checkout, summary), stdin=subprocess.PIPE,
                                      stdout=log, stderr=log, env=env, start_new_session=True)

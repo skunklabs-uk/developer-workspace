@@ -72,17 +72,16 @@ class GitHubTests(unittest.TestCase):
                 self.api.list_comments()
             self.assertEqual(run.call_count, 1)
 
-    def test_required_sources_are_read_once_and_identified_by_blob(self):
+    def test_required_rfc_is_read_once_and_identified_by_blob(self):
         encoded = base64.b64encode('Fonte verificata'.encode()).decode()
         body = {'encoding': 'base64', 'content': encoded, 'sha': 'a' * 40}
         self.assertTrue(hasattr(self.m, 'reference_context'), 'Canonical source loader missing')
-        with patch.object(self.m.subprocess, 'run', side_effect=[response(200, body), response(200, body)]):
+        with patch.object(self.m.subprocess, 'run', return_value=response(200, body)):
             text = self.m.reference_context(self.api)
         self.assertIn('RFC-0001-principles.md', text)
-        self.assertIn('global/agent-loop/SKILL.md', text)
-        self.assertEqual(text.count('Fonte verificata'), 2)
+        self.assertEqual(text.count('Fonte verificata'), 1)
         self.assertIn('a' * 40, text)
-        self.assertEqual(self.api.metrics['requests'], 2)
+        self.assertEqual(self.api.metrics['requests'], 1)
 
     def test_missing_canonical_source_cannot_be_silently_ignored(self):
         self.assertTrue(hasattr(self.m, 'reference_context'), 'Canonical source loader missing')

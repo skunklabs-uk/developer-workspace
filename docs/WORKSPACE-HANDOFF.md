@@ -13,6 +13,13 @@ ritirata `agent-loop`. Il percorso di scrittura è verificato con Git locale;
 non è ancora collaudato o abilitato nel Pod. Il risultato storico di #75 resta
 limitato ai due incarichi read-only.
 
+Il 9 settembre 2026 Homelab ha distribuito e ricaricato il profilo AppArmor #79
+su `k3s-worker1`, `k3s-worker2` e `k3s-worker3`, senza ricreare il Pod. Gli
+hash di sorgente e compilato, l'enforce e il rollback sono nella
+[fonte delle policy](workspace-handoff-candidates/README.md). Il consumer resta
+fermo. Il codice write non è rilasciato né collaudato nel Pod e il profilo non
+autorizza da solo nuovi incarichi.
+
 | Iterazione | HEAD eseguito | Report riletto dalla chat |
 | --- | --- | --- |
 | g1 | `9384c1808da6926e7eb222b974ac78f7661200fd` | [5570838436](https://github.com/skunklabs-uk/iwant/pull/524#issuecomment-5570838436) |
@@ -179,12 +186,13 @@ nessun altro ledger o stato globale è introdotto.
 
 ### Prerequisiti ancora aperti
 
-I profili installati nella #75 restano limitati ai percorsi g1/g2. Questa
-modifica non li aggiorna e non abilita nuovi checkout. Il delta necessario a
-nuovi incarichi IWANT deve evitare sia le aperture sull'intera home sia una
-modifica dei nodi a ogni generation, con riesame della baseline e approvazione
-dei file esatti prima dell'applicazione. Nessun reboot di nodo/VM o operazione
-Proxmox, pruning, backup o registry è parte della #79.
+Il profilo #79 installato consente `runs/<sha256>/checkout` tramite `@{hex64}`:
+evita aperture sull'intera home e policy per generation. `@{hex64}` ammette
+anche A-F maiuscole e i pattern sorgente e destinazione sono indipendenti; non
+è un controllo di identità del job. Nel lifecycle corrente bubblewrap espone al
+comando soltanto il checkout selezionato. Non allargare la policy per questo
+motivo. Nessun reboot di nodo/VM o operazione Proxmox, pruning, backup o registry
+è parte della #79.
 
 Prima dell'incarico reale, Codex nel workspace verifica i permessi effettivi,
 la CLI, l'identità Git del padre e l'accesso alla PR, senza stampare segreti.
@@ -250,8 +258,12 @@ può aggiornare la CLI anche invocando `--version`.
 Homelab possiede manifest, RBAC e distribuzione delle
 [policy correnti](workspace-handoff-candidates/README.md) sui worker.
 I permessi approvati rimangono installati anche a consumer fermo; ciò non
-autorizza nuovi incarichi. I profili limitano i percorsi al checkout diagnostico
-e a g1/g2: non costituiscono una sandbox generica per altri task.
+autorizza nuovi incarichi. Il profilo AppArmor #79 è stato distribuito e
+ricaricato il 9 settembre 2026 su tutti e tre i worker e in enforce: la
+[fonte delle policy](workspace-handoff-candidates/README.md) conserva hash e
+rollback. Il Pod non è stato ricreato. Il profilo non costituisce una sandbox
+generica per altri task né abilita da solo il percorso write, che resta non
+rilasciato e non collaudato nel Pod.
 
 Il Pod usa user namespace, `procMount: Unmasked` nel solo code-server,
 seccomp locale e AppArmor ridotto con compensazioni delle protezioni proc.

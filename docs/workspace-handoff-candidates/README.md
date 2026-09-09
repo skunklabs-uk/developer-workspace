@@ -9,16 +9,17 @@ distribuire.
 
 | Stato | Sorgente | Destinazione sui worker K3s | SHA-256 sorgente |
 | --- | --- | --- | --- |
-| Candidato AppArmor #82 + #83, non ancora distribuito | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `8130d61d4405fc495609497be3ab7eef72f61108f47bb826ac66a46be9378c1f` |
-| Candidato seccomp #83, non ancora distribuito | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2` |
+| Candidato AppArmor #82 + #83, non ancora applicato integralmente | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `8130d61d4405fc495609497be3ab7eef72f61108f47bb826ac66a46be9378c1f` |
+| Candidato seccomp #83, installato per il trial controllato | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2` |
 
 Homelab possiede distribuzione, caricamento e riferimenti GitOps; la procedura
 è nel [disegno operativo](https://github.com/skunklabs-uk/homelab/blob/main/doc/35-Developer%20Workspace%20K3s%20GitOps%20design.md).
-Il profilo #79 attualmente osservato sui worker resta la revisione precedente:
-sorgente SHA-256 `4581088a082c031dfea806127b1fcbcb926da6f740c0ccbd97ea35658538b672`,
-compilato `f04f6adf97faecd1883144701c46e4bc043ba62f804d262540428e30a87f162d`,
-profilo in enforce sui tre worker. La PR #82 ha integrato un delta successivo
-non ancora applicato al runtime: stato dedicato
+Durante il trial controllato corrente, i tre worker usano il seccomp candidato
+SHA-256 `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2`
+e la revisione AppArmor intermedia: sorgente
+`4110efffcb696a0e7436a893ae2b2cc0ec8e37562ad33d654c39cf30634a0d59`,
+raw `a24a2503de54b12a9ef4f19d645fb3f115749d3f9e764f60e144b0ff0e23f597`,
+profilo in enforce sui tre worker. La revisione intermedia include lo stato dedicato
 `iwant` o `iwant-<thread>` e remount `rw` limitato al checkout per
 `workspace-write`. Il candidato è stato compilato offline con
 `apparmor_parser 4.0.1`; il raw locale ha SHA-256

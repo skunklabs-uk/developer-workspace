@@ -21,9 +21,10 @@ Il raw compilato offline con `apparmor_parser -Q -K -S` resta
 `9a0f79b5f61f7c0ca480238f7dc84d3f5ab6f76cc43f5054466ab98402d42873`: è
 un'evidenza distinta dal compilato osservato sui worker.
 
-AppArmor consente il checkout diagnostico e i checkout in
-`runs/<sha256>/checkout`, tramite `@{hex64}`; non autorizza altri percorsi dello
-stato o della home. La variabile ammette 64 caratteri esadecimali, anche
+Le regole mount/remount del delta AppArmor consentono il checkout diagnostico e
+i checkout in `runs/<sha256>/checkout`, tramite `@{hex64}`; non aggiungono
+autorizzazioni per altri percorsi dello stato o della home. La variabile ammette
+64 caratteri esadecimali, anche
 maiuscoli, e non lega i pattern sorgente e destinazione. Nel lifecycle corrente
 bubblewrap espone al comando soltanto il checkout selezionato: il profilo non è
 un'autenticazione dei job e non autorizza da solo un incarico. Le aperture
@@ -33,9 +34,11 @@ write non è rilasciato né collaudato nel Pod.
 
 Il rollback del delta #79 resta di competenza Homelab. I backup della sorgente
 baseline `b28fec1792b33cb77cd0e9ae1dc4c4af269a9a8ad12ef786c23313b74f592cc2`
-sono conservati; per il rollback ripristinare tale sorgente, il raw offline
-`56f2927e628ceed16235be16e9ed21d5c97e281cd2b496cfccf0c09ab03815df` e
-ricaricare sui worker.
+sono conservati; per il rollback ripristinare tale sorgente e ricaricarla sui
+worker. Il raw offline storico
+`56f2927e628ceed16235be16e9ed21d5c97e281cd2b496cfccf0c09ab03815df` identifica
+la baseline compilata nell'ambiente di riferimento, non un file da installare
+al posto della sorgente.
 
 Confini, verifiche e lifecycle sono nel [runbook](../WORKSPACE-HANDOFF.md).
 La [cronologia diagnostica](archive/README.md) è archiviata e non autorizza operazioni.

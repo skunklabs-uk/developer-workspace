@@ -174,7 +174,7 @@ def prepare_checkout(request, origin, target):
     head = git(target, 'rev-parse', 'HEAD')
     if head != request['head']:
         raise HandoffError('Branch remoto diverso dallo SHA autorizzato')
-    git(target, 'checkout', '--detach', head)
+    git(target, 'checkout', '--detach', head, safe=True)
     entry = git(target, 'ls-tree', 'HEAD', '--', request['prompt'])
     if not entry.startswith(('100644 blob ', '100755 blob ')):
         raise HandoffError('Il prompt non è un file Git regolare')

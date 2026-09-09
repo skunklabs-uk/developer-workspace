@@ -264,6 +264,24 @@ class CheckoutTests(unittest.TestCase):
         self.assertEqual(subprocess.check_output(
             ['git', '-C', str(checkout), 'show', revision + ':item.txt']), content)
 
+    def test_prepare_checkout_ignores_parent_autocrlf_for_safe_status_and_snapshot(self):
+        """A parent conversion setting must not manufacture a publication change."""
+        from workspace_handoff_publish import snapshot_commit
+        item = self.origin / 'item.txt'
+        item.write_bytes(b'unchanged\n')
+        self.git('add', 'item.txt')
+        self.git('commit', '-m', 'add item')
+        self.request['head'] = self.git('rev-parse', 'HEAD')
+        config = self.root / 'parent.gitconfig'
+        config.write_text('[core]\n\tautocrlf = true\n')
+        checkout = self.root / 'clone'
+
+        with patch.dict(os.environ, {'GIT_CONFIG_GLOBAL': str(config)}):
+            self.m.prepare_checkout(self.request, str(self.origin), checkout)
+            self.assertEqual(self.m.git(checkout, 'status', '--porcelain', safe=True), '')
+            self.assertEqual(snapshot_commit(
+                checkout, self.request['head'], ['item.txt'], 'chore: test'), self.request['head'])
+
     def test_process_configuration_does_not_inherit_personal_tool_credentials(self):
         config = {'execution_enabled': True, 'sandbox': 'read-only'}
         runner = self.m.LocalCodex(config)

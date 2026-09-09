@@ -1,14 +1,16 @@
 # Profili runtime del POC IWANT
 
-**Stato: Active.** Sorgenti dei profili ridotti approvati e applicati nella
-missione [#75](https://github.com/skunklabs-uk/developer-workspace/issues/75),
-con il delta della continuazione [#79](https://github.com/skunklabs-uk/developer-workspace/issues/79) distribuito e ricaricato il 9 settembre 2026.
-Il nome storico della directory non indica che siano ancora candidati.
+**Stato: Active.** Questa directory conserva il profilo seccomp distribuito e
+il candidato AppArmor della Draft PR #82. I profili originano dalla missione
+[#75](https://github.com/skunklabs-uk/developer-workspace/issues/75) e dalla
+continuazione [#79](https://github.com/skunklabs-uk/developer-workspace/issues/79);
+la tabella distingue ciò che è già applicato dal nuovo delta ancora da
+distribuire.
 
-| Sorgente | Destinazione sui worker K3s | SHA-256 |
-| --- | --- | --- |
-| [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `4581088a082c031dfea806127b1fcbcb926da6f740c0ccbd97ea35658538b672` |
-| [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `8657dc596023b63a3501932caf19e55e416ff795d1724e68612812fd865f1d53` |
+| Stato | Sorgente | Destinazione sui worker K3s | SHA-256 sorgente |
+| --- | --- | --- | --- |
+| Candidato #82, non ancora distribuito | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `ec0abc6b7729743825d0be469d7b5559a06a48c51a18f776d6688c0e36f0e5e6` |
+| Invariato e distribuito | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `8657dc596023b63a3501932caf19e55e416ff795d1724e68612812fd865f1d53` |
 
 Homelab possiede distribuzione, caricamento e riferimenti GitOps; la procedura
 è nel [disegno operativo](https://github.com/skunklabs-uk/homelab/blob/main/doc/35-Developer%20Workspace%20K3s%20GitOps%20design.md).
@@ -18,7 +20,12 @@ compilato `f04f6adf97faecd1883144701c46e4bc043ba62f804d262540428e30a87f162d`,
 profilo in enforce sui tre worker. Il branch `fix/79-handoff-write-apparmor`
 propone un delta successivo non ancora applicato al runtime: stato dedicato
 `iwant` o `iwant-<thread>` e remount `rw` limitato al checkout per
-`workspace-write`.
+`workspace-write`. Il candidato è stato compilato offline con
+`apparmor_parser 4.0.1`; il raw locale ha SHA-256
+`9a0f79b5f61f7c0ca480238f7dc84d3f5ab6f76cc43f5054466ab98402d42873`.
+L'ambiente locale non espone l'interfaccia kernel AppArmor: questo dato non
+sostituisce l'hash compilato nativamente che va prodotto sui worker prima del
+reload.
 
 Le regole mount/remount del profilo mantengono il checkout diagnostico e i
 checkout in `runs/<sha256>/checkout`, tramite `@{hex64}`. Il delta write non apre

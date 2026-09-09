@@ -9,16 +9,17 @@ Nessun servizio è avviato automaticamente.
 
 La continuazione [#79](https://github.com/skunklabs-uk/developer-workspace/issues/79)
 aggiunge la consegna dei file autorizzati e rimuove la dipendenza dalla skill
-ritirata `agent-loop`. Il percorso di scrittura è verificato con Git locale;
-non è ancora collaudato o abilitato nel Pod. Il risultato storico di #75 resta
-limitato ai due incarichi read-only.
+ritirata `agent-loop`. Il codice è stato rilasciato dalla #80. Il 10 settembre
+2026 i probe nativi `read-only` e `workspace-write` sono passati nel Pod: il
+checkout è scrivibile soltanto in modalità write, mentre `.git`, `.agents` e
+`.codex`, filesystem esterno, rete e credenziali del padre restano protetti.
 
-Il 9 settembre 2026 Homelab ha distribuito e ricaricato il profilo AppArmor #79
-su `k3s-worker1`, `k3s-worker2` e `k3s-worker3`, senza ricreare il Pod. Gli
-hash di sorgente e compilato, l'enforce e il rollback sono nella
+Homelab ha distribuito e ricaricato i profili AppArmor e seccomp della #83 su
+`k3s-worker1`, `k3s-worker2` e `k3s-worker3`; soltanto
+`developer-workspace-0` è stato ricreato per acquisire il nuovo seccomp. Hash,
+enforce e rollback sono nella
 [fonte delle policy](workspace-handoff-candidates/README.md). Il consumer resta
-fermo. Il codice write non è rilasciato né collaudato nel Pod e il profilo non
-autorizza da solo nuovi incarichi.
+fermo e disabilitato. Nessun incarico write o modello è stato ancora avviato.
 
 | Iterazione | HEAD eseguito | Report riletto dalla chat |
 | --- | --- | --- |
@@ -129,7 +130,7 @@ superata; risultati già prodotti vengono comunque consegnati. I comandi malform
 bloccare le successive richieste valide. Le modifiche a un comando non sono un
 meccanismo di cancellazione di un processo già avviato.
 
-## Consegna di modifiche — implementazione #79, non ancora attiva nel Pod
+## Consegna di modifiche — runtime verificato, incarico reale ancora da eseguire
 
 La richiesta può aggiungere `publish_paths`, una lista non vuota di **file
 esatti** relativi al repository. Non sono pattern o directory. Il campo è
@@ -184,9 +185,9 @@ aggirare il fallimento tecnico. Un errore di trasporto del commit o del report
 non può autorizzare un nuovo modello. La ricevuta usa il PATCH già esistente;
 nessun altro ledger o stato globale è introdotto.
 
-### Prerequisiti ancora aperti
+### Prerequisiti dell'incarico reale
 
-Il profilo #79 installato consente `runs/<sha256>/checkout` tramite `@{hex64}`:
+Il profilo installato consente `runs/<sha256>/checkout` tramite `@{hex64}`:
 evita aperture sull'intera home e policy per generation. `@{hex64}` ammette
 anche A-F maiuscole e i pattern sorgente e destinazione sono indipendenti; non
 è un controllo di identità del job. Nel lifecycle corrente bubblewrap espone al
@@ -258,12 +259,12 @@ può aggiornare la CLI anche invocando `--version`.
 Homelab possiede manifest, RBAC e distribuzione delle
 [policy correnti](workspace-handoff-candidates/README.md) sui worker.
 I permessi approvati rimangono installati anche a consumer fermo; ciò non
-autorizza nuovi incarichi. Il profilo AppArmor #79 è stato distribuito e
-ricaricato il 9 settembre 2026 su tutti e tre i worker e in enforce: la
+autorizza nuovi incarichi. AppArmor e seccomp della #83 sono distribuiti sui
+tre worker; il profilo AppArmor è in enforce e il Pod è stato ricreato per
+acquisire il filtro seccomp. La
 [fonte delle policy](workspace-handoff-candidates/README.md) conserva hash e
-rollback. Il Pod non è stato ricreato. Il profilo non costituisce una sandbox
-generica per altri task né abilita da solo il percorso write, che resta non
-rilasciato e non collaudato nel Pod.
+rollback. Il profilo non costituisce una sandbox generica per altri task e non
+abilita da solo il consumer.
 
 Il Pod usa user namespace, `procMount: Unmasked` nel solo code-server,
 seccomp locale e AppArmor ridotto con compensazioni delle protezioni proc.
@@ -290,8 +291,8 @@ i dati persistenti, non vieta file temporanei privati.
 Gli strumenti figli possono richiedere percorsi assoluti, come
 `/usr/bin/git` e `/usr/bin/sha256sum`, perché il PATH è ristretto.
 
-I risultati del collaudo non dichiarano già rilasciata una nuova immagine:
-gli script sono stati eseguiti dal checkout verificato.
+Il runtime verificato usa l'immagine `2026.09.09-b000242`; il collaudo delle
+policy non costituisce una nuova release applicativa.
 Prima di rimuovere il collegamento conservare risultati e stato. Revocare i
 riferimenti runtime tramite Homelab prima di scaricare policy non più in uso.
 Le [prove diagnostiche archiviate](workspace-handoff-candidates/archive/README.md)

@@ -315,6 +315,7 @@ abi <abi/3.0>,
 @{hex38}=@{hex32}@{hex6}
 
 @{hex64}=@{hex32}@{hex32}
+@{handoff_state}=iwant iwant-@{int}
 
 
 # Any x alphanumeric characters
@@ -836,7 +837,7 @@ profile workspace-handoff-poc-iwant flags=(attach_disconnected,mediate_deleted) 
   mount options=(rw,rbind) /oldroot/usr/sbin/ -> /newroot/sbin/,
   mount options=(rw,rbind) /oldroot/usr/ -> /newroot/usr/,
   mount options=(rw,rbind) /oldroot/workspaces/developer-workspace/.worktrees/handoff-75/ -> /newroot/workspaces/developer-workspace/.worktrees/handoff-75/,
-  mount options=(rw,rbind) /oldroot/home/coder/.local/state/workspace-handoff/iwant/runs/@{hex64}/checkout/ -> /newroot/home/coder/.local/state/workspace-handoff/iwant/runs/@{hex64}/checkout/,
+  mount options=(rw,rbind) /oldroot/home/coder/.local/state/workspace-handoff/@{handoff_state}/runs/@{hex64}/checkout/ -> /newroot/home/coder/.local/state/workspace-handoff/@{handoff_state}/runs/@{hex64}/checkout/,
   remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/bin/,
   remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/,
   remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/codex-resources/zsh/bin/zsh,
@@ -845,7 +846,8 @@ profile workspace-handoff-poc-iwant flags=(attach_disconnected,mediate_deleted) 
   remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/sbin/,
   remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/usr/,
   remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/workspaces/developer-workspace/.worktrees/handoff-75/,
-  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/home/coder/.local/state/workspace-handoff/iwant/runs/@{hex64}/checkout/,
+  remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/home/coder/.local/state/workspace-handoff/@{handoff_state}/runs/@{hex64}/checkout/,
+  remount options=(rw,bind,nosuid,nodev,relatime,silent) /newroot/home/coder/.local/state/workspace-handoff/@{handoff_state}/runs/@{hex64}/checkout/,
   remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/hosts,
   remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/hostname,
   remount options=(ro,bind,nosuid,nodev,relatime,silent) /newroot/etc/resolv.conf,

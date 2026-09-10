@@ -8,7 +8,7 @@ la tabella identifica la revisione sorgente verificata nel runtime.
 
 | Stato | Sorgente | Destinazione sui worker K3s | SHA-256 sorgente |
 | --- | --- | --- | --- |
-| Candidato toolchain #79, non ancora distribuito | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `3f6254472d9489a51ba3b345340951505068a8a51ff3a2a006b5397a398d0a6f` |
+| Verificato e distribuito sui tre worker | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `3f6254472d9489a51ba3b345340951505068a8a51ff3a2a006b5397a398d0a6f` |
 | Verificato e distribuito sui tre worker | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2` |
 
 Homelab possiede distribuzione, caricamento e riferimenti GitOps; la procedura
@@ -41,6 +41,10 @@ La remediation toolchain della #79 aggiunge soltanto due read root esatti:
 successivo remount read-only; non apre `.local`, mise, i suoi shim, GOPATH o home.
 I flag mount sono quelli già coperti dal seccomp corrente (`53248` per `rbind` e
 `2134055` per il remount read-only), quindi il seccomp non cambia.
+Il 10 settembre 2026 il candidato è stato compilato e ricaricato in replace-mode
+sui tre worker: sorgente identica all'hash in tabella, raw parser 4.1.0
+`9769ef4ef9ccd29fe40e7eceeb00aacc365dfca748a1fdf9cc000aca971cdcda`
+e profilo in enforce. Non sono stati eseguiti reboot o cambi seccomp.
 
 Il delta è stato compilato e revisionato prima del reload, con consumer fermo.
 I probe `read-only` e `workspace-write` sono passati sullo state path dedicato;

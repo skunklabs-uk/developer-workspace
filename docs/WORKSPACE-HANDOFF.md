@@ -292,6 +292,15 @@ i dati persistenti, non vieta file temporanei privati.
 Gli strumenti figli possono richiedere percorsi assoluti, come
 `/usr/bin/git` e `/usr/bin/sha256sum`, perché il PATH è ristretto.
 
+Per gli incarichi Go della continuazione #79, il profilo espone in sola lettura
+soltanto `~/.local/share/mise/installs/go/1.26.5` e il module cache effettivo
+`~/go/pkg/mod`. Non espone `.local`, l'albero mise, gli shim o il GOPATH
+completo. Il figlio riceve un PATH esplicito con il `bin` della release fissata,
+`GOPROXY=off`, `GOTOOLCHAIN=local`, `GOENV=off` e `GOTELEMETRY=off`; build cache
+e temporanei Go restano nel tmpfs privato sotto `/tmp`. Il module cache è input
+read-only: le dipendenze devono essere presenti prima dell'incarico e nessuna
+installazione o aggiornamento viene eseguito durante il modello.
+
 Il runtime verificato usa l'immagine `2026.09.09-b000242`; il collaudo delle
 policy non costituisce una nuova release applicativa.
 Prima di rimuovere il collegamento conservare risultati e stato. Revocare i

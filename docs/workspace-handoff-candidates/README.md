@@ -8,7 +8,7 @@ la tabella identifica la revisione sorgente verificata nel runtime.
 
 | Stato | Sorgente | Destinazione sui worker K3s | SHA-256 sorgente |
 | --- | --- | --- | --- |
-| Verificato e distribuito sui tre worker | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `8130d61d4405fc495609497be3ab7eef72f61108f47bb826ac66a46be9378c1f` |
+| Verificato e distribuito sui tre worker | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `3f6254472d9489a51ba3b345340951505068a8a51ff3a2a006b5397a398d0a6f` |
 | Verificato e distribuito sui tre worker | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2` |
 
 Homelab possiede distribuzione, caricamento e riferimenti GitOps; la procedura
@@ -35,6 +35,17 @@ coerentemente con la modalità scelta dal permission profile Codex. Il profilo
 non autentica il job e non autorizza da solo un incarico; request, thread,
 branch, head, prompt e `publish_paths` restano verificati dal consumer.
 
+La remediation toolchain della #79 aggiunge soltanto due read root esatti:
+`/home/coder/.local/share/mise/installs/go/1.26.5` e il `GOMODCACHE` osservato
+`/home/coder/go/pkg/mod`. Per ciascuno il profilo ammette il bind ricorsivo e il
+successivo remount read-only; non apre `.local`, mise, i suoi shim, GOPATH o home.
+I flag mount sono quelli già coperti dal seccomp corrente (`53248` per `rbind` e
+`2134055` per il remount read-only), quindi il seccomp non cambia.
+Il 10 settembre 2026 il candidato è stato compilato e ricaricato in replace-mode
+sui tre worker: sorgente identica all'hash in tabella, raw parser 4.1.0
+`9769ef4ef9ccd29fe40e7eceeb00aacc365dfca748a1fdf9cc000aca971cdcda`
+e profilo in enforce. Non sono stati eseguiti reboot o cambi seccomp.
+
 Il delta è stato compilato e revisionato prima del reload, con consumer fermo.
 I probe `read-only` e `workspace-write` sono passati sullo state path dedicato;
 il secondo ha verificato checkout scrivibile, metadati protetti e assenza di
@@ -43,11 +54,11 @@ scritture persistenti esterne. Il seccomp #83 aggiunge esclusivamente l'allow `m
 varianti read-only `2134055` e `2134063` restano invariate. Un fallimento non
 autorizza altre regole, wildcard più ampie, full access o bypass della sandbox.
 
-Rollback: mantenere `execution_enabled=false`, ripristinare la sorgente runtime
-precedente SHA-256 `4581088a082c031dfea806127b1fcbcb926da6f740c0ccbd97ea35658538b672`
-e ricaricarla sui tre worker; ripristinare il seccomp precedente SHA-256
-`8657dc596023b63a3501932caf19e55e416ff795d1724e68612812fd865f1d53` e
-ricreare soltanto il Pod `developer-workspace-0`. Stato e risultati restano
+Rollback del candidato toolchain: mantenere `execution_enabled=false`,
+ripristinare la sorgente runtime distribuita dalla #83 SHA-256
+`8130d61d4405fc495609497be3ab7eef72f61108f47bb826ac66a46be9378c1f`
+e ricaricarla sui tre worker. Il seccomp resta invariato e non richiede rollback
+o ricreazione del Pod per questa remediation. Stato e risultati restano
 conservati; StatefulSet, RBAC, credenziali e CLI non cambiano.
 La baseline storica pre-#79 `b28fec1792b33cb77cd0e9ae1dc4c4af269a9a8ad12ef786c23313b74f592cc2`
 resta evidenza diagnostica, non il rollback immediato della continuazione write.

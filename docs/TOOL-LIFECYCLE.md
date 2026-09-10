@@ -20,6 +20,12 @@ Project-specific versions remain owned by each repository through its
 `mise.toml`. Prefer `mise exec` in CI and scripts; interactive shells activate
 mise from `.bashrc`.
 
+La sandbox `workspace-handoff` non eredita l'ambiente interattivo e non usa gli
+shim mise. Quando un incarico autorizzato richiede Go, il runner espone soltanto
+la release esatta e il module cache già popolato indicati nel relativo runbook,
+entrambi read-only; cache di build e temporanei restano nel tmpfs privato. Questo
+confine non rende l'intero catalogo mise disponibile al figlio.
+
 ## Ownership
 
 | Owner | Tools | Location | Update |

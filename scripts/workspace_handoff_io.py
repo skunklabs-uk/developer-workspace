@@ -206,6 +206,10 @@ def reference_context(github):
 
 class LocalCodex:
     """Opt-in native permissions; the effective managed tool set still needs live review."""
+    GO_ROOT = '/home/coder/.local/share/mise/installs/go/1.26.5'
+    GO_MODULE_CACHE = '/home/coder/go/pkg/mod'
+    SYSTEM_PATH = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
     def __init__(self, config, github=None):
         self.github = github
         self.config = config
@@ -285,10 +289,15 @@ class LocalCodex:
             'default_permissions="handoff"',
             'permissions.handoff={filesystem={":minimal"="read",":workspace_roots"="' + access +
                 '","/etc/developer-workspace"="deny",'
+                f'"{self.GO_ROOT}"="read","{self.GO_MODULE_CACHE}"="read",'
                 '"/home/coder/.codex/packages/standalone/releases/0.153.4-x86_64-unknown-linux-musl/bin/codex"='
                 '"read"},network={enabled=false}}',
             'approval_policy="never"', 'web_search="disabled"',
             'shell_environment_policy.inherit="none"',
+            'shell_environment_policy.set={PATH="' + self.GO_ROOT + '/bin:' + self.SYSTEM_PATH +
+                '",GOPROXY="off",GOTOOLCHAIN="local",GOENV="off",GOTELEMETRY="off",'
+                'GOCACHE="/tmp/go-build",GOTMPDIR="/tmp/go-tmp",'
+                f'GOMODCACHE="{self.GO_MODULE_CACHE}"}}',
             'features.plugins=false', 'features.apps=false', 'features.hooks=false',
         ]
         return [part for value in values for part in ('-c', value)]

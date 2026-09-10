@@ -165,6 +165,34 @@ class CheckoutTests(unittest.TestCase):
         with self.assertRaises(self.m.HandoffError):
             runner(self.request, self.root / 'run')
 
+    def test_handoff_exposes_only_the_pinned_offline_go_toolchain(self):
+        runner = self.m.LocalCodex({'sandbox': 'workspace-write'})
+        overrides = '\n'.join(runner.overrides())
+
+        go_root = '/home/coder/.local/share/mise/installs/go/1.26.5'
+        module_cache = '/home/coder/go/pkg/mod'
+        self.assertIn(f'"{go_root}"="read"', overrides)
+        self.assertIn(f'"{module_cache}"="read"', overrides)
+        self.assertNotIn('"/home/coder/.local"=', overrides)
+        self.assertNotIn('"/home/coder/.local/share/mise"=', overrides)
+        self.assertNotIn('/home/coder/.local/share/mise/shims', overrides)
+        self.assertIn('network={enabled=false}', overrides)
+
+        self.assertIn(f'PATH="{go_root}/bin:/usr/local/sbin:/usr/local/bin:'
+                      '/usr/sbin:/usr/bin:/sbin:/bin"', overrides)
+        for setting in ('GOPROXY="off"', 'GOTOOLCHAIN="local"', 'GOENV="off"',
+                        'GOTELEMETRY="off"', 'GOCACHE="/tmp/go-build"',
+                        'GOTMPDIR="/tmp/go-tmp"', f'GOMODCACHE="{module_cache}"'):
+            self.assertIn(setting, overrides)
+        self.assertIn('shell_environment_policy.inherit="none"', overrides)
+
+        # Existing workspace and protected-metadata boundaries stay in the
+        # native profile; adding Go must not replace or weaken them.
+        self.assertIn('":workspace_roots"="write"', overrides)
+        self.assertIn('features.plugins=false', overrides)
+        self.assertIn('features.apps=false', overrides)
+        self.assertIn('features.hooks=false', overrides)
+
     def test_probe_rejects_host_write_despite_successful_child(self):
         runner = self.m.LocalCodex({'sandbox': 'read-only'})
 

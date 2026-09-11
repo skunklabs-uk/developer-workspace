@@ -83,11 +83,11 @@ port_reserved() {
 }
 
 port_busy() {
-  local port=$1 hex table _ local_address remote_address state rest
+  local port=$1 hex table local_address state
   printf -v hex '%04X' "$port"
   for table in /proc/net/tcp /proc/net/tcp6; do
     [[ -r $table ]] || continue
-    while read -r _ local_address remote_address state rest; do
+    while read -r _ local_address _ state _; do
       [[ $state == 0A && ${local_address##*:} == "$hex" ]] && return 0
     done < "$table"
   done

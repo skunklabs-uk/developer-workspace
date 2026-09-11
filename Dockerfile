@@ -72,6 +72,7 @@ RUN CODE_SERVER_EXTENSIONS_DIR=/opt/developer-workspace/code-server-extensions \
  && chmod 0755 /usr/local/lib/developer-workspace/*.sh \
  && ln -s /usr/local/lib/developer-workspace/workspace-doctor.sh /usr/local/bin/workspace-doctor \
  && ln -s /usr/local/lib/developer-workspace/workspace-tmux.sh /usr/local/bin/workspace-tmux \
+ && ln -s /usr/local/lib/developer-workspace/workspace-port.sh /usr/local/bin/workspace-port \
  && ln -s /usr/local/lib/developer-workspace/mise-launcher.sh /usr/local/bin/mise \
  && ln -s /usr/local/lib/developer-workspace/codex-launcher.sh /usr/local/bin/codex
 

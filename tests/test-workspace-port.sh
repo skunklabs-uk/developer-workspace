@@ -12,6 +12,7 @@ trap cleanup EXIT
 
 fail() { echo "FAIL: $*" >&2; exit 1; }
 assert_contains() { [[ $1 == *"$2"* ]] || fail "expected <$1> to contain <$2>"; }
+workspace_port() { bash "$script" "$@"; }
 
 export HOME="$tmp/home"
 export WORKSPACE_PORT_STATE_DIR="$tmp/state"
@@ -32,18 +33,18 @@ baialupo=$(make_repo baialupo.com)
 iwant=$(make_repo iwant)
 aeris=$(make_repo aeris)
 
-out=$(cd "$baialupo" && "$script" allocate)
+out=$(cd "$baialupo" && workspace_port allocate)
 assert_contains "$out" "Project: baialupo.com"
 assert_contains "$out" "Port:    3000"
 assert_contains "$out" "Preview: https://dev.skunklabs.uk/proxy/3000/"
 
-out=$(cd "$baialupo" && "$script" allocate)
+out=$(cd "$baialupo" && workspace_port allocate)
 assert_contains "$out" "Port:    3000"
 
-out=$(cd "$iwant" && "$script" allocate)
+out=$(cd "$iwant" && workspace_port allocate)
 assert_contains "$out" "Port:    3001"
 
-out=$($script list)
+out=$(workspace_port list)
 assert_contains "$out" $'baialupo.com\t3000\tstopped'
 assert_contains "$out" $'iwant\t3001\tstopped'
 
@@ -56,17 +57,17 @@ for _ in $(seq 1 50); do
   fi
   sleep 0.02
 done
-out=$(cd "$aeris" && "$script" allocate)
+out=$(cd "$aeris" && workspace_port allocate)
 assert_contains "$out" "Port:    3003"
 
-out=$(cd "$aeris" && "$script" check)
+out=$(cd "$aeris" && workspace_port check)
 assert_contains "$out" "Status:  stopped"
 
-(cd "$iwant" && "$script" forget) >/dev/null
-out=$(cd "$iwant" && "$script" allocate)
+(cd "$iwant" && workspace_port forget) >/dev/null
+out=$(cd "$iwant" && workspace_port allocate)
 assert_contains "$out" "Port:    3001"
 
-out=$(cd "$tmp" && "$script" check baialupo.com)
+out=$(cd "$tmp" && workspace_port check baialupo.com)
 assert_contains "$out" "Project: baialupo.com"
 assert_contains "$out" "Port:    3000"
 

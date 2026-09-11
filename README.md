@@ -114,11 +114,44 @@ tmux attach -t repo-b
 To leave tmux without stopping Codex, press `Ctrl+B`, release the keys, and
 then press `D`.
 
-### If both projects run services
+### Project development ports
 
-Use different host ports. For example, run one application on port `3000` and
-the other on `3001`. Two services cannot listen on the same port at the same
-time.
+Development services use code-server's native path proxy. Each project receives
+a stable TCP port automatically; the generated assignment is stored in the
+persistent workspace home and is not maintained by hand.
+
+From a project repository:
+
+```bash
+workspace-port allocate
+```
+
+The command discovers the project from Git, reuses its existing assignment or
+selects the first unassigned and currently unused port starting at `3000`, then
+prints the corresponding preview URL, for example:
+
+```text
+Project: baialupo.com
+Port:    3000
+Preview: https://dev.skunklabs.uk/proxy/3000/
+```
+
+Useful commands:
+
+```bash
+workspace-port list
+workspace-port check
+workspace-port forget
+```
+
+`list` distinguishes a reserved port from a service that is currently
+listening. `forget` removes only the persistent assignment; if a process is
+still listening on that port, the allocator still treats the port as busy and
+does not reuse it.
+
+The port allocator owns only local project-to-port assignments. It does not
+create Kubernetes resources, Cloudflare routes, DNS records or background
+services. Friendly project hostnames remain outside this contract.
 
 ## Release flow
 

@@ -26,7 +26,7 @@ RUN apt-get update \
  && apt-get upgrade -y \
  && apt-get install -y --no-install-recommends \
     bash-completion ca-certificates curl dnsutils dumb-init git gnupg less make openssh-client \
-    sudo tmux unzip util-linux wget xz-utils docker-cli docker-compose \
+    sudo tmux unzip util-linux wget xz-utils docker-cli docker-compose docker-buildx \
     fonts-liberation fonts-noto-color-emoji fonts-unifont libfontconfig1 libfreetype6 \
     libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libatspi2.0-0t64 \
     libcairo2 libcups2t64 libdbus-1-3 libdrm2 libgbm1 libglib2.0-0t64 \

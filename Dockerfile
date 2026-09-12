@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.26
 ARG DEBIAN_VERSION=13
 ARG CODE_SERVER_VERSION=v4.133.0
 ARG CODE_SERVER_DEB_SHA256=241feb9fcbd96b1e2caa2e16ecafa67a70d6f7f60659058ddc9a8ba51d366d7e

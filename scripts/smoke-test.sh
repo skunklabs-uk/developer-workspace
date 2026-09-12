@@ -8,7 +8,7 @@ mise install node python uv
 mise install
 eval "$(mise activate bash)"
 
-required=(code-server bash git gh tmux mise chezmoi sops age kubectl helm kustomize tofu ansible proxmox-mcp-server jq yq rg fd ssh dig codex bw node npm pnpm python3 uv shellcheck workspace-doctor workspace-tmux argocd actionlint trivy)
+required=(code-server bash git gh tmux mise chezmoi sops age kubectl helm kustomize tofu ansible proxmox-mcp-server jq yq rg fd ssh dig codex bw node npm pnpm python3 uv shellcheck workspace-doctor workspace-tmux argocd actionlint trivy docker)
 for binary in "${required[@]}"; do
   command -v "$binary" >/dev/null || { echo "missing: $binary" >&2; exit 1; }
 done
@@ -65,6 +65,8 @@ argocd version --client
 trivy --version
 actionlint --version
 chezmoi --version
+docker --version
+docker compose version
 workspace-doctor
 
 proxmox_mcp_python="$(mise where pipx:proxmox-mcp-server@1.4.1)/proxmox-mcp-server/bin/python"

@@ -157,6 +157,20 @@ The port allocator owns only local project-to-preview-port assignments. It does
 not create Kubernetes resources, Cloudflare routes, DNS records or background
 services. Friendly project hostnames remain outside this contract.
 
+### Docker Compose projects
+
+The image includes the standard Debian Docker CLI and Compose v2 client so
+projects that already use `docker compose` do not need a parallel local launch
+path. The Docker daemon is **not** part of this image and the workspace never
+uses the node Docker/containerd socket. Kubernetes supplies a dedicated daemon
+sidecar and its Unix socket through the `homelab` deployment.
+
+The container client therefore remains disposable and project-oriented:
+`docker compose` talks only to the daemon attached to the same Developer
+Workspace Pod. Docker images, containers and volumes belong to that daemon and
+may disappear when the Pod is recreated; source trees and the workspace home
+remain on the persistent workspace PVC.
+
 ## Release flow
 
 1. GitHub Actions builds, tests and scans one immutable image artifact.

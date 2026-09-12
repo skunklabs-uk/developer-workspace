@@ -4,8 +4,8 @@ set -euo pipefail
 state_dir=${WORKSPACE_PORT_STATE_DIR:-${XDG_STATE_HOME:-${HOME:-/home/coder}/.local/state}/developer-workspace}
 state_file="$state_dir/project-ports.tsv"
 lock_file="$state_dir/project-ports.lock"
-port_min=${WORKSPACE_PORT_MIN:-3000}
-port_max=${WORKSPACE_PORT_MAX:-3999}
+port_min=${WORKSPACE_PORT_MIN:-10000}
+port_max=${WORKSPACE_PORT_MAX:-19999}
 preview_base=${WORKSPACE_PORT_PREVIEW_BASE:-https://dev.skunklabs.uk/proxy}
 
 usage() {

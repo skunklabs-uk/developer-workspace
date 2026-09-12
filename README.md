@@ -117,8 +117,12 @@ then press `D`.
 ### Project development ports
 
 Development services use code-server's native path proxy. Each project receives
-a stable TCP port automatically; the generated assignment is stored in the
+a stable preview port automatically; the generated assignment is stored in the
 persistent workspace home and is not maintained by hand.
+
+The preview range is `10000-19999`. These ports are workspace-facing preview
+ports, not application-internal ports: a project may keep its native runtime
+ports and map one preview port to the service it wants to expose.
 
 From a project repository:
 
@@ -127,13 +131,13 @@ workspace-port allocate
 ```
 
 The command discovers the project from Git, reuses its existing assignment or
-selects the first unassigned and currently unused port starting at `3000`, then
-prints the corresponding preview URL, for example:
+selects the first unassigned and currently unused preview port starting at
+`10000`, then prints the corresponding preview URL, for example:
 
 ```text
 Project: baialupo.com
-Port:    3000
-Preview: https://dev.skunklabs.uk/proxy/3000/
+Port:    10000
+Preview: https://dev.skunklabs.uk/proxy/10000/
 ```
 
 Useful commands:
@@ -149,8 +153,8 @@ listening. `forget` removes only the persistent assignment; if a process is
 still listening on that port, the allocator still treats the port as busy and
 does not reuse it.
 
-The port allocator owns only local project-to-port assignments. It does not
-create Kubernetes resources, Cloudflare routes, DNS records or background
+The port allocator owns only local project-to-preview-port assignments. It does
+not create Kubernetes resources, Cloudflare routes, DNS records or background
 services. Friendly project hostnames remain outside this contract.
 
 ## Release flow

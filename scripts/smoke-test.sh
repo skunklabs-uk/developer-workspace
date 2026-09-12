@@ -67,6 +67,7 @@ actionlint --version
 chezmoi --version
 docker --version
 docker compose version
+docker buildx version
 workspace-doctor
 
 proxmox_mcp_python="$(mise where pipx:proxmox-mcp-server@1.4.1)/proxmox-mcp-server/bin/python"

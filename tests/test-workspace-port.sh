@@ -16,8 +16,6 @@ workspace_port() { bash "$script" "$@"; }
 
 export HOME="$tmp/home"
 export WORKSPACE_PORT_STATE_DIR="$tmp/state"
-export WORKSPACE_PORT_MIN=3000
-export WORKSPACE_PORT_MAX=3005
 mkdir -p "$HOME" "$tmp/repos"
 
 make_repo() {
@@ -35,40 +33,40 @@ aeris=$(make_repo aeris)
 
 out=$(cd "$baialupo" && workspace_port allocate)
 assert_contains "$out" "Project: baialupo.com"
-assert_contains "$out" "Port:    3000"
-assert_contains "$out" "Preview: https://dev.skunklabs.uk/proxy/3000/"
+assert_contains "$out" "Port:    10000"
+assert_contains "$out" "Preview: https://dev.skunklabs.uk/proxy/10000/"
 
 out=$(cd "$baialupo" && workspace_port allocate)
-assert_contains "$out" "Port:    3000"
+assert_contains "$out" "Port:    10000"
 
 out=$(cd "$iwant" && workspace_port allocate)
-assert_contains "$out" "Port:    3001"
+assert_contains "$out" "Port:    10001"
 
 out=$(workspace_port list)
-assert_contains "$out" $'baialupo.com\t3000\tstopped'
-assert_contains "$out" $'iwant\t3001\tstopped'
+assert_contains "$out" $'baialupo.com\t10000\tstopped'
+assert_contains "$out" $'iwant\t10001\tstopped'
 
-python3 -m http.server 3002 --bind 127.0.0.1 --directory "$tmp" >/dev/null 2>&1 &
+python3 -m http.server 10002 --bind 127.0.0.1 --directory "$tmp" >/dev/null 2>&1 &
 server_pid=$!
 for _ in $(seq 1 50); do
-  if (exec 3<>/dev/tcp/127.0.0.1/3002) 2>/dev/null; then
+  if (exec 3<>/dev/tcp/127.0.0.1/10002) 2>/dev/null; then
     exec 3>&- 3<&-
     break
   fi
   sleep 0.02
 done
 out=$(cd "$aeris" && workspace_port allocate)
-assert_contains "$out" "Port:    3003"
+assert_contains "$out" "Port:    10003"
 
 out=$(cd "$aeris" && workspace_port check)
 assert_contains "$out" "Status:  stopped"
 
 (cd "$iwant" && workspace_port forget) >/dev/null
 out=$(cd "$iwant" && workspace_port allocate)
-assert_contains "$out" "Port:    3001"
+assert_contains "$out" "Port:    10001"
 
 out=$(cd "$tmp" && workspace_port check baialupo.com)
 assert_contains "$out" "Project: baialupo.com"
-assert_contains "$out" "Port:    3000"
+assert_contains "$out" "Port:    10000"
 
 echo "workspace-port tests passed"

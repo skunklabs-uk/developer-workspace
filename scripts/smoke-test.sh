@@ -8,7 +8,7 @@ mise install node python uv
 mise install
 eval "$(mise activate bash)"
 
-required=(code-server bash git gh tmux mise chezmoi sops age kubectl helm kustomize tofu ansible proxmox-mcp-server jq yq rg fd ssh dig codex bw node npm pnpm python3 uv shellcheck workspace-doctor workspace-tmux argocd actionlint trivy docker)
+required=(code-server bash git gh tmux mise chezmoi sops age kubectl helm kustomize tofu ansible proxmox-mcp-server jq yq rg fd ssh dig codex bw node npm pnpm python3 uv shellcheck workspace-doctor workspace-tmux argocd actionlint trivy docker podman pasta slirp4netns crun conmon)
 for binary in "${required[@]}"; do
   command -v "$binary" >/dev/null || { echo "missing: $binary" >&2; exit 1; }
 done
@@ -33,6 +33,10 @@ done
 
 grep -Fxq 'python = "3"' /opt/developer-workspace/mise-workspace-tools.toml
 grep -Fxq '"pipx:proxmox-mcp-server" = { version = "1.4.1", extras = ["router"], uvx_args = "--python /home/coder/.local/share/mise/installs/python/3.12.14/bin/python" }' /opt/developer-workspace/mise-workspace-tools.toml
+grep -Fxq 'cgroups = "disabled"' /opt/developer-workspace/podman/containers.conf
+grep -Fxq 'default_rootless_network_cmd = "pasta"' /opt/developer-workspace/podman/containers.conf
+grep -Fxq 'driver = "vfs"' /opt/developer-workspace/podman/storage.conf
+grep -Fxq 'ignore_chown_errors = "true"' /opt/developer-workspace/podman/storage.conf
 test "$(id -u)" != "0"
 test "${BW_SERVER:-}" = "https://vault.skunklabs.uk"
 test -d /opt/oh-my-bash
@@ -68,6 +72,10 @@ chezmoi --version
 docker --version
 docker compose version
 docker buildx version
+podman --version
+pasta --version
+slirp4netns --version
+crun --version
 workspace-doctor
 
 proxmox_mcp_python="$(mise where pipx:proxmox-mcp-server@1.4.1)/proxmox-mcp-server/bin/python"

@@ -160,16 +160,23 @@ services. Friendly project hostnames remain outside this contract.
 ### Docker Compose projects
 
 The image includes the standard Debian Docker CLI and Compose v2 client so
-projects that already use `docker compose` do not need a parallel local launch
-path. The Docker daemon is **not** part of this image and the workspace never
-uses the node Docker/containerd socket. Kubernetes supplies a dedicated daemon
-sidecar and its Unix socket through the `homelab` deployment.
+projects that already use `docker compose` keep their existing command and
+Compose model. The workspace never mounts the node Docker/containerd socket.
 
-The container client therefore remains disposable and project-oriented:
-`docker compose` talks only to the daemon attached to the same Developer
-Workspace Pod. Docker images, containers and volumes belong to that daemon and
-may disappear when the Pod is recreated; source trees and the workspace home
-remain on the persistent workspace PVC.
+The first non-privileged Docker-in-Docker canary in `homelab#1143` was rolled
+back because the upstream DinD helper requires a privilege model outside the
+approved boundary. The supported Homelab runtime therefore remains
+code-server-only until a replacement backend passes its runtime canary.
+
+This image also carries the Debian Podman runtime and its standard rootless
+network helpers as the candidate compatibility backend for that canary. Podman
+can expose a Docker-compatible API on a Unix socket, allowing the existing
+`docker`/`docker compose` clients to remain unchanged. The candidate config in
+`config/podman/` uses VFS storage, single-UID ownership squashing and disabled
+nested cgroups so the runtime can be tested without a host runtime socket,
+`privileged: true` or writable cgroup delegation. Homelab owns whether that API
+service is enabled; the presence of the binaries in the image is not runtime
+acceptance.
 
 ## Release flow
 

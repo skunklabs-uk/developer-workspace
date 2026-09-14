@@ -157,26 +157,29 @@ The port allocator owns only local project-to-preview-port assignments. It does
 not create Kubernetes resources, Cloudflare routes, DNS records or background
 services. Friendly project hostnames remain outside this contract.
 
-### Docker Compose projects
+### Preview di progetti containerizzati
 
-The image includes the standard Debian Docker CLI and Compose v2 client so
-projects that already use `docker compose` keep their existing command and
-Compose model. The workspace never mounts the node Docker/containerd socket.
+L'immagine mantiene Docker CLI, Compose v2 e Podman come strumenti disponibili
+per compatibilità con i repository e per attività locali che non richiedono un
+runtime annidato. La loro presenza **non** definisce però un backend supportato
+nel Pod persistente del Developer Workspace.
 
-The first non-privileged Docker-in-Docker canary in `homelab#1143` was rolled
-back because the upstream DinD helper requires a privilege model outside the
-approved boundary. The supported Homelab runtime therefore remains
-code-server-only until a replacement backend passes its runtime canary.
+La decisione di prodotto registrata in `skunklabs-uk/homelab#1143` stabilisce
+che build e preview containerizzate seguono il percorso **Kubernetes-native**:
+la CI del repository produttore verifica e pubblica un'immagine immutabile del
+commit esatto, quindi Homelab/Argo CD esegue l'eventuale preview come workload
+GitOps separato e temporaneo. `docker compose` nel Developer Workspace non è un
+criterio di accettazione di questo ambiente.
 
-This image also carries the Debian Podman runtime and its standard rootless
-network helpers as the candidate compatibility backend for that canary. Podman
-can expose a Docker-compatible API on a Unix socket, allowing the existing
-`docker`/`docker compose` clients to remain unchanged. The candidate config in
-`config/podman/` uses VFS storage, single-UID ownership squashing and disabled
-nested cgroups so the runtime can be tested without a host runtime socket,
-`privileged: true` or writable cgroup delegation. Homelab owns whether that API
-service is enabled; the presence of the binaries in the image is not runtime
-acceptance.
+Il workspace resta quindi `code-server`-only e non monta socket Docker o
+containerd del nodo, non avvia daemon Docker/Podman annidati e non richiede
+`privileged: true`. La configurazione in `config/podman/` resta materiale di
+tooling e sperimentazione storica: non va abilitata come servizio persistente
+senza una nuova decisione esplicita di prodotto/sicurezza.
+
+Per preview locali basate su processi resta valido `workspace-port`; per preview
+containerizzate va usato il contratto producer-CI → immagine immutabile →
+workload Kubernetes/GitOps del progetto.
 
 ## Release flow
 

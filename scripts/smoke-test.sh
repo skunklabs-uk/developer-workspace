@@ -75,7 +75,7 @@ docker buildx version
 podman --version
 pasta --version
 slirp4netns --version
-crun --version
+dpkg-query -W -f='${Version}\n' crun
 workspace-doctor
 
 proxmox_mcp_python="$(mise where pipx:proxmox-mcp-server@1.4.1)/proxmox-mcp-server/bin/python"

@@ -4,10 +4,11 @@
 Il protocollo nasce dal POC [#75](https://github.com/skunklabs-uk/developer-workspace/issues/75)
 e dalla continuazione [#79](https://github.com/skunklabs-uk/developer-workspace/issues/79).
 La missione [Homelab #1143](https://github.com/skunklabs-uk/homelab/issues/1143)
-autorizza il consumer automatico IWANT isolato, predisposto nella
-[PR Homelab #1246](https://github.com/skunklabs-uk/homelab/pull/1246).
-La promozione resta subordinata al gate edge/browser della preview protetta:
-questa documentazione non attesta rollout, autostart o nuovo handoff riusciti.
+ha promosso il consumer automatico IWANT isolato con la
+[PR Homelab #1246](https://github.com/skunklabs-uk/homelab/pull/1246), dopo la
+verifica browser attraverso Cloudflare Access. Il nuovo incarico report-only
+ha verificato autostart, consegna e RETURN; le evidenze sono riportate sotto.
+Il closeout infrastrutturale della missione resta di proprietà Homelab.
 
 ## Collaudi storici #75 e #79
 
@@ -60,7 +61,7 @@ Usare una PR pertinente al lavoro, non una PR fittizia creata soltanto come
 trasporto. Gli endpoint REST usati dal processo locale funzionano anche per
 issue ordinarie, ma ciò **non prova** che questo connettore possa scriverle.
 
-## Consumer automatico autorizzato dalla #1143
+## Consumer automatico IWANT
 
 Homelab possiede launcher, StatefulSet e promozione GitOps. Il
 [disegno del Developer Workspace](https://github.com/skunklabs-uk/homelab/blob/main/doc/35-Developer%20Workspace%20K3s%20GitOps%20design.md#consumer-workspace-handoff)
@@ -82,13 +83,37 @@ rimane fermo. Non rilancia automaticamente il processo modello. I retry bounded
 del trasporto già implementati in watch restano distinti da una nuova
 esecuzione Codex; il recupero segue la sezione dedicata sotto.
 
-Prima della promozione serve il PASS del browser reale attraverso Cloudflare
-Access. Dopo il rollout verificare l'avvio automatico di watch e un nuovo
-incarico bounded sul thread già enrolled, con branch/head reali e prompt
-corrente. Preferire il solo report quando non serve modificare IWANT.
-Osservare receipt e result dello stesso incarico; il coordinatore verifica il
-risultato e, se presente, `publication.head` remoto, quindi registra il RETURN.
-Pod Ready, test locali e collaudi storici non sostituiscono queste evidenze.
+La #1143 ha verificato il browser reale attraverso Cloudflare Access prima
+della promozione. Per gli incarichi successivi usare il thread già enrolled,
+branch/head reali e un prompt corrente esplicitamente autorizzato. Preferire il
+solo report quando non serve modificare IWANT. Osservare receipt e result dello
+stesso incarico; il coordinatore verifica il risultato e, se presente,
+`publication.head` remoto, quindi registra il RETURN. Pod Ready e test locali
+non sostituiscono la prova del collegamento.
+
+### Accettazione autostart, handoff e RETURN
+
+Il rollout Homelab `f9c9489535aa3db5ef7aa840309f79d8e6b08d32` è stato
+osservato `Synced / Healthy`, con entrambi i container Ready e watch avviato
+automaticamente. La configurazione persistente è rimasta disabilitata, la
+copia runtime privata `0600` abilitata; il consumer non montava `/workspaces`,
+kubeconfig, token ServiceAccount o CA Proxmox.
+
+La [richiesta](https://github.com/skunklabs-uk/iwant/pull/548#issuecomment-5670563289)
+`HOMELAB-1143-HANDOFF-RETURN`, generation `1`, ha prodotto una sola esecuzione
+e una [ricevuta aggiornata con il risultato](https://github.com/skunklabs-uk/iwant/pull/548#issuecomment-5670574049).
+Il probe sandbox e il modello sono terminati con exit 0; lo stato è `delivered`,
+HEAD `e4da88195fd11c7395b333903367359c59c5d16d` e checkout pulito. Il report-only
+non prevedeva una publication. Non sono serviti avvio manuale, secondo worker,
+reset dello stato o nuova generation per aggirare errori.
+
+Nel [RETURN](https://github.com/skunklabs-uk/iwant/pull/548#issuecomment-5670602343)
+il coordinatore ha confrontato il report con le fonti dello stesso head e
+accettato il risultato. Questa prova dimostra il percorso automatico
+richiesta → receipt → Codex → result → RETURN. Non dimostra una nuova
+pubblicazione write della #79 e non autorizza altri incarichi. Prompt e branch
+del collaudo sono temporanei; stato, ricevute e risultati restano conservati
+per il recupero.
 
 ## Enrollment e avvio manuale del collaudo
 
@@ -163,7 +188,7 @@ prompt deve essere un file Git regolare, non un symlink o un file archiviato.
 Una nuova generation è una nuova iterazione esplicitamente autorizzata, non un
 modo per aggirare un problema tecnico. Il POC #75 resta in sola lettura.
 Il collaudo della sandbox di scrittura resta distinto dalla prova della
-pubblicazione reale e dal nuovo handoff automatico richiesto dalla #1143.
+pubblicazione reale; l'accettazione automatica della #1143 è report-only.
 
 Repository, assignment e generation identificano l'incarico. Ripubblicare lo
 stesso incarico non lo riesegue; cambiarne il contenuto senza cambiare identità
@@ -253,8 +278,9 @@ l'enrollment esistenti. Non avviare due worker. Pubblicare il payload completo
 soltanto dopo il preflight e i gate della missione, poi osservare il consumer
 automatico senza avviare `once` manualmente. Verificare report ed eventuale
 commit, completando il RETURN. Il successo locale dei test non dimostra il
-percorso write reale della #79 né chiude il nuovo collaudo della #1143. Il merge
-producer resta distinto perché può attivare build/pubblicazione e il successivo rollout GitOps.
+percorso write reale della #79. Il collaudo automatico della #1143 è invece
+sostenuto dalla ricevuta e dal RETURN riportati sopra. Il merge producer resta
+distinto perché può attivare build/pubblicazione e il successivo rollout GitOps.
 
 ## Permessi: cosa fa il codice e cosa resta da provare
 
@@ -417,7 +443,7 @@ Le esecuzioni reali verificano il beneficio, non i soli test interni.
 
 | Controlli collegati | Esito e necessità |
 | --- | --- |
-| Autostart del consumer nella #1143 | Predisposto in Homelab #1246: rimuove il comando manuale necessario dopo rollout riusando consumer e StatefulSet. Nessun nuovo protocollo, ledger o identità; verifica con nuovo incarico e RETURN ancora richiesta dopo il gate browser. Lifecycle e rollback appartengono al disegno Homelab. |
+| Autostart del consumer nella #1143 | KEEP: il nuovo incarico e il RETURN documentati sopra dimostrano l'avvio e la consegna senza comando manuale dopo rollout. Riuso di consumer e StatefulSet, nessun nuovo protocollo, ledger o identità. Lifecycle e rollback appartengono al disegno Homelab. |
 | Consumer seriale e richiesta stretta | KEEP: il collegamento chat/processo non è coperto dai singoli tool; un repository/thread/attore, nessun scheduler. |
 | Clone, head e prompt verificati | KEEP: impediscono esecuzione di una revisione diversa, symlink, prompt stale o configurazione progetto non riesaminata. |
 | Lock, stato e ricevuta unica | KEEP: i test di interruzione e consegna incerta mostrano perché non rilanciare modello o POST; riuso di flock, file atomici e PATCH, nessun ledger distribuito. |

@@ -39,12 +39,11 @@ La [missione #75](https://github.com/skunklabs-uk/developer-workspace/issues/75)
 aggiunge il collegamento opt-in `scripts/workspace-handoff`, con test locali
 eseguibili tramite `python3 -m unittest discover -s tests -v`.
 Il [runbook del collegamento](docs/WORKSPACE-HANDOFF.md) è **Active** e conserva
-le prove storiche del POC. Descrive anche il consumer automatico IWANT
-predisposto in [Homelab #1246](https://github.com/skunklabs-uk/homelab/pull/1246):
-la promozione richiede il gate browser attraverso Cloudflare Access, seguito
-dalle prove runtime di autostart, handoff e RETURN. La preparazione non attesta
-il completamento di queste verifiche. Il codice producer non installa servizi
-né introduce Actions di orchestrazione; il launcher appartiene a Homelab.
+le prove storiche del POC e l'accettazione del consumer automatico IWANT della
+missione Homelab #1143: un nuovo incarico report-only ha prodotto receipt e
+result, riletti e verificati dal coordinatore nel RETURN. Il launcher e il
+lifecycle runtime appartengono a Homelab; il codice producer non installa
+servizi né introduce Actions di orchestrazione.
 
 ## Work on two repositories at the same time
 

@@ -1,11 +1,20 @@
-# Collegamento ChatGPT → Codex: POC IWANT
+# Collegamento ChatGPT → Codex su IWANT
 
 **Stato: Active.** Owner: maintainer Developer Workspace.
-Missione [#75](https://github.com/skunklabs-uk/developer-workspace/issues/75).
+Il protocollo nasce dal POC [#75](https://github.com/skunklabs-uk/developer-workspace/issues/75)
+e dalla continuazione [#79](https://github.com/skunklabs-uk/developer-workspace/issues/79).
+La missione [Homelab #1143](https://github.com/skunklabs-uk/homelab/issues/1143)
+autorizza il consumer automatico IWANT isolato, predisposto nella
+[PR Homelab #1246](https://github.com/skunklabs-uk/homelab/pull/1246).
+La promozione resta subordinata al gate edge/browser della preview protetta:
+questa documentazione non attesta rollout, autostart o nuovo handoff riusciti.
+
+## Collaudi storici #75 e #79
+
 Il 7 settembre 2026 g1 e g2 sono stati eseguiti, consegnati e riletti dalla chat,
-con HEAD, digest e checkout puliti verificati. Il consumer foreground è terminato
-ed è nuovamente disabilitato; configurazione e risultati sono conservati.
-Nessun servizio è avviato automaticamente.
+con HEAD, digest e checkout puliti verificati. Il consumer foreground è stato
+terminato e disabilitato a fine collaudo, conservando configurazione e risultati.
+Quel collaudo non comprendeva un avvio automatico.
 
 La continuazione [#79](https://github.com/skunklabs-uk/developer-workspace/issues/79)
 aggiunge la consegna dei file autorizzati e rimuove la dipendenza dalla skill
@@ -18,8 +27,10 @@ Homelab ha distribuito e ricaricato i profili AppArmor e seccomp della #83 su
 `k3s-worker1`, `k3s-worker2` e `k3s-worker3`; soltanto
 `developer-workspace-0` è stato ricreato per acquisire il nuovo seccomp. Hash,
 enforce e rollback sono nella
-[fonte delle policy](workspace-handoff-candidates/README.md). Il consumer resta
-fermo e disabilitato. Nessun incarico write o modello è stato ancora avviato.
+[fonte delle policy](workspace-handoff-candidates/README.md). In quel checkpoint
+il consumer era fermo e disabilitato e il percorso write reale non era ancora
+stato verificato. Queste evidenze storiche non descrivono lo stato live della
+#1143.
 
 | Iterazione | HEAD eseguito | Report riletto dalla chat |
 | --- | --- | --- |
@@ -41,14 +52,45 @@ esecuzione né un secondo commento.
 La richiesta autorizzata e i criteri di accettazione restano posseduti dalla
 missione; il prompt versionato resta subordinato ad AGENTS. Il collegamento non
 pianifica wave, non decide merge/deploy e non risveglia questa conversazione.
-Il coordinatore rilegge il report quando l'utente riprende il lavoro in chat.
+Il coordinatore rilegge il report e lo confronta con repository e revisione
+reali prima di accettarlo; nella #1143 questo passaggio costituisce il RETURN.
 
 Il connettore ChatGPT verificato permette commenti nelle conversazioni di PR.
 Usare una PR pertinente al lavoro, non una PR fittizia creata soltanto come
 trasporto. Gli endpoint REST usati dal processo locale funzionano anche per
 issue ordinarie, ma ciò **non prova** che questo connettore possa scriverle.
 
-## Avvio locale, solo dopo il riesame dei permessi
+## Consumer automatico autorizzato dalla #1143
+
+Homelab possiede launcher, StatefulSet e promozione GitOps. Il
+[disegno del Developer Workspace](https://github.com/skunklabs-uk/homelab/blob/main/doc/35-Developer%20Workspace%20K3s%20GitOps%20design.md#consumer-workspace-handoff)
+è la fonte del confine runtime: container `workspace-handoff` non privilegiato,
+stessa immagine immutabile del workspace, `hostUsers:false`, home persistente
+e `/tmp` separato. Nessun mount `/workspaces`, kubeconfig, token ServiceAccount,
+CA Proxmox o socket Docker/containerd. La sandbox dei comandi figli resta
+quella descritta sotto; il padre riusa le autenticazioni già disponibili.
+
+Il launcher richiede la configurazione persistente con
+`execution_enabled=false` e prepara una copia runtime privata `0600` con
+esecuzione abilitata. Riusa l'enrollment e lo stato esistenti del thread IWANT,
+quindi avvia `workspace-handoff watch`. Non esegue automaticamente `init` o
+`once`, non usa tmux e non crea un secondo worker o ledger. I percorsi effettivi
+e il binario Codex fissato restano autorevoli nel manifest Homelab.
+
+Se un prerequisito manca o watch termina, il launcher conserva lo stato e
+rimane fermo. Non rilancia automaticamente il processo modello. I retry bounded
+del trasporto già implementati in watch restano distinti da una nuova
+esecuzione Codex; il recupero segue la sezione dedicata sotto.
+
+Prima della promozione serve il PASS del browser reale attraverso Cloudflare
+Access. Dopo il rollout verificare l'avvio automatico di watch e un nuovo
+incarico bounded sul thread già enrolled, con branch/head reali e prompt
+corrente. Preferire il solo report quando non serve modificare IWANT.
+Osservare receipt e result dello stesso incarico; il coordinatore verifica il
+risultato e, se presente, `publication.head` remoto, quindi registra il RETURN.
+Pod Ready, test locali e collaudi storici non sostituiscono queste evidenze.
+
+## Enrollment e avvio manuale del collaudo
 
 Servono Linux, Python 3.10 o successivo, Git, GitHub CLI autenticata e Codex CLI
 con autenticazione valida. Non vengono installati runtime, credenziali, servizi
@@ -97,11 +139,13 @@ la prima richiesta soltanto dopo l'enrollment. Non condividere lo stesso
 thread fra più directory di stato: il lock impedisce due processi sullo stesso
 stato, non coordina worker distribuiti.
 
-Dopo il riesame dei prerequisiti, abilitare localmente `execution_enabled` e
-usare `once` per il primo giro. `watch` ripete lo stesso ciclo seriale con
-intervallo minimo di 60 secondi. Il processo può essere avviato nel tmux già
-esistente; non viene aggiunto un autostart al Pod. Una ricreazione del Pod
-interrompe i processi: leggere e riconciliare lo stato prima del riavvio.
+Nel collaudo manuale, dopo il riesame dei prerequisiti, si abilitava localmente
+`execution_enabled` e si usava `once` per il primo giro. `watch` ripete lo stesso
+ciclo seriale con intervallo minimo di 60 secondi. L'avvio in tmux appartiene
+al percorso storico: non affiancarlo al consumer automatico della #1143.
+La promozione riusa lo stato già enrolled e mantiene disabilitata la
+configurazione persistente. Una ricreazione del Pod interrompe i processi;
+le regole di recupero vietano il rilancio di un modello dall'esito incerto.
 
 ## Richiesta
 
@@ -118,9 +162,8 @@ com'è. Il branch deve ancora puntare a quello SHA al momento del clone. Il
 prompt deve essere un file Git regolare, non un symlink o un file archiviato.
 Una nuova generation è una nuova iterazione esplicitamente autorizzata, non un
 modo per aggirare un problema tecnico. Il POC #75 resta in sola lettura.
-La sandbox di scrittura descritta sotto è collaudata nel workspace; restano da
-verificare con un incarico IWANT reale il commit remoto, la ricevuta e la review
-di ChatGPT.
+Il collaudo della sandbox di scrittura resta distinto dalla prova della
+pubblicazione reale e dal nuovo handoff automatico richiesto dalla #1143.
 
 Repository, assignment e generation identificano l'incarico. Ripubblicare lo
 stesso incarico non lo riesegue; cambiarne il contenuto senza cambiare identità
@@ -131,7 +174,7 @@ superata; risultati già prodotti vengono comunque consegnati. I comandi malform
 bloccare le successive richieste valide. Le modifiche a un comando non sono un
 meccanismo di cancellazione di un processo già avviato.
 
-## Consegna di modifiche — runtime verificato, incarico reale ancora da eseguire
+## Consegna di modifiche
 
 La richiesta può aggiungere `publish_paths`, una lista non vuota di **file
 esatti** relativi al repository. Non sono pattern o directory. Il campo è
@@ -203,14 +246,15 @@ aprire rete o directory personali per farli passare. Leggere il puntatore
 IWANT corrente, rispettare il lavoro UI attivo e risolvere con il Product Owner
 solo le decisioni di prodotto realmente mancanti. Non riassegnare vecchi prompt.
 
-Il nuovo thread richiede un enrollment esplicito distinto dopo la verifica
+Un cambio di thread richiede un enrollment esplicito distinto dopo la verifica
 che il consumer precedente sia fermo e i risultati siano consegnati; conservare
-lo stato storico, non cambiarne il binding. Non avviare due worker. Pubblicare
-il payload completo realmente da ChatGPT soltanto dopo questo preflight,
-quindi eseguire `once`, verificare commit e report, e reiterare se serve.
-Il successo locale dei test non chiude la #79: manca il percorso write reale
-con review del risultato e closeout. Il merge producer resta distinto
-perché può attivare build/pubblicazione e il successivo rollout GitOps.
+lo stato storico, non cambiarne il binding. La #1143 riusa invece il thread e
+l'enrollment esistenti. Non avviare due worker. Pubblicare il payload completo
+soltanto dopo il preflight e i gate della missione, poi osservare il consumer
+automatico senza avviare `once` manualmente. Verificare report ed eventuale
+commit, completando il RETURN. Il successo locale dei test non dimostra il
+percorso write reale della #79 né chiude il nuovo collaudo della #1143. Il merge
+producer resta distinto perché può attivare build/pubblicazione e il successivo rollout GitOps.
 
 ## Permessi: cosa fa il codice e cosa resta da provare
 
@@ -267,8 +311,8 @@ acquisire il filtro seccomp. La
 rollback. Il profilo non costituisce una sandbox generica per altri task e non
 abilita da solo il consumer.
 
-Il Pod usa user namespace, `procMount: Unmasked` nel solo code-server,
-seccomp locale e AppArmor ridotto con compensazioni delle protezioni proc.
+Il Pod del collaudo storico usava user namespace, `procMount: Unmasked` nel
+solo code-server, seccomp locale e AppArmor ridotto con compensazioni delle protezioni proc.
 Proc è realmente montato; PID, mount e network namespace del comando figlio
 sono distinti dal padre. Il collaudo ha verificato letture ristrette, checkout
 non scrivibile, connessioni IPv4/IPv6 e Unix pathname/abstract negate,
@@ -301,8 +345,9 @@ e temporanei Go restano nel tmpfs privato sotto `/tmp`. Il module cache è input
 read-only: le dipendenze devono essere presenti prima dell'incarico e nessuna
 installazione o aggiornamento viene eseguito durante il modello.
 
-Il runtime verificato usa l'immagine `2026.09.09-b000242`; il collaudo delle
-policy non costituisce una nuova release applicativa.
+Il collaudo storico delle policy usava l'immagine `2026.09.09-b000242`;
+non costituisce una nuova release applicativa né identifica la release
+selezionata oggi dai manifest Homelab.
 Prima di rimuovere il collegamento conservare risultati e stato. Revocare i
 riferimenti runtime tramite Homelab prima di scaricare policy non più in uso.
 Le [prove diagnostiche archiviate](workspace-handoff-candidates/archive/README.md)
@@ -372,6 +417,7 @@ Le esecuzioni reali verificano il beneficio, non i soli test interni.
 
 | Controlli collegati | Esito e necessità |
 | --- | --- |
+| Autostart del consumer nella #1143 | Predisposto in Homelab #1246: rimuove il comando manuale necessario dopo rollout riusando consumer e StatefulSet. Nessun nuovo protocollo, ledger o identità; verifica con nuovo incarico e RETURN ancora richiesta dopo il gate browser. Lifecycle e rollback appartengono al disegno Homelab. |
 | Consumer seriale e richiesta stretta | KEEP: il collegamento chat/processo non è coperto dai singoli tool; un repository/thread/attore, nessun scheduler. |
 | Clone, head e prompt verificati | KEEP: impediscono esecuzione di una revisione diversa, symlink, prompt stale o configurazione progetto non riesaminata. |
 | Lock, stato e ricevuta unica | KEEP: i test di interruzione e consegna incerta mostrano perché non rilanciare modello o POST; riuso di flock, file atomici e PATCH, nessun ledger distribuito. |

@@ -42,6 +42,22 @@ Entrambi exit 0: g1 verifica la subordinazione dei prompt alle fonti autorevoli;
 g2 conferma g1 e distingue successo del processo da closeout. Le risposte e i
 riferimenti sono stati confrontati con le fonti dello stesso commit.
 
+### Accettazione write della #79
+
+Il [closeout della #79](https://github.com/skunklabs-uk/developer-workspace/issues/79#issuecomment-5629528460)
+registra la prova write su IWANT: generation 4 eseguita
+una sola volta, commit `c22df05bddd8636448e4e250c87c5a12431f6f0f` pubblicato
+dal parent sulla Draft PR #548 e diff remoto riletto dal coordinatore ChatGPT.
+La CI naturale ha poi rilevato un problema nel generated templ; le correzioni
+successive e i gate verdi sono registrati nello stesso closeout. La consegna
+del commit non equivaleva all'accettazione applicativa della PR.
+
+Il consumer era fermo e disabilitato al termine di quella prova, con storico
+e risultati conservati. L'autostart e il nuovo incarico report-only della
+#1143 sono verifiche successive e distinte. Queste evidenze riguardano IWANT:
+non dimostrano l'estensione ad altri progetti della
+[Homelab #1252](https://github.com/skunklabs-uk/homelab/issues/1252).
+
 ## Perimetro
 
 Il collegamento legge un solo thread GitHub di `skunklabs-uk/iwant`, prende una
@@ -451,7 +467,7 @@ Le esecuzioni reali verificano il beneficio, non i soli test interni.
 | Override app/plugin/hook e ambiente | KEEP: il config utente conteneva un plugin; exec e sandbox caricavano layer diversi. Override nativi, nessun nuovo checker. |
 | Quote, paginazione e backoff | KEEP: rispettano gli header e limitano il trasporto seriale; i retry di consegna non rilanciano Codex. |
 | Skill `agent-loop` come prerequisito del trasporto | DELETE nella #79: ritirata dall'upstream locale, causava 404 prima del modello. RFC resta obbligatoria; il prompt conserva la responsabilità delle istruzioni di esecuzione. |
-| Consegna dei file nella #79 | Candidata KEEP: test comportamentali dimostrano commit esatto, rifiuto di file inattesi e recupero del push senza modello. Necessità e perimetro approvati nella #79; beneficio live ancora da dimostrare. Riuso result.json e Git nativo. |
+| Consegna dei file nella #79 | KEEP: il closeout write documentato sopra dimostra pubblicazione del commit e review ChatGPT su IWANT. I test proteggono file autorizzati e recupero del push senza modello. Riuso result.json e Git nativo; nessuna ammissione implicita di altri repository. |
 | Aperture globali proc-v3/v4 e checkpoint preparatori | DELETE dal percorso operativo; REPLACE con profilo ristretto e fonti correnti. Prove conservate in archivio. |
 
 Owner del codice: maintainer Developer Workspace; del runtime/RBAC: maintainer

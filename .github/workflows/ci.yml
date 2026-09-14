@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths-ignore:
       - "**/*.md"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
   workflow_dispatch:
 
 permissions:
@@ -17,7 +21,22 @@ env:
   DOCKER_BUILD_RECORD_UPLOAD: false
 
 jobs:
+  handoff-tests:
+    runs-on: ci-standard
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Test handoff contracts
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -m unittest discover -s tests -v
+
   verify:
+    needs: [handoff-tests]
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
     runs-on: ci-container
     permissions:
       contents: read

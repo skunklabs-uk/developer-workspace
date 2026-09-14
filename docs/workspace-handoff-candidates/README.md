@@ -8,7 +8,7 @@ la tabella identifica la revisione sorgente verificata nel runtime.
 
 | Stato | Sorgente | Destinazione sui worker K3s | SHA-256 sorgente |
 | --- | --- | --- | --- |
-| Verificato e distribuito sui tre worker | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `3f6254472d9489a51ba3b345340951505068a8a51ff3a2a006b5397a398d0a6f` |
+| Candidato #1252, compilato offline; distribuzione da verificare | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `8b035e46201fc94321f8a64f07c6b660eb221c22f6c51512b33828d12c33cf8d` |
 | Verificato e distribuito sui tre worker | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2` |
 
 Homelab possiede distribuzione, caricamento e riferimenti GitOps; la procedura
@@ -73,3 +73,16 @@ resta evidenza diagnostica, non il rollback immediato della continuazione write.
 
 Confini, verifiche e lifecycle sono nel [runbook](../WORKSPACE-HANDOFF.md).
 La [cronologia diagnostica](archive/README.md) è archiviata e non autorizza operazioni.
+
+## Delta Skunklabs #1252
+
+L’approvazione Product Owner della #1252 aggiunge soltanto `skunklabs` a
+`@{handoff_state}`, conservando `iwant` e `iwant-<thread>`. Nessun nuovo mount
+home, toolchain, socket o cambio seccomp. La sorgente precedente verificata è
+`3f6254472d9489a51ba3b345340951505068a8a51ff3a2a006b5397a398d0a6f`;
+è il rollback immediato di questo delta, con consumer fermo.
+
+La compilazione offline con `apparmor_parser --skip-kernel-load --skip-cache
+--jobs 1` versione 4.0.1 è passata. Prima del rollout servono compilazione con
+il parser effettivo dei worker, distribuzione identica sui tre nodi e readback
+enforce. Il solo file sorgente non prova che Skunklabs sia eseguibile live.

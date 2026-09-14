@@ -5,6 +5,7 @@ import runpy
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -26,6 +27,59 @@ class CLITests(unittest.TestCase):
         self.assertTrue(SCRIPT.is_file(), 'CLI entrypoint missing')
         return subprocess.run([sys.executable, str(SCRIPT), '--config', str(self.config),
             '--state', str(self.root / 'state'), operation], capture_output=True, text=True)
+
+    def test_explicit_second_repository_is_accepted_without_enrollment(self):
+        value = json.loads(self.config.read_text())
+        value['repository'] = 'skunklabs-uk/skunklabs'
+        self.config.write_text(json.dumps(value))
+        result = self.run_cli('status')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse((self.root / 'state').exists())
+
+    def test_repository_must_be_an_exact_organization_member_name(self):
+        for repository in ('other/skunklabs', 'skunklabs-uk/*', 'skunklabs-uk/',
+                           'skunklabs-uk/../iwant', 'skunklabs-uk/iwant.git/', None, True):
+            with self.subTest(repository=repository):
+                value = json.loads(self.config.read_text())
+                value['repository'] = repository
+                self.config.write_text(json.dumps(value))
+                self.assertEqual(self.run_cli('status').returncode, 2)
+
+    def test_watch_keeps_one_consumer_across_sibling_states_while_idle(self):
+        fake = self.root / 'gh-fixture'
+        fake.write_text('#!' + sys.executable + '\nprint("HTTP/2 200 OK\\n\\n[]")\n')
+        fake.chmod(0o700)
+        value = json.loads(self.config.read_text())
+        value.update(gh=str(fake), execution_enabled=True)
+        self.config.write_text(json.dumps(value))
+        self.assertEqual(self.run_cli('init').returncode, 0)
+        args = [sys.executable, str(SCRIPT), '--config', str(self.config),
+                '--state', str(self.root / 'state'), 'watch']
+        watcher = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        def stop():
+            if watcher.poll() is None:
+                watcher.terminate()
+            watcher.communicate(timeout=5)
+        self.addCleanup(stop)
+        deadline = time.monotonic() + 5
+        transport = self.root / 'state' / 'transport.json'
+        while time.monotonic() < deadline:
+            if json.loads(transport.read_text())['requests'] >= 2:
+                break
+            time.sleep(0.02)
+        else:
+            self.fail('watch non ha completato il primo polling')
+        original = (self.root / 'state' / 'state.json').read_bytes()
+        result = subprocess.run(args[:-2] + [str(self.root / 'second'), 'init'],
+                                capture_output=True, text=True, timeout=5)
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertFalse((self.root / 'second' / 'transport.json').exists())
+        self.assertEqual((self.root / 'state' / 'state.json').read_bytes(), original)
+        stop()
+        # Process exit releases the lock without deleting it or resetting state.
+        result = subprocess.run(args[:-2] + [str(self.root / 'second'), 'init'],
+                                capture_output=True, text=True, timeout=5)
+        self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_once_disabled_fails_before_network_or_process_launch(self):
         result = self.run_cli('once')

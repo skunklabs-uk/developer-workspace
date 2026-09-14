@@ -111,7 +111,7 @@ class CheckoutTests(unittest.TestCase):
         self.git('config', 'user.email', 'fixture@example.invalid')
         path = self.origin / 'docs/agents/prompts/poc.md'
         path.parent.mkdir(parents=True)
-        path.write_text('Verifica questo repository, senza modifiche.\n')
+        path.write_text('**Stato: Active**\n\nVerifica questo repository, senza modifiche.\n')
         self.git('add', '.')
         self.git('commit', '-m', 'fixture')
         self.request = {'repository': 'skunklabs-uk/iwant', 'branch': 'agent/poc',
@@ -128,6 +128,18 @@ class CheckoutTests(unittest.TestCase):
         self.assertIn('Verifica questo repository', prompt)
         self.assertEqual((self.origin / 'personal.txt').read_text(), 'unfinished')
         self.assertFalse((target / 'personal.txt').exists())
+
+    def test_non_active_prompt_is_rejected_at_the_pinned_head(self):
+        for index, body in enumerate(('**Stato: Archived**\nIncarico concluso.',
+                                      '# Prompt\nNessuno stato dichiarato.',
+                                      '**Stato: Active**\n**Stato: Archived**\n')):
+            with self.subTest(body=body):
+                (self.origin / self.request['prompt']).write_text(body)
+                self.git('add', '.')
+                self.git('commit', '-m', 'prompt lifecycle')
+                self.request['head'] = self.git('rev-parse', 'HEAD')
+                with self.assertRaises(self.m.HandoffError):
+                    self.m.prepare_checkout(self.request, str(self.origin), self.root / f'task-{index}')
 
     def test_moved_remote_branch_does_not_run_an_old_prompt(self):
         (self.origin / 'new.txt').write_text('new')

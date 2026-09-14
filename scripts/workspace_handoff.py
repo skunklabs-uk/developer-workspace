@@ -164,6 +164,7 @@ class Consumer:
         elif publication.get('state') == 'blocked':
             delivery = 'Pubblicazione bloccata: ' + publication['reason'] + '\n'
         return (self.marker(key) + '\n## Risultato workspace\n\n'
+                f"Repository: `{request['repository']}`. Thread: `{self.config['thread']}`.\n"
                 f"Incarico: `{request['assignment']}` / generation `{request['generation']}`.\n"
                 f"Richiesta: commento `{job['comment_id']}`. Esecuzione: `{key}`.\n"
                 f"Esito processo: **{outcome}**; exit code `{result.get('exit_code')}`.\n"

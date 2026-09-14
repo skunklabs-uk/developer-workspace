@@ -173,8 +173,9 @@ commit esatto, quindi Homelab/Argo CD esegue l'eventuale preview come workload
 GitOps separato e temporaneo. `docker compose` nel Developer Workspace non è un
 criterio di accettazione di questo ambiente.
 
-Il workspace resta quindi `code-server`-only e non monta socket Docker o
-containerd del nodo, non avvia daemon Docker/Podman annidati e non richiede
+Il workspace esegue code-server e il consumer IWANT automatico della #1143;
+non monta socket Docker o containerd del nodo, non avvia daemon Docker/Podman
+annidati e non richiede
 `privileged: true`. La configurazione in `config/podman/` resta materiale di
 tooling e sperimentazione storica: non va abilitata come servizio persistente
 senza una nuova decisione esplicita di prodotto/sicurezza.

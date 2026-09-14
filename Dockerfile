@@ -27,6 +27,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     bash-completion ca-certificates curl dnsutils dumb-init git gnupg less make openssh-client \
     sudo tmux unzip util-linux wget xz-utils docker-cli docker-compose docker-buildx \
+    podman passt slirp4netns aardvark-dns \
     fonts-liberation fonts-noto-color-emoji fonts-unifont libfontconfig1 libfreetype6 \
     libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libatspi2.0-0t64 \
     libcairo2 libcups2t64 libdbus-1-3 libdrm2 libgbm1 libglib2.0-0t64 \
@@ -64,6 +65,7 @@ COPY config/code-server/config.yaml /etc/code-server/config.yaml
 COPY config/shell/bashrc /opt/developer-workspace/bashrc
 COPY config/tmux/tmux.conf /opt/developer-workspace/tmux.conf
 COPY config/mise/workspace-tools.toml /opt/developer-workspace/mise-workspace-tools.toml
+COPY config/podman/ /opt/developer-workspace/podman/
 COPY extensions/baseline.txt /opt/developer-workspace/extensions.txt
 
 RUN CODE_SERVER_EXTENSIONS_DIR=/opt/developer-workspace/code-server-extensions \

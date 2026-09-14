@@ -1,4 +1,4 @@
-# Collegamento ChatGPT → Codex su IWANT
+# Collegamento seriale ChatGPT → Codex
 
 **Stato: Active.** Owner: maintainer Developer Workspace.
 Il protocollo nasce dal POC [#75](https://github.com/skunklabs-uk/developer-workspace/issues/75)
@@ -60,7 +60,8 @@ non dimostrano l'estensione ad altri progetti della
 
 ## Perimetro
 
-Il collegamento legge un solo thread GitHub di `skunklabs-uk/iwant`, prende una
+Il collegamento legge un solo thread GitHub del repository esplicitamente
+configurato, prende una
 richiesta esplicita, prepara un clone separato alla revisione indicata e invoca
 `codex exec`. Pubblica prima una ricevuta e poi aggiorna **quello stesso
 commento** con il risultato: un timeout del PATCH non richiede una seconda
@@ -131,6 +132,31 @@ pubblicazione write della #79 e non autorizza altri incarichi. Prompt e branch
 del collaudo sono temporanei; stato, ricevute e risultati restano conservati
 per il recupero.
 
+## Estensione autorizzata #1252
+
+La [missione Homelab #1252](https://github.com/skunklabs-uk/homelab/issues/1252)
+ammette IWANT e Skunklabs. Il consumer seleziona un solo repository/thread;
+non ascolta l’organizzazione e non crea worker per progetto. Le prove IWANT
+sopra restano storiche; rollout e prove Skunklabs sono ancora da completare.
+
+Per cambiare progetto, attendere la consegna dei risultati e fermare watch
+tramite GitOps. Conservare configurazioni, enrollment, receipt e risultati
+IWANT. Il nuovo stato Skunklabs usa esattamente la root sorella `skunklabs`;
+il profilo AppArmor candidato aggiunge soltanto quel nome. Distribuzione e
+reload sui worker appartengono a Homelab e precedono l’attivazione del nuovo
+binding. Non modificare un binding esistente né riutilizzare il suo file di
+stato. Eseguire `init` una sola volta per il thread reale approvato, con il
+consumer fermo, poi selezionare il binding nel launcher GitOps. Il launcher
+usa una copia privata runtime e non esegue enrollment automatico.
+
+Il rollback torna all’immagine precedente e al binding IWANT tramite GitOps,
+dopo aver fermato il consumer e conservato le consegne pendenti. La versione
+precedente non possiede il lock comune: non avviarla insieme alla nuova.
+Il formato dello stato non cambia e non richiede migrazione.
+
+Il producer esegue la suite Python nelle PR e prima della build main; le PR
+non pubblicano immagini. La build e la pubblicazione restano nel producer.
+
 ## Enrollment e avvio manuale del collaudo
 
 Servono Linux, Python 3.10 o successivo, Git, GitHub CLI autenticata e Codex CLI
@@ -163,7 +189,9 @@ Configurazione locale senza segreti, per esempio in
 `thread: 0` è intenzionalmente invalido: sostituirlo con la PR concordata, dopo
 averne verificato accesso e stato. Gli ID identificano l'account osservato nelle
 scritture ChatGPT; verificare separatamente il publisher reale di `gh` nel Pod.
-Il codice rifiuta altri repository e campi inattesi. `gh` e `codex` sono gli
+Il codice richiede il nome esatto di un repository `skunklabs-uk` e rifiuta
+wildcard, altre organizzazioni e campi inattesi. La configurazione è ammissione
+operativa esplicita, non scoperta automatica dei repository accessibili. `gh` e `codex` sono gli
 unici percorsi di eseguibili eventualmente configurabili.
 
 ```bash
@@ -177,8 +205,12 @@ python3 scripts/workspace-handoff --config ~/.config/workspace-handoff/iwant.jso
 `init` registra il limite dei commenti già presenti, che **non** verranno
 eseguiti. Lo stato è privato e non va ricreato per forzare un retry. Pubblicare
 la prima richiesta soltanto dopo l'enrollment. Non condividere lo stesso
-thread fra più directory di stato: il lock impedisce due processi sullo stesso
-stato, non coordina worker distribuiti.
+thread fra più directory di stato. Tutte le root operative devono essere
+sorelle sotto `~/.local/state/workspace-handoff/`: `consumer.lock` in questa
+directory resta acquisito per tutta la durata di `init`, `once` o `watch`,
+compresa l’attesa fra poll. Impedisce un secondo consumer anche su un altro
+binding. Il lock `worker.lock` del singolo stato resta invariato; nessuno dei
+due va eliminato per recuperare un incarico. Non coordina host o volumi distinti.
 
 Nel collaudo manuale, dopo il riesame dei prerequisiti, si abilitava localmente
 `execution_enabled` e si usava `once` per il primo giro. `watch` ripete lo stesso
@@ -189,6 +221,13 @@ configurazione persistente. Una ricreazione del Pod interrompe i processi;
 le regole di recupero vietano il rilancio di un modello dall'esito incerto.
 
 ## Richiesta
+
+Ogni nuovo prompt deve contenere una sola dichiarazione su riga autonoma
+`**Stato: Active**`. Il preflight rifiuta dichiarazione assente, duplicata o
+Archived anche se il file è ancora fuori da `archive/`. La dichiarazione non
+sostituisce la verifica delle autorità, dell’head e dell’incarico corrente.
+I prompt storici non vengono modificati né riattivati da questo requisito.
+
 
 Il commento deve essere nuovo, non modificato, provenire da un ID abilitato e
 iniziare esattamente con `/workspace run` seguito da un oggetto JSON:

@@ -33,7 +33,7 @@ Personal SSH agent sharing is managed by chezmoi, not by project repositories
 or this image repository. The expected layout, Bash snippet, checks, and manual
 post-Pod-recreation step are documented in `docs/SSH-AGENT.md`.
 
-## POC ChatGPT → Codex su IWANT
+## Collegamento ChatGPT → Codex
 
 La [missione #75](https://github.com/skunklabs-uk/developer-workspace/issues/75)
 aggiunge il collegamento opt-in `scripts/workspace-handoff`, con test locali
@@ -44,6 +44,13 @@ missione Homelab #1143: un nuovo incarico report-only ha prodotto receipt e
 result, riletti e verificati dal coordinatore nel RETURN. Il launcher e il
 lifecycle runtime appartengono a Homelab; il codice producer non installa
 servizi né introduce Actions di orchestrazione.
+
+La [missione Homelab #1252](https://github.com/skunklabs-uk/homelab/issues/1252)
+estende configurazione e lock al cambio seriale fra IWANT e Skunklabs.
+L’ammissione richiede configurazione e thread approvati; non segue la visibilità
+delle credenziali. La suite Python gira anche nelle PR, senza build o
+pubblicazione di immagini dalle PR. Le prove runtime Skunklabs restano aperte
+nella missione; la generalizzazione del codice non ne attesta il completamento.
 
 ## Work on two repositories at the same time
 

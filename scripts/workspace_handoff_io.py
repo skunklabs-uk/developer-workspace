@@ -186,7 +186,11 @@ def prepare_checkout(request, origin, target):
     # A repository-supplied configuration must not enable tools outside this profile.
     if (target / '.codex').exists():
         raise HandoffError('Configurazione Codex di progetto presente: richiede review esplicita')
-    return prompt.read_text(encoding='utf-8')
+    text = prompt.read_text(encoding='utf-8')
+    states = re.findall(r'^\*\*Stato: ([^\r\n]+)\*\*[ \t]*$', text, re.MULTILINE)
+    if states != ['Active']:
+        raise HandoffError('Il prompt deve dichiarare un solo stato Active: **Stato: Active**')
+    return text
 
 
 def reference_context(github):

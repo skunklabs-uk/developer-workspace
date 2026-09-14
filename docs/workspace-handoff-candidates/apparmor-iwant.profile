@@ -315,7 +315,7 @@ abi <abi/3.0>,
 @{hex38}=@{hex32}@{hex6}
 
 @{hex64}=@{hex32}@{hex32}
-@{handoff_state}=iwant iwant-@{int}
+@{handoff_state}=iwant iwant-@{int} skunklabs
 
 
 # Any x alphanumeric characters

@@ -100,6 +100,42 @@ class HandoffTests(unittest.TestCase):
     def restart(self):
         self.consumer = self.m.Consumer(self.root, self.config, self.api, self.runner)
 
+    def test_same_assignment_in_two_repositories_has_independent_delivery_and_recovery(self):
+        self.api.comments.append(self.request())
+        self.consumer.tick()
+        previous = (self.root / 'state.json').read_bytes()
+        config = dict(self.config, repository='skunklabs-uk/skunklabs')
+        api, runner = GitHubFake(), RunnerFake()
+        second_root = self.root / 'second'
+        second = self.m.Consumer(second_root, config, api, runner)
+        second.enroll()
+        api.comments.append(self.request(repository='skunklabs-uk/skunklabs'))
+        api.lose_patch = True
+        with self.assertRaises(TimeoutError):
+            second.tick()
+        recovered = self.m.Consumer(second_root, config, api, runner)
+        recovered.tick()
+        self.assertEqual(runner.calls, 1)
+        self.assertEqual(api.posts, 1)
+        self.assertEqual(api.patches, 2)
+        self.assertEqual((self.root / 'state.json').read_bytes(), previous)
+        self.assertNotEqual(set(self.consumer.state['jobs']), set(recovered.state['jobs']))
+        self.assertIn('skunklabs-uk/skunklabs', api.comments[-1]['body'])
+
+    def test_other_repository_cannot_rebind_existing_state_or_execute(self):
+        config = dict(self.config, repository='skunklabs-uk/skunklabs')
+        previous = (self.root / 'state.json').read_bytes()
+        other = self.m.Consumer(self.root, config, self.api, self.runner)
+        with self.assertRaises(self.m.HandoffError):
+            other.tick()
+        self.assertEqual(self.runner.calls, 0)
+        self.assertEqual(self.api.posts, 0)
+        self.assertEqual((self.root / 'state.json').read_bytes(), previous)
+        self.api.comments.append(self.request(repository='skunklabs-uk/skunklabs'))
+        self.consumer.tick()
+        self.assertEqual(self.runner.calls, 0)
+        self.assertEqual(self.api.posts, 0)
+
     def test_one_request_delivers_result_in_same_receipt_comment(self):
         self.api.comments.append(self.request())
         self.consumer.tick()

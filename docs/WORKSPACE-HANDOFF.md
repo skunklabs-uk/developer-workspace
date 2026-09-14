@@ -45,7 +45,7 @@ riferimenti sono stati confrontati con le fonti dello stesso commit.
 ### Accettazione write della #79
 
 Il [closeout della #79](https://github.com/skunklabs-uk/developer-workspace/issues/79#issuecomment-5629528460)
-registra la prova write del 10 settembre 2026 su IWANT: generation 4 eseguita
+registra la prova write su IWANT: generation 4 eseguita
 una sola volta, commit `c22df05bddd8636448e4e250c87c5a12431f6f0f` pubblicato
 dal parent sulla Draft PR #548 e diff remoto riletto dal coordinatore ChatGPT.
 La CI naturale ha poi rilevato un problema nel generated templ; le correzioni

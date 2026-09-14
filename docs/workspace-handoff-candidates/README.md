@@ -54,12 +54,20 @@ scritture persistenti esterne. Il seccomp #83 aggiunge esclusivamente l'allow `m
 varianti read-only `2134055` e `2134063` restano invariate. Un fallimento non
 autorizza altre regole, wildcard più ampie, full access o bypass della sandbox.
 
-Rollback del candidato toolchain: mantenere `execution_enabled=false`,
-ripristinare la sorgente runtime distribuita dalla #83 SHA-256
+I profili hanno lifecycle permanente e sono riusati dal consumer automatico
+IWANT. Il nome `candidates` conserva la provenienza del collaudo e non richiede
+la loro rimozione al closeout della #1143.
+
+Per il rollback del profilo toolchain, arrestare prima il consumer tramite il
+percorso GitOps Homelab e conservare stato e risultati. La sola configurazione
+persistente `execution_enabled=false` non arresta watch, che usa una copia
+runtime abilitata. Con consumer fermo, ripristinare la sorgente distribuita
+dalla #83 SHA-256
 `8130d61d4405fc495609497be3ab7eef72f61108f47bb826ac66a46be9378c1f`
 e ricaricarla sui tre worker. Il seccomp resta invariato e non richiede rollback
 o ricreazione del Pod per questa remediation. Stato e risultati restano
-conservati; StatefulSet, RBAC, credenziali e CLI non cambiano.
+conservati; il rollback del profilo non cambia RBAC, credenziali o CLI.
+Arresto e riattivazione del consumer restano gestiti dal percorso Homelab.
 La baseline storica pre-#79 `b28fec1792b33cb77cd0e9ae1dc4c4af269a9a8ad12ef786c23313b74f592cc2`
 resta evidenza diagnostica, non il rollback immediato della continuazione write.
 

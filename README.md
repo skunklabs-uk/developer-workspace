@@ -48,12 +48,31 @@ servizi né introduce Actions di orchestrazione.
 La [missione Homelab #1252](https://github.com/skunklabs-uk/homelab/issues/1252)
 estende configurazione e lock al cambio seriale fra IWANT e Skunklabs.
 L’ammissione richiede configurazione e thread approvati; non segue la visibilità
-delle credenziali. La suite Python gira anche nelle PR, senza build o
-pubblicazione di immagini dalle PR. Skunklabs ha completato handoff write,
+delle credenziali. La suite Python gira nelle PR interne verso main ammesse dai filtri del
+workflow; i diff esclusivamente Markdown sono esclusi. Le PR non avviano build
+né pubblicazione di immagini. Skunklabs ha completato handoff write,
 review del commit remoto e RETURN, build producer e preview browser protetta.
 Il ritorno a IWANT ha prodotto un nuovo report e RETURN conservando lo storico.
 Le prove e i relativi limiti sono nel runbook; disponibilità delle preview e
 ritiro delle risorse restano documentati da Homelab.
+
+La [missione Homelab #1265](https://github.com/skunklabs-uk/homelab/issues/1265)
+adotta il collegamento anche per questo repository, producer dell’immagine e
+del consumer. L’incarico documentale legge input qualificati in un checkout
+isolato, vincolato a repository/thread e branch/head esatti, e restituisce un
+report. Il consumer esegue un incarico alla volta; il report non collauda né
+ricostruisce l’immagine che lo ospita.
+
+Il coordinatore revisiona e accetta l’esito con RETURN; applicazione,
+pubblicazione e merge competono al parent tramite una PR ordinaria discendente
+da main. Lo snapshot senza parent non viene integrato. Exit 0 e consegna del
+report non equivalgono automaticamente ad accettazione o merge. La procedura
+resta nel [runbook del collegamento](docs/WORKSPACE-HANDOFF.md).
+
+Il workspace resta non privilegiato, con `hostUsers: false`, senza runtime
+annidati o socket del nodo. Le build appartengono ai producer; le preview
+applicative Kubernetes-native sono gestite da Homelab. Questo incarico modifica
+soltanto la documentazione e non richiede una preview HTTP.
 
 ## Work on two repositories at the same time
 

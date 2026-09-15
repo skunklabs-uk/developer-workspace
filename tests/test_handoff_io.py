@@ -129,6 +129,26 @@ class CheckoutTests(unittest.TestCase):
         self.assertEqual((self.origin / 'personal.txt').read_text(), 'unfinished')
         self.assertFalse((target / 'personal.txt').exists())
 
+    def test_data_prompt_passes_intake_and_pinned_checkout(self):
+        from workspace_handoff import parse_request
+
+        path = self.origin / 'data/homelab-1265-adoption-g1.md'
+        path.parent.mkdir()
+        text = '**Stato: Active**\n\nReport su input qualificati.\n'
+        path.write_text(text)
+        self.git('add', '.')
+        self.git('commit', '-m', 'repository-specific prompt location')
+        request = dict(self.request, prompt=path.relative_to(self.origin).as_posix(),
+                       head=self.git('rev-parse', 'HEAD'), assignment='ADOPTION', generation=1)
+        config = {'actor_ids': [7], 'repository': request['repository']}
+        comment = {'user': {'id': 7}, 'created_at': '2026-09-15T00:00:00Z',
+                   'updated_at': '2026-09-15T00:00:00Z',
+                   'body': '/workspace run\n' + json.dumps(request)}
+        admitted = parse_request(comment, config)
+        target = self.root / 'task'
+        self.assertEqual(self.m.prepare_checkout(admitted, str(self.origin), target), text)
+        self.assertEqual((target / request['prompt']).read_text(), text)
+
     def test_non_active_prompt_is_rejected_at_the_pinned_head(self):
         for index, body in enumerate(('**Stato: Archived**\nIncarico concluso.',
                                       '# Prompt\nNessuno stato dichiarato.',

@@ -325,7 +325,7 @@ class LocalCodex:
         access = 'read' if self.config.get('sandbox', 'read-only') == 'read-only' else 'write'
         args = [self.codex, 'sandbox', '--include-managed-config', '--permission-profile',
                 'handoff', '--cd', str(checkout), *self.overrides(), '--', '/bin/sh', '-c', script,
-                'probe', str(checkout / 'AGENTS.md'), str(hidden), str(outside_write),
+                'probe', str(checkout / '.git' / 'HEAD'), str(hidden), str(outside_write),
                 str(inside_write), access]
         result = subprocess.run(args, capture_output=True, timeout=30, env=env)
         atomic_json(run_dir / 'permissions-probe.json', {'exit_code': result.returncode})

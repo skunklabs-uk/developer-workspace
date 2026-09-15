@@ -172,6 +172,24 @@ class CheckoutTests(unittest.TestCase):
             with self.assertRaises(self.m.HandoffError):
                 runner.probe(self.origin, self.root, {})
 
+    def test_probe_read_check_accepts_repository_without_agents_document(self):
+        # A valid Git checkout need not carry a project-specific AGENTS.md.
+        # Emulate only the external CLI's read operand check; native isolation
+        # remains a separate runtime acceptance gate.
+        (self.origin / 'AGENTS.md').unlink(missing_ok=True)
+        runner = self.m.LocalCodex({'sandbox': 'read-only'})
+        run_command = subprocess.run
+
+        def check_read_operand(args, **kwargs):
+            operand = args[args.index('probe') + 1]
+            return run_command(['/bin/sh', '-c', 'test -r "$1" || exit 11',
+                                'read-check', operand], capture_output=True)
+
+        with patch.object(self.m.subprocess, 'run', side_effect=check_read_operand):
+            runner.probe(self.origin, self.root, {})
+        self.assertEqual(json.loads((self.root / 'permissions-probe.json').read_text()),
+                         {'exit_code': 0})
+
     def test_execution_is_disabled_without_explicit_activation(self):
         runner = self.m.LocalCodex({'execution_enabled': False})
         with self.assertRaises(self.m.HandoffError):

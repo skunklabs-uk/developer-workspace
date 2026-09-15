@@ -502,8 +502,12 @@ Il probe usa lo stesso profilo `handoff` di exec e richiede proc montato.
 La lettura positiva usa `.git/HEAD`, presente nel checkout verificato: non
 presume che il repository contenga `AGENTS.md`. Le istruzioni AGENTS presenti
 restano vincolanti; questa verifica riguarda soltanto l’accesso al checkout.
-Il cambiamento della #1265 ha una regressione locale su repository senza
-AGENTS; il suo collaudo nativo sul nuovo artifact resta da registrare.
+La regressione locale su repository senza AGENTS è passata nel producer
+[#97](https://github.com/skunklabs-uk/developer-workspace/pull/97).
+Il nuovo artifact ha poi superato il probe nativo, con exit 0, nel
+[risultato OutSystems](https://github.com/skunklabs-uk/outsystems-release-manager/pull/2#issuecomment-5679193183)
+della continuazione #1265. Questa prova riguarda il confine del checkout,
+non il collaudo applicativo; va ripetuta quando cambia il confine pertinente.
 Una scrittura nel tmpfs privato può riuscire senza modificare il filesystem
 persistente: il controllo esterno viene fatto dal padre. `read-only` protegge
 i dati persistenti, non vieta file temporanei privati.

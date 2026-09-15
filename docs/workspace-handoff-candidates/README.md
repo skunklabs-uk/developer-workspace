@@ -8,7 +8,7 @@ la tabella identifica la revisione sorgente verificata nel runtime.
 
 | Stato | Sorgente | Destinazione sui worker K3s | SHA-256 sorgente |
 | --- | --- | --- | --- |
-| Verificato e distribuito sui tre worker nella #1252 | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `8b035e46201fc94321f8a64f07c6b660eb221c22f6c51512b33828d12c33cf8d` |
+| Baseline distribuita sui tre worker nella #1252 | [sorgente #1252](https://github.com/skunklabs-uk/developer-workspace/blob/599dbc40d18892865443bfe9fb2606237b3c06c8/docs/workspace-handoff-candidates/apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `8b035e46201fc94321f8a64f07c6b660eb221c22f6c51512b33828d12c33cf8d` |
 | Verificato e distribuito sui tre worker | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2` |
 
 Homelab possiede distribuzione, caricamento e riferimenti GitOps; la procedura
@@ -92,3 +92,37 @@ Il consumer era fermo e lo storico IWANT è stato conservato. Il successivo
 [handoff Skunklabs](https://github.com/skunklabs-uk/skunklabs/pull/121#issuecomment-5672262509)
 ha completato una modifica README nella sandbox e la pubblicazione parent,
 con [RETURN del coordinatore](https://github.com/skunklabs-uk/skunklabs/pull/121#issuecomment-5672297046).
+
+## Estensione finita della #1265
+
+Il Product Owner ha approvato nella [Homelab #1265](https://github.com/skunklabs-uk/homelab/issues/1265)
+le altre 30 root esatte dell'inventario, oltre a IWANT e Skunklabs. La variabile
+`@{handoff_state}` della sorgente contiene l'elenco autorevole; non introduce
+nuovi pattern, cambi seccomp, capability, toolchain, rete o credenziali.
+La sorgente preparata ha SHA-256
+`0768726739b36c5e08c6772d1d0a3fc86e9de9661cbd392d002053723abddeb7`.
+La tabella iniziale continua a identificare la baseline effettivamente distribuita:
+compilazione e review offline del nuovo delta sono concluse, distribuzione ed
+enrollment sono ancora da verificare nella missione Homelab.
+
+AppArmor riconosce percorsi, non repository GitHub o binding. L'espansione delle
+root sorgente e destinazione nelle regole mount è indipendente; il profilo da
+solo non isola i repository. Consumer e sandbox nativa devono esporre il solo
+checkout selezionato e superare il probe prima del modello. Un nome ammesso
+non autorizza il corpus del repository: dati personali/cliente e configurazioni
+`.codex` restano soggetti al preflight descritto nel runbook.
+
+La distribuzione segue il percorso Ansible Homelab già esistente, con consumer
+fermo e consegne riconciliate. Prima dell'attivazione confrontare baseline,
+compilazione sui tre worker e readback enforce; usare enrollment separati e
+un solo watch automatico. Il rollback immediato è la sorgente
+`8b035e46201fc94321f8a64f07c6b660eb221c22f6c51512b33828d12c33cf8d`,
+con consumer fermo e ritorno al binding IWANT, preservando tutti gli stati.
+Le nuove preview richiedono i loro piani e autorizzazioni: questo delta copre
+solo le root e il lifecycle seriale approvati.
+
+Nel riesame cumulativo si riusano profilo nativo, consumer, lock e formato dello
+stato. L'elenco finito evita sia un wildcard sia profili o worker per repository.
+Le root hanno lifecycle permanente per i binding ammessi; prompt e candidate
+specifici si ritirano dopo il collaudo. Il codice generalizzato non costituisce
+prova di adozione: handoff, RETURN e le preview pertinenti restano da completare.

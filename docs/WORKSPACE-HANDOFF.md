@@ -174,6 +174,30 @@ Il formato dello stato non cambia e non richiede migrazione.
 Il producer esegue la suite Python nelle PR e prima della build main; le PR
 non pubblicano immagini. La build e la pubblicazione restano nel producer.
 
+## Continuazione per tutti i repository
+
+La [Homelab #1265](https://github.com/skunklabs-uk/homelab/issues/1265) prosegue
+l'adozione sui 32 repository inventariati. Il Product Owner ha approvato i 30
+nomi aggiuntivi della [sorgente AppArmor](workspace-handoff-candidates/apparmor-iwant.profile)
+e il lifecycle seriale di enrollment e selezione GitOps. La #1252 conserva
+le prove concluse IWANT + Skunklabs; non attestano i nuovi incarichi.
+
+L'approvazione non estende dati, credenziali o preview. Il checkout corrente
+materializza l'intero repository e rende leggibili anche gli oggetti Git;
+`publish_paths` limita la pubblicazione, non gli input. Prima di incarichi su
+repository con dati personali o cliente serve un confine effettivo degli input
+oppure l'autorizzazione esplicita a dati e destinazione. Il solo prompt o sparse
+checkout non dimostra l'esclusione. Una `.codex` presente continua a richiedere
+review e viene rifiutata dal preflight corrente.
+
+I referenti dei repository possono preparare e revisionare in parallelo i propri
+worktree; il collegamento nel cluster esegue un solo incarico alla volta.
+Il coordinatore mantiene selezione, autorizzazioni e integrazione condivise.
+Ogni nuovo binding segue la stessa sequenza di arresto, conservazione dello
+stato, enrollment, autostart, richiesta reale e RETURN. La configurazione di un
+nome non sostituisce il collaudo; lo stato aggiornato dell'adozione resta nella
+missione, fino al closeout delle fonti proprietarie.
+
 ## Enrollment e avvio manuale del collaudo
 
 Servono Linux, Python 3.10 o successivo, Git, GitHub CLI autenticata e Codex CLI

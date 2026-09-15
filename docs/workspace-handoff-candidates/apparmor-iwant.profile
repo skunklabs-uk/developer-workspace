@@ -315,7 +315,7 @@ abi <abi/3.0>,
 @{hex38}=@{hex32}@{hex6}
 
 @{hex64}=@{hex32}@{hex32}
-@{handoff_state}=iwant iwant-@{int} skunklabs
+@{handoff_state}=iwant iwant-@{int} skunklabs aeris agent-os arduino-aircraft-strobo astral baialupo.com bookmarks career-lab club-aviazione-popolare codex-skills developer-workspace flight-examiner flight-meter flightlog-uploader flying homelab kiron-cdg learning medium n8n-workflows obsidian outsystems-release-manager powerpoint-ai prosignal quiz renovate-config resume scuola synthesize-guber-knowledge txt-ai-adoption vfrcampus
 
 
 # Any x alphanumeric characters

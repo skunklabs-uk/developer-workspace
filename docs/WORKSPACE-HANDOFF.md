@@ -78,7 +78,7 @@ Usare una PR pertinente al lavoro, non una PR fittizia creata soltanto come
 trasporto. Gli endpoint REST usati dal processo locale funzionano anche per
 issue ordinarie, ma ciò **non prova** che questo connettore possa scriverle.
 
-## Consumer automatico IWANT
+## Consumer automatico seriale
 
 Homelab possiede launcher, StatefulSet e promozione GitOps. Il
 [disegno del Developer Workspace](https://github.com/skunklabs-uk/homelab/blob/main/doc/35-Developer%20Workspace%20K3s%20GitOps%20design.md#consumer-workspace-handoff)
@@ -90,7 +90,7 @@ quella descritta sotto; il padre riusa le autenticazioni già disponibili.
 
 Il launcher richiede la configurazione persistente con
 `execution_enabled=false` e prepara una copia runtime privata `0600` con
-esecuzione abilitata. Riusa l'enrollment e lo stato esistenti del thread IWANT,
+esecuzione abilitata. Riusa l'enrollment e lo stato del repository/thread selezionato,
 quindi avvia `workspace-handoff watch`. Non esegue automaticamente `init` o
 `once`, non usa tmux e non crea un secondo worker o ledger. I percorsi effettivi
 e il binario Codex fissato restano autorevoli nel manifest Homelab.
@@ -137,12 +137,29 @@ per il recupero.
 La [missione Homelab #1252](https://github.com/skunklabs-uk/homelab/issues/1252)
 ammette IWANT e Skunklabs. Il consumer seleziona un solo repository/thread;
 non ascolta l’organizzazione e non crea worker per progetto. Le prove IWANT
-sopra restano storiche; rollout e prove Skunklabs sono ancora da completare.
+sopra restano storiche. Il 15 settembre 2026 il rollout Homelab ha selezionato
+Skunklabs sul thread121, con watch automatico e stato separato. La
+[richiesta via connettore](https://github.com/skunklabs-uk/skunklabs/pull/121#issuecomment-5672259424)
+ha prodotto il commit README `e3bde001f5c945732542e434c823f9820b7e5603`;
+[risultato e RETURN](https://github.com/skunklabs-uk/skunklabs/pull/121#issuecomment-5672297046)
+attestano consegna e review del diff remoto. Il producer
+[34909336589](https://github.com/skunklabs-uk/skunklabs/actions/runs/34909336589)
+ha verificato lint/build e pubblicato il digest del medesimo head;
+[runtime e browser](https://github.com/skunklabs-uk/homelab/issues/1252#issuecomment-5672474271)
+sono stati verificati nella preview GitOps protetta da Access.
+
+Il ritorno al binding IWANT548 tramite Homelab #1261 ha completato una nuova
+[richiesta report-only e RETURN](https://github.com/skunklabs-uk/iwant/pull/548#issuecomment-5672485254),
+con checkout pulito. Gli otto risultati IWANT precedenti e il risultato
+Skunklabs sono conservati; non sono stati riaperti thread o azzerati stati.
+Il browser IWANT #1143 resta una prova storica del percorso invariato, distinta
+dalla nuova regressione del cambio seriale. Il perimetro terminale approvato
+è IWANT + Skunklabs; gli altri 30 repository inventariati non sono ammessi.
 
 Per cambiare progetto, attendere la consegna dei risultati e fermare watch
 tramite GitOps. Conservare configurazioni, enrollment, receipt e risultati
 IWANT. Il nuovo stato Skunklabs usa esattamente la root sorella `skunklabs`;
-il profilo AppArmor candidato aggiunge soltanto quel nome. Distribuzione e
+il profilo AppArmor aggiunge soltanto quel nome. Distribuzione e
 reload sui worker appartengono a Homelab e precedono l’attivazione del nuovo
 binding. Non modificare un binding esistente né riutilizzare il suo file di
 stato. Eseguire `init` una sola volta per il thread reale approvato, con il
@@ -262,13 +279,17 @@ ammesso solo con configurazione locale `sandbox: workspace-write` già
 approvata. Ometterlo conserva la consegna del solo report, anche quando il
 checkout è scrivibile: la scrittura locale non autorizza implicitamente il push.
 
-La destinazione è il branch della PR IWANT aperta e Draft selezionata da
+La destinazione write è il branch della PR aperta e Draft selezionata da
 `thread`; deve appartenere allo stesso repository, non essere il default
 branch e avere lo SHA autorizzato. Il collegamento non crea PR artificiali,
 non pubblica su fork, non esegue merge né force-push. Prima di eseguire un
 incarico il coordinatore verifica anche questi prerequisiti: il publisher li
 ricontrolla al momento della consegna, non garantisce che restino invariati
 mentre il modello lavora.
+
+La consegna report-only può usare il thread storico di una PR già integrata;
+non richiede di riaprirla o ricreare il branch ritirato. Il nuovo incarico
+indica comunque il branch e l'head esatto del checkout da leggere.
 
 Il modello modifica i file e svolge le verifiche del prompt, senza commit o
 push. Il padre, con identità Git e autenticazione già configurate, crea una
@@ -323,7 +344,8 @@ Prima dell'incarico reale, Codex nel workspace verifica i permessi effettivi,
 la CLI, l'identità Git del padre e l'accesso alla PR, senza stampare segreti.
 I gate di test del task devono poter funzionare nel perimetro approvato; non
 aprire rete o directory personali per farli passare. Leggere il puntatore
-IWANT corrente, rispettare il lavoro UI attivo e risolvere con il Product Owner
+corrente del repository selezionato; per IWANT rispettare il lavoro UI attivo.
+Risolvere con il Product Owner
 solo le decisioni di prodotto realmente mancanti. Non riassegnare vecchi prompt.
 
 Un cambio di thread richiede un enrollment esplicito distinto dopo la verifica

@@ -49,8 +49,11 @@ La [missione Homelab #1252](https://github.com/skunklabs-uk/homelab/issues/1252)
 estende configurazione e lock al cambio seriale fra IWANT e Skunklabs.
 L’ammissione richiede configurazione e thread approvati; non segue la visibilità
 delle credenziali. La suite Python gira anche nelle PR, senza build o
-pubblicazione di immagini dalle PR. Le prove runtime Skunklabs restano aperte
-nella missione; la generalizzazione del codice non ne attesta il completamento.
+pubblicazione di immagini dalle PR. Skunklabs ha completato handoff write,
+review del commit remoto e RETURN, build producer e preview browser protetta.
+Il ritorno a IWANT ha prodotto un nuovo report e RETURN conservando lo storico.
+Le prove e i relativi limiti sono nel runbook; disponibilità delle preview e
+ritiro delle risorse restano documentati da Homelab.
 
 ## Work on two repositories at the same time
 
@@ -180,7 +183,9 @@ commit esatto, quindi Homelab/Argo CD esegue l'eventuale preview come workload
 GitOps separato e temporaneo. `docker compose` nel Developer Workspace non è un
 criterio di accettazione di questo ambiente.
 
-Il workspace esegue code-server e il consumer IWANT automatico della #1143;
+Il workspace esegue code-server e un consumer seriale automatico sul binding
+selezionato da Homelab, introdotto per IWANT nella #1143 e verificato anche
+su Skunklabs nella #1252;
 non monta socket Docker o containerd del nodo, non avvia daemon Docker/Podman
 annidati e non richiede
 `privileged: true`. La configurazione in `config/podman/` resta materiale di

@@ -8,7 +8,7 @@ la tabella identifica la revisione sorgente verificata nel runtime.
 
 | Stato | Sorgente | Destinazione sui worker K3s | SHA-256 sorgente |
 | --- | --- | --- | --- |
-| Candidato #1252, compilato offline; distribuzione da verificare | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `8b035e46201fc94321f8a64f07c6b660eb221c22f6c51512b33828d12c33cf8d` |
+| Verificato e distribuito sui tre worker nella #1252 | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `8b035e46201fc94321f8a64f07c6b660eb221c22f6c51512b33828d12c33cf8d` |
 | Verificato e distribuito sui tre worker | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2` |
 
 Homelab possiede distribuzione, caricamento e riferimenti GitOps; la procedura
@@ -42,7 +42,8 @@ successivo remount read-only; non apre `.local`, mise, i suoi shim, GOPATH o hom
 I flag mount sono quelli già coperti dal seccomp corrente (`53248` per `rbind` e
 `2134055` per il remount read-only), quindi il seccomp non cambia.
 Il 10 settembre 2026 il candidato è stato compilato e ricaricato in replace-mode
-sui tre worker: sorgente identica all'hash in tabella, raw parser 4.1.0
+sui tre worker: sorgente storica
+`3f6254472d9489a51ba3b345340951505068a8a51ff3a2a006b5397a398d0a6f`, raw parser 4.1.0
 `9769ef4ef9ccd29fe40e7eceeb00aacc365dfca748a1fdf9cc000aca971cdcda`
 e profilo in enforce. Non sono stati eseguiti reboot o cambi seccomp.
 
@@ -55,8 +56,8 @@ varianti read-only `2134055` e `2134063` restano invariate. Un fallimento non
 autorizza altre regole, wildcard più ampie, full access o bypass della sandbox.
 
 I profili hanno lifecycle permanente e sono riusati dal consumer automatico
-IWANT. Il nome `candidates` conserva la provenienza del collaudo e non richiede
-la loro rimozione al closeout della #1143.
+IWANT e Skunklabs. Il nome `candidates` conserva la provenienza del collaudo e
+non richiede la loro rimozione al closeout.
 
 Per il rollback del profilo toolchain, arrestare prima il consumer tramite il
 percorso GitOps Homelab e conservare stato e risultati. La sola configurazione
@@ -83,6 +84,11 @@ home, toolchain, socket o cambio seccomp. La sorgente precedente verificata è
 è il rollback immediato di questo delta, con consumer fermo.
 
 La compilazione offline con `apparmor_parser --skip-kernel-load --skip-cache
---jobs 1` versione 4.0.1 è passata. Prima del rollout servono compilazione con
-il parser effettivo dei worker, distribuzione identica sui tre nodi e readback
-enforce. Il solo file sorgente non prova che Skunklabs sia eseguibile live.
+--jobs 1` versione 4.0.1 è passata. Il 15 settembre 2026 Homelab ha verificato
+la compilazione con parser 4.1.0 sui tre worker, con raw identico
+`2c0c6bda5592f5e443860094407aaa8b8f78769d9caac02f2b28c685faa05b54`,
+distribuzione via Ansible, caricamento replace-mode e readback enforce.
+Il consumer era fermo e lo storico IWANT è stato conservato. Il successivo
+[handoff Skunklabs](https://github.com/skunklabs-uk/skunklabs/pull/121#issuecomment-5672262509)
+ha completato una modifica README nella sandbox e la pubblicazione parent,
+con [RETURN del coordinatore](https://github.com/skunklabs-uk/skunklabs/pull/121#issuecomment-5672297046).

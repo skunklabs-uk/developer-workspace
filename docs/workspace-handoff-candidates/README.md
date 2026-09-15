@@ -8,7 +8,7 @@ la tabella identifica la revisione sorgente verificata nel runtime.
 
 | Stato | Sorgente | Destinazione sui worker K3s | SHA-256 sorgente |
 | --- | --- | --- | --- |
-| Baseline distribuita sui tre worker nella #1252 | [sorgente #1252](https://github.com/skunklabs-uk/developer-workspace/blob/599dbc40d18892865443bfe9fb2606237b3c06c8/docs/workspace-handoff-candidates/apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `8b035e46201fc94321f8a64f07c6b660eb221c22f6c51512b33828d12c33cf8d` |
+| Distribuito sui tre worker nella #1265 | [apparmor-iwant.profile](apparmor-iwant.profile) | `/etc/apparmor.d/workspace-handoff-poc-iwant` | `0768726739b36c5e08c6772d1d0a3fc86e9de9661cbd392d002053723abddeb7` |
 | Verificato e distribuito sui tre worker | [seccomp.json](seccomp.json) | `/var/lib/kubelet/seccomp/profiles/workspace-handoff-poc-v1.json` | `65bc289fe949214aae251e4adb265523a07d55d91108c163e8843a98cb0a24b2` |
 
 Homelab possiede distribuzione, caricamento e riferimenti GitOps; la procedura
@@ -101,9 +101,14 @@ le altre 30 root esatte dell'inventario, oltre a IWANT e Skunklabs. La variabile
 nuovi pattern, cambi seccomp, capability, toolchain, rete o credenziali.
 La sorgente preparata ha SHA-256
 `0768726739b36c5e08c6772d1d0a3fc86e9de9661cbd392d002053723abddeb7`.
-La tabella iniziale continua a identificare la baseline effettivamente distribuita:
-compilazione e review offline del nuovo delta sono concluse, distribuzione ed
-enrollment sono ancora da verificare nella missione Homelab.
+Il 15 settembre 2026, con consumer fermo tramite GitOps Homelab #1270 e
+dieci risultati storici delivered, Ansible ha distribuito il delta sui tre
+worker. Parser 4.1.0 ha prodotto il raw identico
+`28c038359f964cac2c419787575a0244c7502b872658d5402f6c9841a1ccea1f`.
+Replace-mode e readback enforce sono riusciti; seccomp invariato. Sono
+registrati enrollment separati Renovate Config #43, Agent OS #28 e Codex
+Skills #51. Queste verifiche non sostituiscono probe, risultato e RETURN
+degli incarichi, ancora da completare nella missione Homelab.
 
 AppArmor riconosce percorsi, non repository GitHub o binding. L'espansione delle
 root sorgente e destinazione nelle regole mount è indipendente; il profilo da

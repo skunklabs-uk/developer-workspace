@@ -457,6 +457,11 @@ Prima di cambiare CLI, profilo, tool gestiti o checkout ammesso, verificare
 nuovamente il confine pertinente. Non ampliare i permessi per far passare un test.
 
 Il probe usa lo stesso profilo `handoff` di exec e richiede proc montato.
+La lettura positiva usa `.git/HEAD`, presente nel checkout verificato: non
+presume che il repository contenga `AGENTS.md`. Le istruzioni AGENTS presenti
+restano vincolanti; questa verifica riguarda soltanto l’accesso al checkout.
+Il cambiamento della #1265 ha una regressione locale su repository senza
+AGENTS; il suo collaudo nativo sul nuovo artifact resta da registrare.
 Una scrittura nel tmpfs privato può riuscire senza modificare il filesystem
 persistente: il controllo esterno viene fatto dal padre. `read-only` protegge
 i dati persistenti, non vieta file temporanei privati.

@@ -154,7 +154,8 @@ con checkout pulito. Gli otto risultati IWANT precedenti e il risultato
 Skunklabs sono conservati; non sono stati riaperti thread o azzerati stati.
 Il browser IWANT #1143 resta una prova storica del percorso invariato, distinta
 dalla nuova regressione del cambio seriale. Il perimetro terminale approvato
-è IWANT + Skunklabs; gli altri 30 repository inventariati non sono ammessi.
+della #1252 era IWANT + Skunklabs; i 30 rimanenti appartengono alla
+continuazione distinta #1265 descritta sotto.
 
 Per cambiare progetto, attendere la consegna dei risultati e fermare watch
 tramite GitOps. Conservare configurazioni, enrollment, receipt e risultati
@@ -197,6 +198,47 @@ Ogni nuovo binding segue la stessa sequenza di arresto, conservazione dello
 stato, enrollment, autostart, richiesta reale e RETURN. La configurazione di un
 nome non sostituisce il collaudo; lo stato aggiornato dell'adozione resta nella
 missione, fino al closeout delle fonti proprietarie.
+
+### Report con input minimo senza cambiare il consumer
+
+Per un report che non richiede il corpus del repository, il coordinatore può
+preparare uno snapshot Git temporaneo senza parent, nello stesso repository.
+Si riusano Git e il percorso report-only esistente; nessun nuovo campo della
+richiesta, filtro runtime, publisher o credenziale.
+
+1. Qualificare i byte e i mode dei soli file regolari necessari, comprese le
+   istruzioni applicabili. Registrare head sorgente e blob ID nel prompt.
+   Non omettere una policy obbligatoria per aggirare un gate; dati necessari
+   non ammessi restano una decisione esplicita.
+2. Creare un tree con soltanto quei blob e il prompt Active, poi un commit
+   senza parent su un nuovo branch snapshot. Non copiare pack, storia o
+   configurazioni dal repository sorgente. Le API Git native equivalenti
+   usano tree senza `base_tree` e commit con `parents: []`.
+3. Prima della richiesta, clonare il branch remoto esatto con il percorso
+   del consumer e verificare tree, mode, head, assenza di parent e tutti gli
+   oggetti locali, inclusi quelli non raggiungibili. Ammettere solo gli oggetti
+   attesi e l'empty tree tecnico usato per neutralizzare gli attributi; nessun
+   blob escluso, alternates o promisor. Questa qualificazione non sostituisce
+   il probe nativo che il consumer esegue prima del modello.
+4. Usare una PR documentale pertinente, discendente dal main, come thread.
+   La richiesta indica branch/head snapshot e omette `publish_paths`: il
+   risultato è solo un report. Il controllo della PR write non si applica;
+   il coordinatore verifica anche la distinta provenienza sorgente.
+5. Il parent può applicare la proposta revisionata sul normale branch della
+   PR. Conservare i file esclusi senza leggerli o riscriverli: con le API Git,
+   usare il tree sorgente come `base_tree` e modificare soltanto i file
+   documentali autorizzati. Non integrare mai il branch senza parent.
+6. Completare RETURN del report e verifiche della PR separatamente. Trasferire
+   i fatti durevoli nel README, ritirare prompt e branch snapshot, conservare
+   enrollment, risultato, clone dell'esecuzione e provenienza.
+
+La preparazione [Bookmarks #2](https://github.com/skunklabs-uk/bookmarks/pull/2)
+ha verificato il clone remoto dello snapshot
+`e2505ca47e17c37afa95c5f8552d89280c8f8a52`, derivato da
+`ca50f63449de7e0e3c0e682f93564794282b28f2`: tre file ammessi e nove oggetti
+locali, senza il blob XBEL, commit sorgente, alternates o promisor. Il solo
+oggetto non raggiungibile è l'empty tree tecnico. Handoff e probe Bookmarks
+restano da eseguire; questa prova non attesta la sincronizzazione floccus.
 
 ## Enrollment e avvio manuale del collaudo
 

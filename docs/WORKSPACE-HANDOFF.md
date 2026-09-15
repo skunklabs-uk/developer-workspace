@@ -323,6 +323,14 @@ iniziare esattamente con `/workspace run` seguito da un oggetto JSON:
 L'esempio va completato con uno SHA reale di 40 caratteri: non è eseguibile così
 com'è. Il branch deve ancora puntare a quello SHA al momento del clone. Il
 prompt deve essere un file Git regolare, non un symlink o un file archiviato.
+Il percorso Markdown è relativo al repository e segue le sue istruzioni:
+`docs/agents/prompts/` nell'esempio non è un prefisso obbligatorio. È ammesso,
+per esempio, `data/homelab-1265-adoption-g1.md` quando il repository riserva
+`docs/` ad altri usi. Restano esclusi percorsi assoluti, traversal, componenti
+vuote, `archive`, `.git`, `.codex` e `.agents`, backslash e caratteri di controllo.
+Il percorso non amplia gli input qualificati, i permessi della sandbox o i
+file pubblicabili. L'head, il file regolare e lo stato Active sono verificati
+prima del modello anche per i percorsi alternativi.
 Una nuova generation è una nuova iterazione esplicitamente autorizzata, non un
 modo per aggirare un problema tecnico. Il POC #75 resta in sola lettura.
 Il collaudo della sandbox di scrittura resta distinto dalla prova della

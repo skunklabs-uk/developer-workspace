@@ -231,6 +231,23 @@ class HandoffTests(unittest.TestCase):
                 with self.assertRaises(self.m.HandoffError):
                     self.m.parse_request(self.request(**changes), self.config)
 
+    def test_prompt_location_follows_repository_layout(self):
+        for path in ('data/homelab-1265-adoption-g1.md', 'task.md',
+                     'docs/agents/prompts/poc-g1.md'):
+            with self.subTest(path=path):
+                request = self.m.parse_request(self.request(prompt=path), self.config)
+                self.assertEqual(request['prompt'], path)
+
+    def test_prompt_must_be_a_safe_current_repository_path(self):
+        for path in ('/data/task.md', '../task.md', 'data/../task.md',
+                     'data/./task.md', 'data//task.md', 'data/archive/task.md',
+                     'data\\task.md', 'data/task\x00.md', 'data/task\n.md',
+                     ' data/task.md', 'data/task.md ', 'data/task.txt',
+                     '.git/task.md', '.codex/task.md', '.agents/task.md'):
+            with self.subTest(path=path):
+                with self.assertRaises(self.m.HandoffError):
+                    self.m.parse_request(self.request(prompt=path), self.config)
+
     def test_running_state_is_persisted_before_calling_executor(self):
         def inspect():
             state = json.loads((self.root / 'state.json').read_text())

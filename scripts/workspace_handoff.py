@@ -5,7 +5,7 @@ import fcntl
 import hashlib
 import json
 import os
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 import re
 import tempfile
 
@@ -84,10 +84,10 @@ def parse_request(comment, config):
     prompt = request['prompt']
     if not isinstance(prompt, str):
         raise HandoffError('Percorso prompt non valido')
-    parts = PurePosixPath(prompt).parts
-    if (not prompt.startswith('docs/agents/prompts/') or not prompt.endswith('.md')
-            or any(part in {'.', '..', 'archive'} for part in prompt.split('/'))
-            or '\\' in prompt or len(parts) < 4 or '\x00' in prompt):
+    if (not prompt.endswith('.md') or prompt != prompt.strip() or prompt.startswith('/')
+            or '\\' in prompt or any(ord(char) < 32 for char in prompt)
+            or any(part in {'', '.', '..', 'archive', '.git', '.codex', '.agents'}
+                   for part in prompt.split('/'))):
         raise HandoffError('Prompt fuori dal percorso corrente autorizzato')
     if 'publish_paths' in request:
         paths = request['publish_paths']

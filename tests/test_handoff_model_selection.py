@@ -1,5 +1,4 @@
 """Contract tests for per-request Codex model selection."""
-import importlib.util
 import json
 from pathlib import Path
 import sys
@@ -9,18 +8,8 @@ import unittest
 SCRIPTS = Path(__file__).resolve().parents[1] / 'scripts'
 sys.path.insert(0, str(SCRIPTS))
 
-
-def load(name):
-    source = SCRIPTS / f'{name}.py'
-    spec = importlib.util.spec_from_file_location(name, source)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
-
-
-handoff = load('workspace_handoff')
-io = load('workspace_handoff_io')
+import workspace_handoff as handoff
+import workspace_handoff_io as io
 
 
 def comment(**changes):

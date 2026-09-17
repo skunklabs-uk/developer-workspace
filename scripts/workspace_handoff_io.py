@@ -306,7 +306,8 @@ class LocalCodex:
         ]
         return [part for value in values for part in ('-c', value)]
 
-    def command(self, request, checkout, summary):
+    def command(self, checkout, summary, request=None):
+        request = request or {}
         command = [self.codex, 'exec', '--ignore-user-config', *self.overrides()]
         if request.get('model') is not None:
             command += ['--model', request['model']]
@@ -364,7 +365,7 @@ class LocalCodex:
                         'Non inviare commenti, non fare commit/push, non rilanciare CI, non eseguire merge/deploy. '
                         'La pubblicazione del report e dei file autorizzati è del collegamento, non dell\'agente.\n')
         with (run_dir / 'codex.log').open('wb') as log:
-            child = subprocess.Popen(self.command(request, checkout, summary), stdin=subprocess.PIPE,
+            child = subprocess.Popen(self.command(checkout, summary, request=request), stdin=subprocess.PIPE,
                                      stdout=log, stderr=log, env=env, start_new_session=True)
             try:
                 child.communicate(instructions.encode(), timeout=self.config.get('timeout_seconds', 1200))

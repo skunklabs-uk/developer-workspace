@@ -71,8 +71,8 @@ class ModelSelectionTests(unittest.TestCase):
     def test_command_passes_explicit_selection_without_shell_interpolation(self):
         runner = io.LocalCodex({'sandbox': 'read-only'})
         command = runner.command(
-            {'model': 'gpt-6-astra', 'reasoning_effort': 'high'},
-            Path('/tmp/checkout'), Path('/tmp/summary.md'))
+            Path('/tmp/checkout'), Path('/tmp/summary.md'),
+            request={'model': 'gpt-6-astra', 'reasoning_effort': 'high'})
         model_index = command.index('--model')
         self.assertEqual(command[model_index + 1], 'gpt-6-astra')
         self.assertIn('model_reasoning_effort="high"', command)
@@ -81,7 +81,7 @@ class ModelSelectionTests(unittest.TestCase):
 
     def test_command_without_selection_keeps_runtime_default(self):
         runner = io.LocalCodex({'sandbox': 'read-only'})
-        command = runner.command({}, Path('/tmp/checkout'), Path('/tmp/summary.md'))
+        command = runner.command(Path('/tmp/checkout'), Path('/tmp/summary.md'))
         self.assertNotIn('--model', command)
         self.assertFalse(any('model_reasoning_effort=' in arg for arg in command))
 

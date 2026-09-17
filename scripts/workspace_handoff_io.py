@@ -306,9 +306,15 @@ class LocalCodex:
         ]
         return [part for value in values for part in ('-c', value)]
 
-    def command(self, checkout, summary):
-        return [self.codex, 'exec', '--ignore-user-config', *self.overrides(),
-                '--cd', str(checkout), '--output-last-message', str(summary), '-']
+    def command(self, checkout, summary, request=None):
+        request = request or {}
+        command = [self.codex, 'exec', '--ignore-user-config', *self.overrides()]
+        if request.get('model') is not None:
+            command += ['--model', request['model']]
+        if request.get('reasoning_effort') is not None:
+            command += ['-c', 'model_reasoning_effort=' + json.dumps(request['reasoning_effort'])]
+        command += ['--cd', str(checkout), '--output-last-message', str(summary), '-']
+        return command
 
     def probe(self, checkout, run_dir, env):
         """Probe native permissions without model usage or reading real secrets."""
@@ -359,7 +365,7 @@ class LocalCodex:
                         'Non inviare commenti, non fare commit/push, non rilanciare CI, non eseguire merge/deploy. '
                         'La pubblicazione del report e dei file autorizzati è del collegamento, non dell\'agente.\n')
         with (run_dir / 'codex.log').open('wb') as log:
-            child = subprocess.Popen(self.command(checkout, summary), stdin=subprocess.PIPE,
+            child = subprocess.Popen(self.command(checkout, summary, request=request), stdin=subprocess.PIPE,
                                      stdout=log, stderr=log, env=env, start_new_session=True)
             try:
                 child.communicate(instructions.encode(), timeout=self.config.get('timeout_seconds', 1200))

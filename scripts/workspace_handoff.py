@@ -65,8 +65,9 @@ def parse_request(comment, config):
     except (ValueError, TypeError) as error:
         raise HandoffError('Comando JSON non valido') from error
     fields = {'repository', 'assignment', 'generation', 'branch', 'head', 'prompt'}
+    optional = {'publish_paths', 'model', 'reasoning_effort'}
     if (not isinstance(request, dict) or not fields.issubset(request)
-            or set(request) - fields - {'publish_paths'}):
+            or set(request) - fields - optional):
         raise HandoffError('Campi del comando non validi')
     if request['repository'] != config['repository']:
         raise HandoffError('Repository non autorizzato')
@@ -89,6 +90,16 @@ def parse_request(comment, config):
             or any(part in {'', '.', '..', 'archive', '.git', '.codex', '.agents'}
                    for part in prompt.split('/'))):
         raise HandoffError('Prompt fuori dal percorso corrente autorizzato')
+    if 'model' in request:
+        model = request['model']
+        if (not isinstance(model, str) or not re.fullmatch(
+                r'[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}', model)):
+            raise HandoffError('Modello Codex non valido')
+    if 'reasoning_effort' in request:
+        effort = request['reasoning_effort']
+        if (not isinstance(effort, str) or not re.fullmatch(
+                r'[A-Za-z0-9][A-Za-z0-9._-]{0,31}', effort)):
+            raise HandoffError('Reasoning Codex non valido')
     if 'publish_paths' in request:
         paths = request['publish_paths']
         if config.get('sandbox', 'read-only') != 'workspace-write':
@@ -163,14 +174,20 @@ class Consumer:
             delivery = 'Pubblicazione: nessuna modifica prodotta; nessun nuovo commit.\n'
         elif publication.get('state') == 'blocked':
             delivery = 'Pubblicazione bloccata: ' + publication['reason'] + '\n'
+        selection = ''
+        if request.get('model') is not None:
+            selection += f"Modello richiesto: `{request['model']}`.\n"
+        if request.get('reasoning_effort') is not None:
+            selection += f"Reasoning richiesto: `{request['reasoning_effort']}`.\n"
         return (self.marker(key) + '\n## Risultato workspace\n\n'
                 f"Repository: `{request['repository']}`. Thread: `{self.config['thread']}`.\n"
                 f"Incarico: `{request['assignment']}` / generation `{request['generation']}`.\n"
                 f"Richiesta: commento `{job['comment_id']}`. Esecuzione: `{key}`.\n"
                 f"Esito processo: **{outcome}**; exit code `{result.get('exit_code')}`.\n"
                 f"Base: `{request['head']}`. Head locale: `{result.get('head', 'non rilevato')}`.\n"
-                f"Modifiche locali non committate: `{result.get('dirty', 'non rilevato')}`.\n\n"
-                + delivery + '\n' + summary + '\n\nIl successo del processo non equivale ad accettazione o merge.\n')
+                f"Modifiche locali non committate: `{result.get('dirty', 'non rilevato')}`.\n"
+                + selection + '\n' + delivery + '\n' + summary
+                + '\n\nIl successo del processo non equivale ad accettazione o merge.\n')
 
     def superseded(self, request):
         return any(job['request']['assignment'] == request['assignment'] and

@@ -40,6 +40,22 @@ Richiede:
 - scope definito;
 - criteri di accettazione identificati.
 
+### Qualification del Coordinator
+
+Il Coordinator deve portare il lavoro da `PLANNED` a `READY_FOR_HANDOFF` senza trasformare in domande manuali informazioni già verificabili.
+
+Prima di interrogare l'autore deve usare il contesto disponibile e le fonti collegate per ricostruire ciò che può determinare direttamente, per esempio repository, issue o PR pertinenti, branch/head, stato corrente, prompt esistente e altri prerequisiti tecnici.
+
+Quando restano informazioni necessarie che non possono essere determinate con sufficiente certezza, il Coordinator deve chiederle all'autore prima di assumere una decisione che ne dipende. Sono esempi:
+
+- repository o destinazione realmente ambigui;
+- comportamento desiderato o scope non definiti;
+- criteri di accettazione che ammettono più interpretazioni rilevanti;
+- decisioni di prodotto o autorizzazioni non ricavabili dalle fonti;
+- scelta esplicita di modello o reasoning quando l'autore vuole controllarli.
+
+L'intervista deve essere mirata e proporzionata; può procedere una domanda alla volta quando serve chiarire una decisione. Il lavoro resta `PLANNED` finché i gap bloccanti non sono risolti. Informazioni non necessarie all'incarico non devono bloccare l'handoff.
+
 ## READY_FOR_HANDOFF
 
 Un incarico può essere consegnato al Workspace consumer solo quando esistono:
@@ -48,9 +64,12 @@ Un incarico può essere consegnato al Workspace consumer solo quando esistono:
 - branch e head verificabili;
 - richiesta GitHub pertinente;
 - prompt versionato quando richiesto dal protocollo;
-- publish paths espliciti se è prevista pubblicazione.
+- publish paths espliciti se è prevista pubblicazione;
+- eventuale selezione di modello/reasoning già qualificata dal Coordinator.
 
 Una issue senza una superficie GitHub pertinente non viene trasformata automaticamente in un handoff. La fase di preparazione del lavoro appartiene al Coordinator.
+
+La selezione del modello è opzionale. Se il Coordinator non specifica `model` o `reasoning_effort`, il consumer conserva il default del runtime Codex. Se li specifica, il consumer deve validarli come valori sicuri per il trasporto e applicarli soltanto a quell'incarico.
 
 ## WORKSPACE_RUN
 
@@ -61,9 +80,17 @@ Il consumer:
 - non modifica lo scope;
 - non crea nuove missioni;
 - non decide merge o deploy;
-- non sostituisce l'autorità delle fonti del repository.
+- non sostituisce l'autorità delle fonti del repository;
+- non conduce interviste con l'autore: riceve un incarico già qualificato.
 
 La richiesta `/workspace run` deve contenere il contesto necessario all'esecuzione secondo il protocollo attivo.
+
+Campi opzionali supportati per l'esecuzione Codex:
+
+- `model`: identificatore del modello richiesto per quella singola esecuzione;
+- `reasoning_effort`: valore di reasoning richiesto per quella singola esecuzione.
+
+Il consumer valida la forma dei due valori prima dell'esecuzione e li passa esplicitamente a `codex exec`. La compatibilità effettiva tra modello, reasoning e account/runtime resta posseduta da Codex: una combinazione sintatticamente valida ma non disponibile deve fallire esplicitamente, senza fallback silenzioso verso un modello o un reasoning diverso.
 
 ## RESULT
 
@@ -73,6 +100,7 @@ Il consumer restituisce evidenza dell'esecuzione:
 - incarico e generation;
 - base/head verificati;
 - esito processo;
+- modello e reasoning richiesti, quando espliciti;
 - eventuali modifiche o pubblicazioni prodotte.
 
 Il risultato tecnico non equivale ad accettazione.
@@ -95,9 +123,12 @@ Solo il Coordinator registra l'accettazione finale.
 Responsabile di:
 
 - qualificare il lavoro;
+- recuperare dalle fonti le informazioni tecniche già determinabili;
+- intervistare l'autore soltanto sui gap reali o sulle decisioni che richiedono autorità umana;
 - assicurare scope e autorizzazione;
 - preparare PR/thread pertinenti;
 - creare o aggiornare prompt versionati quando richiesto;
+- selezionare opzionalmente modello e reasoning per incarico;
 - valutare RETURN.
 
 ### Workspace consumer
@@ -105,9 +136,10 @@ Responsabile di:
 Responsabile di:
 
 - eseguire l'incarico ricevuto;
-- rispettare repository, branch e prompt assegnati;
+- rispettare repository, branch, prompt e selezione modello assegnati;
 - produrre evidenza verificabile;
-- non ampliare il perimetro.
+- non ampliare il perimetro;
+- non colmare autonomamente gap di prodotto o di autorità che avrebbero dovuto bloccare `READY_FOR_HANDOFF`.
 
 ## Compatibilità
 
@@ -117,4 +149,4 @@ Questo contratto mantiene compatibilità con i flussi già verificati:
 - receipt/result nello stesso thread;
 - RETURN del Coordinator.
 
-Non modifica il runtime consumer e non modifica il modello di sicurezza del workspace.
+La qualification non aggiunge un nuovo servizio o orchestratore: è una responsabilità del Coordinator prima del protocollo esistente. La selezione modello aggiunge soltanto parametri opzionali per singolo incarico e non modifica il modello di sicurezza del workspace.

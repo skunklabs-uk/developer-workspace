@@ -173,7 +173,7 @@ consumer fermo, poi selezionare il binding nel launcher GitOps. Il launcher
 usa una copia privata runtime e non esegue enrollment automatico.
 
 Il rollback torna all’immagine precedente e al binding IWANT tramite GitOps,
-dopo aver fermato il consumer e conservare le consegne pendenti. La versione
+dopo aver fermato il consumer e conservato le consegne pendenti. La versione
 precedente non possiede il lock comune: non avviarla insieme alla nuova.
 Il formato dello stato non cambia e non richiede migrazione.
 

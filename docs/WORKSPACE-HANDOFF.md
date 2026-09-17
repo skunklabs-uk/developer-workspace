@@ -10,6 +10,11 @@ verifica browser attraverso Cloudflare Access. Il nuovo incarico report-only
 ha verificato autostart, consegna e RETURN; le evidenze sono riportate sotto.
 Il closeout infrastrutturale della missione resta di proprietà Homelab.
 
+Il lifecycle operativo precedente a `/workspace run`, inclusa la qualification
+del Coordinator e l'eventuale selezione per-incarico di modello/reasoning, è
+posseduto da [WORKSPACE-HANDOFF-LIFECYCLE.md](WORKSPACE-HANDOFF-LIFECYCLE.md).
+Questo runbook vi rimanda senza duplicarne il contratto.
+
 ## Collaudi storici #75 e #79
 
 Il 7 settembre 2026 g1 e g2 sono stati eseguiti, consegnati e riletti dalla chat,
@@ -168,7 +173,7 @@ consumer fermo, poi selezionare il binding nel launcher GitOps. Il launcher
 usa una copia privata runtime e non esegue enrollment automatico.
 
 Il rollback torna all’immagine precedente e al binding IWANT tramite GitOps,
-dopo aver fermato il consumer e conservato le consegne pendenti. La versione
+dopo aver fermato il consumer e conservando le consegne pendenti. La versione
 precedente non possiede il lock comune: non avviarla insieme alla nuova.
 Il formato dello stato non cambia e non richiede migrazione.
 

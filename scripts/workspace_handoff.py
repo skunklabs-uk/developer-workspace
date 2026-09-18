@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Single-thread handoff consumer. No scheduler, model calls or automatic reruns."""
+"""Serial handoff consumer with a stable GitHub inbox. No scheduler, model calls or automatic reruns."""
 from contextlib import contextmanager
 import fcntl
 import hashlib
@@ -65,12 +65,22 @@ def parse_request(comment, config):
     except (ValueError, TypeError) as error:
         raise HandoffError('Comando JSON non valido') from error
     fields = {'repository', 'assignment', 'generation', 'branch', 'head', 'prompt'}
-    optional = {'publish_paths', 'model', 'reasoning_effort'}
+    optional = {'thread', 'publish_paths', 'model', 'reasoning_effort'}
     if (not isinstance(request, dict) or not fields.issubset(request)
             or set(request) - fields - optional):
         raise HandoffError('Campi del comando non validi')
-    if request['repository'] != config['repository']:
-        raise HandoffError('Repository non autorizzato')
+    inbox_mode = 'allowed_repositories' in config
+    allowed_repositories = config.get('allowed_repositories', [config['repository']])
+    if request['repository'] not in allowed_repositories:
+        raise HandoffError('Repository target non autorizzato')
+    if inbox_mode and 'thread' not in request:
+        raise HandoffError('Thread target obbligatorio per la inbox')
+    thread = request.get('thread', config['thread'])
+    if type(thread) is not int or thread < 1:
+        raise HandoffError('Thread target non valido')
+    if inbox_mode and request['repository'] == config['repository'] and thread == config['thread']:
+        raise HandoffError('La inbox non può essere la destinazione autorevole')
+    request['thread'] = thread
     if not isinstance(request['assignment'], str) or not re.fullmatch(
             r'[A-Za-z0-9][A-Za-z0-9_-]{0,79}', request['assignment']):
         raise HandoffError('Assignment non valido')
@@ -129,6 +139,8 @@ class Consumer:
         self.config, self.github, self.runner = config, github, runner
         self.binding = {name: config[name] for name in
                         ('repository', 'thread', 'actor_ids', 'publisher_id')}
+        if 'allowed_repositories' in config:
+            self.binding['allowed_repositories'] = list(config['allowed_repositories'])
         self.path = self.root / 'state.json'
 
     @contextmanager
@@ -158,6 +170,25 @@ class Consumer:
     def marker(self, key):
         return '<!-- workspace-handoff:' + key + ' -->'
 
+    def target_thread(self, request):
+        return request.get('thread', self.config['thread'])
+
+    def target_comments(self, request):
+        if 'allowed_repositories' not in self.config:
+            return self.github.list_comments()
+        return self.github.list_comments(request['repository'], self.target_thread(request))
+
+    def create_target_comment(self, request, body):
+        if 'allowed_repositories' not in self.config:
+            return self.github.create_comment(body)
+        return self.github.create_comment(
+            body, repository=request['repository'], thread=self.target_thread(request))
+
+    def update_target_comment(self, request, comment_id, body):
+        if 'allowed_repositories' not in self.config:
+            return self.github.update_comment(comment_id, body)
+        return self.github.update_comment(comment_id, body, repository=request['repository'])
+
     def report(self, key, job, result):
         request = job['request']
         outcome = 'terminata — da revisionare' if result.get('exit_code') == 0 else 'fallita'
@@ -180,7 +211,7 @@ class Consumer:
         if request.get('reasoning_effort') is not None:
             selection += f"Reasoning richiesto: `{request['reasoning_effort']}`.\n"
         return (self.marker(key) + '\n## Risultato workspace\n\n'
-                f"Repository: `{request['repository']}`. Thread: `{self.config['thread']}`.\n"
+                f"Repository: `{request['repository']}`. Thread: `{self.target_thread(request)}`.\n"
                 f"Incarico: `{request['assignment']}` / generation `{request['generation']}`.\n"
                 f"Richiesta: commento `{job['comment_id']}`. Esecuzione: `{key}`.\n"
                 f"Esito processo: **{outcome}**; exit code `{result.get('exit_code')}`.\n"
@@ -190,7 +221,10 @@ class Consumer:
                 + '\n\nIl successo del processo non equivale ad accettazione o merge.\n')
 
     def superseded(self, request):
-        return any(job['request']['assignment'] == request['assignment'] and
+        thread = self.target_thread(request)
+        return any(job['request']['repository'] == request['repository'] and
+                   self.target_thread(job['request']) == thread and
+                   job['request']['assignment'] == request['assignment'] and
                    job['request']['generation'] > request['generation']
                    for job in self.state['jobs'].values())
 
@@ -210,7 +244,7 @@ class Consumer:
                         self.save()
                     else:
                         if not job.get('interruption_reported'):
-                            self.github.update_comment(job['receipt'], self.marker(key) +
+                            self.update_target_comment(job['request'], job['receipt'], self.marker(key) +
                                 '\n## Esito non determinato\n\nProcesso interrotto prima della '
                                 'registrazione del risultato. Verificare processo e checkout. '
                                 'Nessuna nuova esecuzione automatica; non è una dichiarazione '
@@ -229,6 +263,8 @@ class Consumer:
                     request = None
                 if request:
                     identity = [request['repository'], request['assignment'], request['generation']]
+                    if 'allowed_repositories' in self.config:
+                        identity.insert(1, self.target_thread(request))
                     key = digest(identity)
                     existing = self.state['jobs'].get(key)
                     if existing and existing['request'] != request:
@@ -246,7 +282,8 @@ class Consumer:
                 if job['phase'] == 'delivered':
                     continue
                 if job['phase'] == 'posting':
-                    matches = [item for item in comments if
+                    target_comments = self.target_comments(job['request'])
+                    matches = [item for item in target_comments if
                                item.get('user', {}).get('id') == self.config['publisher_id']
                                and item.get('body', '').startswith(self.marker(key) + '\n')]
                     if len(matches) != 1:
@@ -257,7 +294,7 @@ class Consumer:
                     job['phase'] = 'posting'
                     self.save()
                     try:
-                        receipt = self.github.create_comment(self.marker(key) +
+                        receipt = self.create_target_comment(job['request'], self.marker(key) +
                             '\nIncarico ricevuto. Verifica dei prerequisiti prima di Codex.')
                     except Exception as error:
                         # A definitive rejection is different from a lost response.
@@ -304,7 +341,8 @@ class Consumer:
                     if publish is not None and job['request'].get('publish_paths'):
                         result = publish(job['request'], run_dir, result)
                         atomic_json(run_dir / 'result.json', result)
-                    self.github.update_comment(job['receipt'], self.report(key, job, result))
+                    self.update_target_comment(
+                        job['request'], job['receipt'], self.report(key, job, result))
                     job['phase'] = 'delivered'
                     self.save()
                 return  # One execution/delivery per poll, not an unbounded drain.

@@ -1,4 +1,4 @@
-"""GitHub CLI transport and fixed Codex invocation for the opt-in IWANT pilot."""
+"""GitHub transport and fixed Codex invocation for the stable workspace handoff."""
 import base64
 import json
 import os
@@ -28,8 +28,9 @@ class RejectedRequest(HandoffError):
 class GitHub:
     """Use gh for credentials/HTTP; persist ETags and backoff, not a second queue."""
     def __init__(self, config, root):
-        self.base = f"repos/{config['repository']}/issues/{config['thread']}/comments"
         self.repo = config['repository']
+        self.thread = config['thread']
+        self.base = f"repos/{self.repo}/issues/{self.thread}/comments"
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.path = self.root / 'transport.json'
@@ -98,8 +99,14 @@ class GitHub:
         atomic_json(self.path, self.meta)
         return status, headers, body
 
-    def list_comments(self):
-        endpoint = self.base + '?per_page=100'
+    def comment_base(self, repository=None, thread=None):
+        repository = self.repo if repository is None else repository
+        thread = self.thread if thread is None else thread
+        return f"repos/{repository}/issues/{thread}/comments"
+
+    def list_comments(self, repository=None, thread=None):
+        base = self.comment_base(repository, thread)
+        endpoint = base + '?per_page=100'
         comments, visited = [], set()
         while endpoint:
             if endpoint in visited or len(visited) >= 20:
@@ -123,16 +130,18 @@ class GitHub:
             if match:
                 next_url = urlsplit(match.group(1))
                 if (next_url.scheme != 'https' or next_url.netloc != 'api.github.com'
-                        or next_url.path != '/' + self.base):
+                        or next_url.path != '/' + base):
                     raise HandoffError('URL di paginazione fuori dal thread autorizzato')
                 endpoint = next_url.path.lstrip('/') + '?' + next_url.query
         return comments
 
-    def create_comment(self, body):
-        return self.request('POST', self.base, {'body': body})[2]
+    def create_comment(self, body, repository=None, thread=None):
+        return self.request('POST', self.comment_base(repository, thread), {'body': body})[2]
 
-    def update_comment(self, comment_id, body):
-        return self.request('PATCH', f'repos/{self.repo}/issues/comments/{int(comment_id)}', {'body': body})[2]
+    def update_comment(self, comment_id, body, repository=None):
+        repository = self.repo if repository is None else repository
+        return self.request(
+            'PATCH', f'repos/{repository}/issues/comments/{int(comment_id)}', {'body': body})[2]
 
 
 def git(directory, *args, safe=False):
@@ -240,7 +249,8 @@ class LocalCodex:
             default_branch = metadata.get('default_branch') if isinstance(metadata, dict) else None
             if not default_branch or request['branch'] == default_branch:
                 raise HandoffError('Default branch vietato o non verificato')
-            _, _, pr = self.github.request('GET', f"repos/{repository}/pulls/{self.config['thread']}")
+            target_thread = request.get('thread', self.config['thread'])
+            _, _, pr = self.github.request('GET', f"repos/{repository}/pulls/{target_thread}")
             head = (pr.get('head') or {}) if isinstance(pr, dict) else {}
             head_repo = head.get('repo') or {}
             if (not isinstance(pr, dict) or pr.get('state') != 'open' or pr.get('draft') is not True

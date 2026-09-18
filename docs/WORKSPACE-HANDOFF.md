@@ -15,6 +15,14 @@ del Coordinator e l'eventuale selezione per-incarico di modello/reasoning, è
 posseduto da [WORKSPACE-HANDOFF-LIFECYCLE.md](WORKSPACE-HANDOFF-LIFECYCLE.md).
 Questo runbook vi rimanda senza duplicarne il contratto.
 
+La missione [#103](https://github.com/skunklabs-uk/developer-workspace/issues/103)
+sostituisce il cambio di binding per-thread con la Handoff Inbox stabile
+[#107](https://github.com/skunklabs-uk/developer-workspace/issues/107).
+Il codice mantiene temporaneamente compatibilità con la configurazione storica
+per non interrompere il runtime prima del cutover Homelab. La #107 resta
+**non attiva** finché integrazione, promozione runtime ed E2E finale della #103
+non sono completati.
+
 ## Collaudi storici #75 e #79
 
 Il 7 settembre 2026 g1 e g2 sono stati eseguiti, consegnati e riletti dalla chat,
@@ -65,12 +73,15 @@ non dimostrano l'estensione ad altri progetti della
 
 ## Perimetro
 
-Il collegamento legge un solo thread GitHub del repository esplicitamente
-configurato, prende una
-richiesta esplicita, prepara un clone separato alla revisione indicata e invoca
-`codex exec`. Pubblica prima una ricevuta e poi aggiorna **quello stesso
-commento** con il risultato: un timeout del PATCH non richiede una seconda
-esecuzione né un secondo commento.
+Nel percorso stabile il collegamento legge un solo thread configurato: la
+Handoff Inbox. Ogni richiesta esplicita identifica un repository target ammesso,
+il thread autorevole della issue/PR, branch, head e prompt. Il consumer prepara
+un clone separato alla revisione indicata e invoca `codex exec`.
+
+Receipt e RESULT vengono pubblicati sul **thread autorevole target**, non nella
+inbox. Il RESULT aggiorna la stessa receipt; un timeout del PATCH non richiede
+una seconda esecuzione né un secondo commento. La inbox conserva soltanto
+l'envelope originario e non diventa una seconda fonte dello stato del lavoro.
 
 La richiesta autorizzata e i criteri di accettazione restano posseduti dalla
 missione; il prompt versionato resta subordinato ad AGENTS. Il collegamento non
@@ -78,10 +89,12 @@ pianifica wave, non decide merge/deploy e non risveglia questa conversazione.
 Il coordinatore rilegge il report e lo confronta con repository e revisione
 reali prima di accettarlo; nella #1143 questo passaggio costituisce il RETURN.
 
-Il connettore ChatGPT verificato permette commenti nelle conversazioni di PR.
-Usare una PR pertinente al lavoro, non una PR fittizia creata soltanto come
-trasporto. Gli endpoint REST usati dal processo locale funzionano anche per
-issue ordinarie, ma ciò **non prova** che questo connettore possa scriverle.
+Il connettore ChatGPT è stato verificato sia su conversazioni di PR sia su una
+issue ordinaria: il commento
+[5729228269](https://github.com/skunklabs-uk/developer-workspace/issues/103#issuecomment-5729228269)
+ha confermato la scrittura sulla #103. La inbox può quindi essere una issue
+dedicata e non richiede una PR fittizia. La issue/PR del repository target resta
+comunque la fonte autorevole del lavoro.
 
 ## Consumer automatico seriale
 
@@ -95,10 +108,16 @@ quella descritta sotto; il padre riusa le autenticazioni già disponibili.
 
 Il launcher richiede la configurazione persistente con
 `execution_enabled=false` e prepara una copia runtime privata `0600` con
-esecuzione abilitata. Riusa l'enrollment e lo stato del repository/thread selezionato,
-quindi avvia `workspace-handoff watch`. Non esegue automaticamente `init` o
-`once`, non usa tmux e non crea un secondo worker o ledger. I percorsi effettivi
-e il binario Codex fissato restano autorevoli nel manifest Homelab.
+esecuzione abilitata, quindi avvia `workspace-handoff watch`. Non esegue
+automaticamente `init` o `once`, non usa tmux e non crea un secondo worker o
+ledger. I percorsi effettivi e il binario Codex fissato restano autorevoli nel
+manifest Homelab.
+
+Fino al cutover della #103 il manifest live conserva il binding storico
+repository/thread. La configurazione stabile userà invece repository/thread
+della inbox e una lista piatta `allowed_repositories` dei target ammessi.
+Il cambio è unico per il runtime: un nuovo incarico non deve più richiedere
+stop, enrollment e rollout GitOps per cambiare progetto.
 
 Se un prerequisito manca o watch termina, il launcher conserva lo stato e
 rimane fermo. Non rilancia automaticamente il processo modello. I retry bounded

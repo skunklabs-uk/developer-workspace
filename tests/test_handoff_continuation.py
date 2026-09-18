@@ -230,7 +230,7 @@ class RequestPublicationTests(unittest.TestCase):
         comment = {'user': {'id': 1}, 'created_at': 't', 'updated_at': 't',
                    'body': '/workspace run\n' + json.dumps(value)}
         return parse_request(comment, {'actor_ids': [1], 'repository': value['repository'],
-                                       'sandbox': sandbox})
+                                       'thread': 42, 'sandbox': sandbox})
 
     def test_publication_requires_explicit_valid_file_paths(self):
         try:

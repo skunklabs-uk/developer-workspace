@@ -140,7 +140,7 @@ class CheckoutTests(unittest.TestCase):
         self.git('commit', '-m', 'repository-specific prompt location')
         request = dict(self.request, prompt=path.relative_to(self.origin).as_posix(),
                        head=self.git('rev-parse', 'HEAD'), assignment='ADOPTION', generation=1)
-        config = {'actor_ids': [7], 'repository': request['repository']}
+        config = {'actor_ids': [7], 'repository': request['repository'], 'thread': 42}
         comment = {'user': {'id': 7}, 'created_at': '2026-09-15T00:00:00Z',
                    'updated_at': '2026-09-15T00:00:00Z',
                    'body': '/workspace run\n' + json.dumps(request)}

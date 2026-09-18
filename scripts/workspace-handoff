@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Consumer seriale per un repository/thread esplicitamente approvato."""
+"""Consumer seriale per una inbox GitHub stabile e target esplicitamente ammessi."""
 import argparse
 from contextlib import contextmanager
 import fcntl
@@ -16,14 +16,22 @@ from workspace_handoff_io import GitHub, LocalCodex, RateLimited
 
 def configuration(path):
     value = json.loads(Path(path).read_text(encoding='utf-8'), object_pairs_hook=unique_object)
-    allowed = {'repository', 'thread', 'actor_ids', 'publisher_id', 'execution_enabled',
-               'poll_seconds', 'timeout_seconds', 'sandbox', 'gh', 'codex'}
+    allowed = {'repository', 'thread', 'actor_ids', 'publisher_id', 'allowed_repositories',
+               'execution_enabled', 'poll_seconds', 'timeout_seconds', 'sandbox', 'gh', 'codex'}
     if not isinstance(value, dict) or set(value) - allowed:
         raise HandoffError('Configurazione non valida o campi non supportati')
+    repository_pattern = r'skunklabs-uk/[A-Za-z0-9][A-Za-z0-9_.-]*'
     repository = value.get('repository')
-    if not isinstance(repository, str) or not re.fullmatch(
-            r'skunklabs-uk/[A-Za-z0-9][A-Za-z0-9_.-]*', repository):
+    if not isinstance(repository, str) or not re.fullmatch(repository_pattern, repository):
         raise HandoffError('repository deve identificare un repository esatto di skunklabs-uk')
+    targets = value.get('allowed_repositories')
+    if targets is not None:
+        if (not isinstance(targets, list) or not targets or
+                any(not isinstance(item, str) or not re.fullmatch(repository_pattern, item)
+                    for item in targets)):
+            raise HandoffError('allowed_repositories deve elencare repository esatti di skunklabs-uk')
+        if len(set(targets)) != len(targets):
+            raise HandoffError('allowed_repositories contiene duplicati')
     for key in ('thread', 'publisher_id'):
         if type(value.get(key)) is not int or value[key] < 1:
             raise HandoffError(key + ' deve essere un ID numerico positivo')
@@ -57,7 +65,7 @@ def serial_consumer(root):
         try:
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as error:
-            raise HandoffError('Un altro consumer è attivo: arrestarlo prima del cambio progetto') from error
+            raise HandoffError('Un altro consumer è attivo: mantenere un solo watch seriale') from error
         yield
     finally:
         os.close(fd)

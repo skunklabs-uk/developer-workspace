@@ -3,7 +3,6 @@ import copy
 import json
 from pathlib import Path
 import runpy
-import subprocess
 import sys
 import tempfile
 import unittest

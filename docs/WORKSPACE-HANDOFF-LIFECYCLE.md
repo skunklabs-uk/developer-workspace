@@ -9,6 +9,8 @@ Questo documento definisce il contratto operativo tra Coordinator e Workspace co
 
 Il documento completa il protocollo `workspace-handoff` definendo la fase precedente all'esecuzione: quando un incarico è pronto per essere consegnato, quali artefatti sono necessari e quali responsabilità appartengono ai diversi attori.
 
+Il trasporto ordinario usa una Handoff Inbox GitHub stabile. La issue o PR del repository target resta la fonte autorevole del lavoro; la inbox contiene soltanto l'envelope necessario al routing.
+
 ## Lifecycle
 
 ```text
@@ -60,14 +62,15 @@ L'intervista deve essere mirata e proporzionata; può procedere una domanda alla
 
 Un incarico può essere consegnato al Workspace consumer solo quando esistono:
 
-- repository configurato;
+- repository target presente nella allowlist della inbox;
+- issue o PR target identificata da un thread GitHub positivo e verificabile;
 - branch e head verificabili;
-- richiesta GitHub pertinente;
+- richiesta GitHub pertinente nel repository target;
 - prompt versionato quando richiesto dal protocollo;
 - publish paths espliciti se è prevista pubblicazione;
 - eventuale selezione di modello/reasoning già qualificata dal Coordinator.
 
-Una issue senza una superficie GitHub pertinente non viene trasformata automaticamente in un handoff. La fase di preparazione del lavoro appartiene al Coordinator.
+Una issue senza una superficie GitHub pertinente non viene trasformata automaticamente in un handoff. La fase di preparazione del lavoro appartiene al Coordinator. La Handoff Inbox non possiede scope, criteri di accettazione o stato di prodotto e non sostituisce la superficie target.
 
 La selezione del modello è opzionale. Se il Coordinator non specifica `model` o `reasoning_effort`, il consumer conserva il default del runtime Codex. Se li specifica, il consumer deve validarli come valori sicuri per il trasporto e applicarli soltanto a quell'incarico.
 
@@ -83,7 +86,13 @@ Il consumer:
 - non sostituisce l'autorità delle fonti del repository;
 - non conduce interviste con l'autore: riceve un incarico già qualificato.
 
-La richiesta `/workspace run` deve contenere il contesto necessario all'esecuzione secondo il protocollo attivo.
+La richiesta `/workspace run` viene pubblicata nella Handoff Inbox e deve contenere il contesto necessario all'esecuzione secondo il protocollo attivo. In modalità inbox include esplicitamente:
+
+- `repository`: repository target ammesso;
+- `thread`: numero della issue o PR autorevole del repository target;
+- assignment, generation, branch, head e prompt già qualificati.
+
+La inbox stessa non può essere indicata come destinazione autorevole.
 
 Campi opzionali supportati per l'esecuzione Codex:
 
@@ -103,7 +112,7 @@ Il consumer restituisce evidenza dell'esecuzione:
 - modello e reasoning richiesti, quando espliciti;
 - eventuali modifiche o pubblicazioni prodotte.
 
-Il risultato tecnico non equivale ad accettazione.
+Receipt e RESULT vengono pubblicati sul thread autorevole del repository target; il comando nella inbox non viene trasformato in una seconda fonte di stato. Il risultato tecnico non equivale ad accettazione.
 
 ## RETURN
 
@@ -126,7 +135,7 @@ Responsabile di:
 - recuperare dalle fonti le informazioni tecniche già determinabili;
 - intervistare l'autore soltanto sui gap reali o sulle decisioni che richiedono autorità umana;
 - assicurare scope e autorizzazione;
-- preparare PR/thread pertinenti;
+- preparare issue/PR target pertinenti e l'envelope della inbox;
 - creare o aggiornare prompt versionati quando richiesto;
 - selezionare opzionalmente modello e reasoning per incarico;
 - valutare RETURN.
@@ -143,10 +152,12 @@ Responsabile di:
 
 ## Compatibilità
 
-Questo contratto mantiene compatibilità con i flussi già verificati:
+Il routing stabile riusa i comportamenti già verificati: richiesta stretta, exact head, sandbox, publication, recovery e RETURN. Durante la transizione il codice accetta ancora la configurazione storica senza `allowed_repositories`, nella quale trasporto e target coincidono; questo percorso serve soltanto a non interrompere il runtime prima del cutover Homelab.
 
-- richiesta `/workspace run` su thread GitHub pertinente;
-- receipt/result nello stesso thread;
-- RETURN del Coordinator.
+Dopo il cutover, il percorso ordinario è:
 
-La qualification non aggiunge un nuovo servizio o orchestratore: è una responsabilità del Coordinator prima del protocollo esistente. La selezione modello aggiunge soltanto parametri opzionali per singolo incarico e non modifica il modello di sicurezza del workspace.
+- `/workspace run` nella Handoff Inbox stabile;
+- receipt/result sul thread autorevole target;
+- RETURN del Coordinator sul repository target.
+
+La qualification e il routing non aggiungono scheduler, queue o un secondo worker. La selezione modello aggiunge soltanto parametri opzionali per singolo incarico e non modifica il modello di sicurezza del workspace.
